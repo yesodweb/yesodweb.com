@@ -1,5 +1,4 @@
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE OverloadedStrings #-}
 -- | Load page contents from the content folder.
 module Import.Content
     ( ContentFormat (..)

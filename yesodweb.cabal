@@ -36,6 +36,8 @@ library
                      Settings
                      Settings.StaticFiles
                      Handler.Root
+                     Handler.Wiki
+                     Handler.Page
 
     ghc-options:   -Wall -threaded -O0
     cpp-options:   -DDEVELOPMENT
