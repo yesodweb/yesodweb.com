@@ -7,5 +7,14 @@ Email
     user UserId Maybe
     verkey Text Maybe
     UniqueEmail email
+Blog
+    posted UTCTime
+    path ContentPath
+    slug Slug
+    year Int
+    month Month
+    author UserId
+    title Text
+    UniqueBlog year month slug
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

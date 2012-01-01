@@ -3,4 +3,4 @@ module Handler.Root where
 import Import
 
 getRootR :: Handler RepHtml
-getRootR = returnContent [unsafeHtmlFormat] ["homepage"]
+getRootR = returnContent [unsafeHtmlFormat] $ ContentPath ["homepage"]

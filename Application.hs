@@ -26,6 +26,7 @@ import Database.Persist.GenericSql (runMigration)
 import Handler.Root
 import Handler.Wiki
 import Handler.Page
+import Handler.Blog
 
 -- This line actually creates our YesodSite instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see

@@ -2,6 +2,7 @@
 -- | Load page contents from the content folder.
 module Import.Content
     ( ContentFormat (..)
+    , ContentPath (..)
     , htmlFormat
     , unsafeHtmlFormat
     , markdownFormat
@@ -9,8 +10,11 @@ module Import.Content
     , returnContent
     ) where
 
-import Prelude ((.), ($), IO, Maybe (..), return, (==), maybe)
-import Data.Text (Text)
+import Prelude
+    ( (.), ($), IO, Maybe (..), return, (==), maybe
+    , Eq, Show, Read
+    )
+import Data.Text (Text, splitOn, intercalate)
 import qualified Data.Conduit as C
 import qualified Data.Conduit.List as CL
 import qualified Data.Conduit.Text as CT
@@ -27,8 +31,10 @@ import Control.Arrow (second)
 import Yesod
     ( liftIO, GHandler, Yesod, RepHtml, notFound, defaultLayout
     , setTitle, toWidget
+    , PersistField (..)
     )
 import qualified Text.Markdown as Markdown
+import Database.Persist.Store (SqlType (SqlString))
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
@@ -65,15 +71,15 @@ markdownFormat = ContentFormat "md" $
 
 -- | Try to load 'Html' from the given path.
 loadContent :: [ContentFormat]
-            -> [Text]
+            -> ContentPath
             -> IO (Maybe (Maybe Html, Html))
 loadContent [] _ = return Nothing
-loadContent (cf:cfs) pieces = do
+loadContent (cf:cfs) cp@(ContentPath pieces) = do
     e <- isFile path
     if e
         -- FIXME caching
         then Just <$> (C.runResourceT $ CB.sourceFile path C.$$ cfLoad cf)
-        else loadContent cfs pieces
+        else loadContent cfs cp
   where
     path = foldl' go "content" pieces <.> cfExtension cf
     go x y = x </> fromText y
@@ -81,7 +87,7 @@ loadContent (cf:cfs) pieces = do
 -- | Return some content as a 'Handler'.
 returnContent :: Yesod master
               => [ContentFormat]
-              -> [Text]
+              -> ContentPath
               -> GHandler sub master RepHtml
 returnContent cfs pieces = do
     mc <- liftIO $ loadContent cfs pieces
@@ -90,3 +96,12 @@ returnContent cfs pieces = do
         Just (mtitle, body) -> defaultLayout $ do
             maybe (return ()) setTitle mtitle
             toWidget body
+
+newtype ContentPath = ContentPath { unContentPath :: [Text] }
+    deriving (Eq, Show, Read)
+instance PersistField ContentPath where
+    toPersistValue = toPersistValue . intercalate "/" . unContentPath
+    fromPersistValue v = do
+        t <- fromPersistValue v
+        return $ ContentPath $ splitOn "/" t
+    sqlType _ = SqlString
