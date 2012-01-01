@@ -5,6 +5,7 @@ module Import.Content
     ( ContentFormat (..)
     , htmlFormat
     , unsafeHtmlFormat
+    , markdownFormat
     , loadContent
     , returnContent
     ) where
@@ -28,6 +29,7 @@ import Yesod
     ( liftIO, GHandler, Yesod, RepHtml, notFound, defaultLayout
     , setTitle, toWidget
     )
+import qualified Text.Markdown as Markdown
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
@@ -56,6 +58,11 @@ htmlFormat = ContentFormat "html" $
 unsafeHtmlFormat :: ContentFormat
 unsafeHtmlFormat = ContentFormat "html" $
     second preEscapedLazyText <$> sinkText
+
+-- | Markdown content with XSS protection.
+markdownFormat :: ContentFormat
+markdownFormat = ContentFormat "md" $
+    second (Markdown.markdown Markdown.def) <$> sinkText
 
 -- | Try to load 'Html' from the given path.
 loadContent :: [ContentFormat]

@@ -21,6 +21,7 @@ Flag library-only
     Default:       False
 
 library
+    hs-source-dirs: ., markdown
     if flag(library-only)
         Buildable: True
     else
@@ -30,6 +31,7 @@ library
     other-modules:   Foundation
                      Import
                      Import.Content
+                     Text.Markdown
                      Model
                      Settings
                      Settings.StaticFiles
@@ -51,6 +53,7 @@ library
                 FlexibleContexts
 
 executable         yesodweb
+    hs-source-dirs: ., markdown
     if flag(library-only)
         Buildable: False
 
@@ -102,3 +105,6 @@ executable         yesodweb
                  , system-filepath               >= 0.4.4      && < 0.5
                  , system-fileio                 >= 0.3        && < 0.4
                  , filesystem-conduit            >= 0.0        && < 0.1
+                 , attoparsec-conduit            >= 0.0        && < 0.1
+                 , attoparsec                    >= 0.10       && < 0.11
+                 , data-default                  >= 0.3        && < 0.4

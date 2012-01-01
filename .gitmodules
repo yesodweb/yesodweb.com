@@ -1,3 +1,6 @@
 [submodule "content"]
 	path = content
 	url = https://github.com/yesodweb/yesodweb.com-content.git
+[submodule "markdown"]
+	path = markdown
+	url = https://github.com/snoyberg/markdown.git
