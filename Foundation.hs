@@ -1,6 +1,6 @@
 module Foundation
     ( YesodWeb (..)
-    , YesodWebRoute (..)
+    , Route (..)
     , YesodWebMessage (..)
     , resourcesYesodWeb
     , Handler
@@ -11,13 +11,11 @@ module Foundation
     , module Yesod
     , module Settings
     , module Model
-    , StaticRoute (..)
-    , AuthRoute (..)
     ) where
 
 import Prelude
 import Yesod
-import Yesod.Static (Static, base64md5, StaticRoute(..))
+import Yesod.Static
 import Settings.StaticFiles
 import Yesod.Auth
 import Yesod.Auth.BrowserId
@@ -145,7 +143,7 @@ instance YesodAuth YesodWeb where
                 fmap Just $ insert $ User (credsIdent creds) Nothing
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins = [authBrowserId', authGoogleEmail]
+    authPlugins = [authBrowserId, authGoogleEmail]
 
 -- Sends off your mail. Requires sendmail in production!
 deliver :: YesodWeb -> L.ByteString -> IO ()
