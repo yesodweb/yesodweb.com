@@ -35,6 +35,7 @@ import Model
 import Text.Jasmine (minifym)
 import Web.ClientSession (getKey)
 import Text.Hamlet (hamletFile)
+import Network.HTTP.Conduit (Manager)
 #if DEVELOPMENT
 import qualified Data.Text.Lazy.Encoding
 #else
@@ -50,6 +51,8 @@ data YesodWeb = YesodWeb
     , getLogger :: Logger
     , getStatic :: Static -- ^ Settings for static file serving.
     , connPool :: Database.Persist.Store.PersistConfigPool Settings.PersistConfig -- ^ Database connection pool.
+    , httpManager :: Manager
+    , persistConfig :: Settings.PersistConfig
     }
 
 -- Set up i18n messages. See the message folder.
@@ -81,7 +84,7 @@ type Form x = Html -> MForm YesodWeb YesodWeb (FormResult x, Widget)
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
 instance Yesod YesodWeb where
-    approot = appRoot . settings
+    approot = ApprootMaster $ appRoot . settings
 
     -- Place the session key file in the config folder
     encryptKey _ = fmap Just $ getKey "config/client_session_key.aes"
@@ -125,7 +128,12 @@ instance Yesod YesodWeb where
 -- How to run database actions.
 instance YesodPersist YesodWeb where
     type YesodPersistBackend YesodWeb = SqlPersist
-    runDB f = fmap connPool getYesod >>= Database.Persist.Store.runPool (undefined :: Settings.PersistConfig) f
+    runDB f = do
+        master <- getYesod
+        Database.Persist.Store.runPool
+            (persistConfig master)
+            f
+            (connPool master)
 
 instance YesodAuth YesodWeb where
     type AuthId YesodWeb = UserId
@@ -138,12 +146,12 @@ instance YesodAuth YesodWeb where
     getAuthId creds = runDB $ do
         x <- getBy $ UniqueUser $ credsIdent creds
         case x of
-            Just (uid, _) -> return $ Just uid
+            Just (Entity uid _) -> return $ Just uid
             Nothing -> do
                 fmap Just $ insert $ User (credsIdent creds) Nothing
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins = [authBrowserId, authGoogleEmail]
+    authPlugins _ = [authBrowserId, authGoogleEmail]
 
 -- Sends off your mail. Requires sendmail in production!
 deliver :: YesodWeb -> L.ByteString -> IO ()

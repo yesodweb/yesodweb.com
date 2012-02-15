@@ -26,5 +26,5 @@ instance PathPiece Month where
 -- You can find more information on persistent and how to declare entities
 -- at:
 -- http://www.yesodweb.com/book/persistent/
-share [mkPersist sqlMkSettings, mkMigrate "migrateAll"]
-    $(persistFile upperCaseSettings "config/models")
+share [mkPersist sqlSettings, mkMigrate "migrateAll"]
+    $(persistFileWith upperCaseSettings "config/models")
