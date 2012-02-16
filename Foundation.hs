@@ -11,9 +11,11 @@ module Foundation
     , module Yesod
     , module Settings
     , module Model
+    , module Blog
     ) where
 
 import Prelude
+import Blog
 import Yesod
 import Yesod.Static
 import Settings.StaticFiles
@@ -54,6 +56,7 @@ data YesodWeb = YesodWeb
     , connPool :: Database.Persist.Store.PersistConfigPool Settings.PersistConfig -- ^ Database connection pool.
     , httpManager :: Manager
     , persistConfig :: Settings.PersistConfig
+    , ywBlog :: Blog
     }
 
 -- Set up i18n messages. See the message folder.
@@ -153,6 +156,8 @@ instance YesodAuth YesodWeb where
 
     -- You can add other plugins like BrowserID, email or OAuth here
     authPlugins _ = [authBrowserId, authGoogleEmail]
+
+    authHttpManager = httpManager
 
 -- Sends off your mail. Requires sendmail in production!
 deliver :: YesodWeb -> L.ByteString -> IO ()

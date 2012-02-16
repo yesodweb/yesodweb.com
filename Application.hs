@@ -21,6 +21,8 @@ import Network.Wai.Middleware.RequestLogger (logCallback)
 import qualified Database.Persist.Store
 import Database.Persist.GenericSql (runMigration)
 import Network.HTTP.Conduit (newManager, def)
+import qualified Data.Yaml
+import qualified Filesystem.Path.CurrentOS as F
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -46,7 +48,11 @@ getApplication conf logger = do
               Database.Persist.Store.applyEnv
     p <- Database.Persist.Store.createPoolConfig (dbconf :: Settings.PersistConfig)
     Database.Persist.Store.runPool dbconf (runMigration migrateAll) p
-    let foundation = YesodWeb conf setLogger s p manager dbconf
+
+    mblog <- Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"
+    blog <- maybe (error "Invalid posts.yaml") return mblog
+
+    let foundation = YesodWeb conf setLogger s p manager dbconf blog
     app <- toWaiAppPlain foundation
     return $ logWare app
   where

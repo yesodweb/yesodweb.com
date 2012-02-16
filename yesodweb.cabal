@@ -29,6 +29,7 @@ library
 
     exposed-modules: Application
     other-modules:   Foundation
+                     Blog
                      Import
                      Import.Content
                      Text.Markdown
@@ -114,3 +115,4 @@ executable         yesodweb
                  , http-conduit                  >= 1.2.5      && < 1.3
                  , time
                  , http-types                    >= 0.6.8      && < 0.7
+                 , containers

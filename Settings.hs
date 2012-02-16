@@ -10,6 +10,7 @@ module Settings
     , staticDir
     , Extra (..)
     , parseExtra
+    , blogRoot
     ) where
 
 import Prelude
@@ -21,6 +22,10 @@ import qualified Yesod.Default.Util
 import Data.Text (Text)
 import Data.Yaml
 import Control.Applicative
+import qualified Filesystem.Path as F
+
+blogRoot :: F.FilePath
+blogRoot = "content/blog"
 
 -- | Which Persistent backend this site is using.
 type PersistConfig = PostgresConf

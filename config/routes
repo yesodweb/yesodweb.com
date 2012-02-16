@@ -8,4 +8,6 @@
 /wiki WikiHomeR GET
 /wiki/#Text WikiR GET
 /page/*Texts PageR GET
+
+/blog BlogR GET
 /blog/#Year/#Month/#Slug BlogPostR GET
