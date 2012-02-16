@@ -23,7 +23,7 @@ import Text.Blaze (Html, preEscapedText, preEscapedLazyText, toHtml)
 import qualified Data.ByteString as S
 import Control.Applicative ((<$>))
 import Text.HTML.SanitizeXSS (sanitizeBalance)
-import Filesystem.Path.CurrentOS ((</>), fromText, (<.>))
+import Filesystem.Path.CurrentOS ((</>), fromText, (<.>), FilePath)
 import Filesystem (isFile)
 import Data.List (foldl')
 import qualified Data.Text.Lazy as TL
@@ -70,27 +70,29 @@ markdownFormat = ContentFormat "md" $
     second (Markdown.markdown Markdown.def) <$> sinkText
 
 -- | Try to load 'Html' from the given path.
-loadContent :: [ContentFormat]
+loadContent :: FilePath -- ^ root
+            -> [ContentFormat]
             -> ContentPath
             -> IO (Maybe (Maybe Html, Html))
-loadContent [] _ = return Nothing
-loadContent (cf:cfs) cp@(ContentPath pieces) = do
+loadContent _ [] _ = return Nothing
+loadContent root (cf:cfs) cp@(ContentPath pieces) = do
     e <- isFile path
     if e
         -- FIXME caching
         then Just <$> (C.runResourceT $ CB.sourceFile path C.$$ cfLoad cf)
-        else loadContent cfs cp
+        else loadContent root cfs cp
   where
-    path = foldl' go "content" pieces <.> cfExtension cf
+    path = foldl' go root pieces <.> cfExtension cf
     go x y = x </> fromText y
 
 -- | Return some content as a 'Handler'.
 returnContent :: Yesod master
-              => [ContentFormat]
+              => FilePath -- ^ root
+              -> [ContentFormat]
               -> ContentPath
               -> GHandler sub master RepHtml
-returnContent cfs pieces = do
-    mc <- liftIO $ loadContent cfs pieces
+returnContent root cfs pieces = do
+    mc <- liftIO $ loadContent root cfs pieces
     case mc of
         Nothing -> notFound
         Just (mtitle, body) -> defaultLayout $ do

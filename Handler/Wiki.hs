@@ -1,7 +1,14 @@
-module Handler.Wiki where
+module Handler.Wiki
+    ( getWikiHomeR
+    , getWikiR
+    ) where
 
 import Import
+import Network.HTTP.Types (status301)
 
-getWikiR :: [Text] -> Handler RepHtml
-getWikiR = returnContent [markdownFormat, htmlFormat] . ContentPath . ("wiki":)
+getWikiHomeR :: Handler RepHtml
+getWikiHomeR = redirectWith status301 $ WikiR "Home"
 
+getWikiR :: Text -> Handler RepHtml
+getWikiR path =
+    returnContent "yesod.wiki" [markdownFormat] $ ContentPath [path]

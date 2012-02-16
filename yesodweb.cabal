@@ -113,3 +113,4 @@ executable         yesodweb
                  , data-default                  >= 0.3        && < 0.4
                  , http-conduit                  >= 1.2.5      && < 1.3
                  , time
+                 , http-types                    >= 0.6.8      && < 0.7
