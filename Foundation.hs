@@ -16,6 +16,7 @@ module Foundation
 
 import Prelude
 import Blog
+import Book
 import Yesod
 import Yesod.Static
 import Settings.StaticFiles
@@ -57,6 +58,7 @@ data YesodWeb = YesodWeb
     , httpManager :: Manager
     , persistConfig :: Settings.PersistConfig
     , ywBlog :: Blog
+    , ywBook :: Book
     }
 
 -- Set up i18n messages. See the message folder.

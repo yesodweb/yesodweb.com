@@ -1,0 +1,10 @@
+<h1>Yesod Web Framework Book
+
+<nav>
+    $forall Part title chapters <- parts
+        <nav .part>
+            <h1>#{title}
+            <ul>
+                $forall Chapter title _ slug <- chapters
+                    <li>
+                        <a href=@{ChapterR slug}>#{title}

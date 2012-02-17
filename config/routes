@@ -11,3 +11,7 @@
 
 /blog BlogR GET
 /blog/#Year/#Month/#Slug BlogPostR GET
+
+/book BookR GET
+/book/#Text ChapterR GET
+/book/image/#Text BookImageR GET

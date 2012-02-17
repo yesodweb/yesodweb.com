@@ -23,12 +23,14 @@ import Database.Persist.GenericSql (runMigration)
 import Network.HTTP.Conduit (newManager, def)
 import qualified Data.Yaml
 import qualified Filesystem.Path.CurrentOS as F
+import Book
 
 -- Import all relevant handler modules here.
 import Handler.Root
 import Handler.Wiki
 import Handler.Page
 import Handler.Blog
+import Handler.Book
 
 -- This line actually creates our YesodSite instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see
@@ -50,9 +52,10 @@ getApplication conf logger = do
     Database.Persist.Store.runPool dbconf (runMigration migrateAll) p
 
     mblog <- Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"
-    blog <- maybe (error "Invalid posts.yaml") return mblog
+    book <- loadBook $ bookRoot F.</> "yesod-web-framework-book.toc"
+    blog <- maybe (return $ error "Invalid posts.yaml") return mblog
 
-    let foundation = YesodWeb conf setLogger s p manager dbconf blog
+    let foundation = YesodWeb conf setLogger s p manager dbconf blog book
     app <- toWaiAppPlain foundation
     return $ logWare app
   where

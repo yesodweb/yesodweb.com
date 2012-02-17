@@ -11,6 +11,7 @@ module Settings
     , Extra (..)
     , parseExtra
     , blogRoot
+    , bookRoot
     ) where
 
 import Prelude
@@ -26,6 +27,9 @@ import qualified Filesystem.Path as F
 
 blogRoot :: F.FilePath
 blogRoot = "content/blog"
+
+bookRoot :: F.FilePath
+bookRoot = "content/book"
 
 -- | Which Persistent backend this site is using.
 type PersistConfig = PostgresConf
