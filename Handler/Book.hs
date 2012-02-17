@@ -6,7 +6,6 @@ module Handler.Book
 
 import Import
 import qualified Data.Text as T
-import Data.Char (isAlphaNum)
 import qualified Filesystem.Path.CurrentOS as F
 import Settings (bookRoot)
 import Book
@@ -15,6 +14,7 @@ import Text.XML
 import Text.XML.Xml2Html ()
 import Control.Monad (guard)
 import Data.Maybe (fromMaybe)
+import Network.HTTP.Types (status301)
 
 getBookR :: Handler RepHtml
 getBookR = do
@@ -61,7 +61,11 @@ getChapterR slug = do
     goA _ p = p
 
 getBookImageR :: Text -> Handler ()
-getBookImageR name = sendFile "image/png" $ F.encodeString $
-    bookRoot F.</> "images" F.</> name' F.<.> "png"
+getBookImageR name
+    | name' == name'' =
+        sendFile "image/png" $ F.encodeString $
+            bookRoot F.</> "images" F.</> name' F.<.> "png"
+    | otherwise = redirectWith status301 $ BookImageR $ either id id $ F.toText name'
   where
-    name' = F.fromText $ T.takeWhile isAlphaNum name
+    name' = F.basename name''
+    name'' = F.fromText name

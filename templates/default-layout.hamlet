@@ -1,3 +1,13 @@
+<nav>
+    <ul>
+        <li>
+            <g:plusOne>
+        <li>
+            <a href=@{BookR}>Book
+        <li>
+            <a href=@{BlogR}>Blog
+        <li>
+            <a href=@{WikiHomeR}>Wiki
 $maybe msg <- mmsg
     <div #message>#{msg}
 ^{widget}

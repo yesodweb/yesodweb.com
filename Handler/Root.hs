@@ -3,9 +3,15 @@ module Handler.Root where
 import Import
 import Text.Blaze (unsafeByteString)
 import qualified Data.ByteString as S
+import Text.Hamlet (hamletFile)
 
 getRootR :: Handler RepHtml
-getRootR = defaultLayout $ do
-    setTitle "Yesod Web Framework for Haskell"
+getRootR = do
     c <- liftIO $ S.readFile "content/homepage.html"
-    toWidget $ unsafeByteString c
+    let widget = do
+            setTitle "Yesod Web Framework for Haskell"
+            $(widgetFile "normalize")
+            $(widgetFile "homepage")
+            toWidget $ unsafeByteString c
+    pc <- widgetToPageContent widget
+    hamletToRepHtml $(hamletFile "templates/homepage-wrapper.hamlet")

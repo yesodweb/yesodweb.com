@@ -8,8 +8,7 @@
         <meta charset="UTF-8">
 
         <title>#{pageTitle pc}
-        <meta name="description" content="">
-        <meta name="author" content="">
+        <meta name="description" content="Yesod is a Haskell web framework for productive development of type-safe, RESTful, high performance web applications.">
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -23,10 +22,18 @@
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
         <div id="container">
-            <header>
+            <nav>
+                <ul>
+                    <li>
+                        <g:plusOne>
+                    <li>
+                        <a href=@{BookR}>Book
+                    <li>
+                        <a href=@{BlogR}>Blog
+                    <li>
+                        <a href=@{WikiHomeR}>Wiki
             <div id="main" role="main">
               ^{pageBody pc}
-            <footer>
 
         <script>
             window._gaq = [['_setAccount','UA-1434510-13'],['_trackPageview'],['_trackPageLoadTime']];
