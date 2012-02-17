@@ -48,7 +48,7 @@ sinkText =
     go . TL.fromChunks <$> (CT.decode CT.utf8 C.=$ CL.consume)
   where
     go t =
-        case TL.stripPrefix "title: " x of
+        case TL.stripPrefix "Title: " x of
             Just title -> (Just $ toHtml title, TL.drop 1 y)
             Nothing -> (Nothing, t)
       where
