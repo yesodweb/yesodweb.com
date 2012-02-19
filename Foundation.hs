@@ -31,8 +31,6 @@ import Yesod.Logger (logLazyText)
 #endif
 import qualified Settings
 import qualified Data.ByteString.Lazy as L
-import qualified Database.Persist.Store
-import Database.Persist.GenericSql
 import Settings (widgetFile, Extra (..))
 import Model
 import Text.Jasmine (minifym)
@@ -54,9 +52,7 @@ data YesodWeb = YesodWeb
     { settings :: AppConfig DefaultEnv Extra
     , getLogger :: Logger
     , getStatic :: Static -- ^ Settings for static file serving.
-    , connPool :: Database.Persist.Store.PersistConfigPool Settings.PersistConfig -- ^ Database connection pool.
     , httpManager :: Manager
-    , persistConfig :: Settings.PersistConfig
     , ywBlog :: Blog
     , ywBook :: Book
     }
@@ -116,9 +112,6 @@ instance Yesod YesodWeb where
         Just $ uncurry (joinPath y (Settings.staticRoot $ settings y)) $ renderRoute s
     urlRenderOverride _ _ = Nothing
 
-    -- The page to be redirected to when authentication is required.
-    authRoute _ = Just $ AuthR LoginR
-
     messageLogger y loc level msg =
       formatLogText (getLogger y) loc level msg >>= logMsg (getLogger y)
 
@@ -130,36 +123,6 @@ instance Yesod YesodWeb where
 
     -- Enable Javascript async loading
     yepnopeJs _ = Just $ Right $ StaticR js_modernizr_js
-
--- How to run database actions.
-instance YesodPersist YesodWeb where
-    type YesodPersistBackend YesodWeb = SqlPersist
-    runDB f = do
-        master <- getYesod
-        Database.Persist.Store.runPool
-            (persistConfig master)
-            f
-            (connPool master)
-
-instance YesodAuth YesodWeb where
-    type AuthId YesodWeb = UserId
-
-    -- Where to send a user after successful login
-    loginDest _ = RootR
-    -- Where to send a user after logout
-    logoutDest _ = RootR
-
-    getAuthId creds = runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
-        case x of
-            Just (Entity uid _) -> return $ Just uid
-            Nothing -> do
-                fmap Just $ insert $ User (credsIdent creds) Nothing
-
-    -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins _ = [authBrowserId, authGoogleEmail]
-
-    authHttpManager = httpManager
 
 -- Sends off your mail. Requires sendmail in production!
 deliver :: YesodWeb -> L.ByteString -> IO ()

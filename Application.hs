@@ -45,17 +45,12 @@ getApplication :: AppConfig DefaultEnv Extra -> Logger -> IO Application
 getApplication conf logger = do
     manager <- newManager def
     s <- staticSite
-    dbconf <- withYamlEnvironment "config/postgresql.yml" (appEnv conf)
-              Database.Persist.Store.loadConfig >>=
-              Database.Persist.Store.applyEnv
-    p <- Database.Persist.Store.createPoolConfig (dbconf :: Settings.PersistConfig)
-    Database.Persist.Store.runPool dbconf (runMigration migrateAll) p
 
     mblog <- Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"
     book <- loadBook $ bookRoot F.</> "yesod-web-framework-book.toc"
     blog <- maybe (return $ error "Invalid posts.yaml") return mblog
 
-    let foundation = YesodWeb conf setLogger s p manager dbconf blog book
+    let foundation = YesodWeb conf setLogger s manager blog book
     app <- toWaiAppPlain foundation
     return $ logWare app
   where
