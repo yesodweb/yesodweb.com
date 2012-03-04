@@ -1,12 +1,13 @@
 # yesodweb.com
 
 You made it!  You're currently looking behind the scenes at
-[`yesodweb.com`](http://yesodweb.com), the project page for Yesod.
+[yesodweb.com](http://yesodweb.com), the project page for Yesod.
 I'm not going to explain what Yesod is, that you learn when you point
 your browser to the link in the previous sentence.
 
-Well the project page of Yesod is written using Yesod, and in the files
-that this repository contains you can see how that is done.
+The project page of Yesod is powered by... Yesod!  And in this repository
+you can see how that is done: a good place to see Yesod applied in
+practice.
 
 
 ## Installing
