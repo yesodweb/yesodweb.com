@@ -34,7 +34,6 @@ library
                      Import
                      Import.Content
                      Text.Markdown
-                     Model
                      Settings
                      Settings.StaticFiles
                      Handler.Root

@@ -10,7 +10,6 @@ module Foundation
     , requireAuth
     , module Yesod
     , module Settings
-    , module Model
     , module Blog
     ) where
 
@@ -29,7 +28,6 @@ import Yesod.Logger (logLazyText)
 #endif
 import qualified Settings
 import Settings (widgetFile, Extra (..))
-import Model
 import Text.Jasmine (minifym)
 import Web.ClientSession (getKey)
 import Text.Hamlet (hamletFile)
