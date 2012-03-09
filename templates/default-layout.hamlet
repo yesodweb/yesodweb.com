@@ -7,7 +7,7 @@
         <li>
             <a href=@{BlogR}>Blog
         <li>
-            <a href=@{WikiHomeR}>Wiki
+            <a href=@{WikiR "Home"}>Wiki
 $maybe msg <- mmsg
     <div #message>#{msg}
 ^{widget}

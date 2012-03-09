@@ -7,7 +7,6 @@ module Application
 import Import
 import Settings
 import Settings.StaticFiles (staticSite)
-import Yesod.Auth
 import Yesod.Default.Config
 import Yesod.Default.Main
 import Yesod.Default.Handlers
@@ -18,8 +17,6 @@ import Network.Wai.Middleware.RequestLogger (logCallbackDev)
 import Yesod.Logger (Logger, logBS, toProduction)
 import Network.Wai.Middleware.RequestLogger (logCallback)
 #endif
-import qualified Database.Persist.Store
-import Database.Persist.GenericSql (runMigration)
 import Network.HTTP.Conduit (newManager, def)
 import qualified Data.Yaml
 import qualified Filesystem.Path.CurrentOS as F
