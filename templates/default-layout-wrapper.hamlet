@@ -13,6 +13,7 @@
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
         ^{pageHead pc}
 
         \<!--[if lt IE 9]>
@@ -23,7 +24,6 @@
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
         <div id="container">
-            <header>
             <div id="main" role="main">
               ^{pageBody pc}
             <footer>

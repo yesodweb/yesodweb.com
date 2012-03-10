@@ -1,0 +1,14 @@
+nav.part {
+    display: inline-block;
+    ul {
+        margin: 0;
+        padding: 0;
+    }
+    vertical-align: top;
+    margin-right: 2em;
+
+    a, a:visited {
+        text-decoration: none;
+        color: blue;
+    }
+}

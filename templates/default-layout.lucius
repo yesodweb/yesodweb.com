@@ -1,3 +1,29 @@
 body {
     font-family: sans-serif;
 }
+
+header {
+    height: 80px;
+
+    > a {
+        float: left;
+        margin-left: 5px;
+    }
+
+    nav {
+        text-align: right;
+    }
+
+    li {
+        display: inline;
+        margin-right: 1em;
+    }
+    a, a:visited {
+        color: blue;
+        text-decoration: none;
+    }
+}
+
+#main {
+    margin: 1em;
+}

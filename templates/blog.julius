@@ -1,0 +1,5 @@
+$(function(){
+    $("#archive li").has("ul").click(function(event){
+        if (event.target.id == $(this).attr("id")) $(this).toggleClass("open");
+    });
+});

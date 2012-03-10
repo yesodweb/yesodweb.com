@@ -1,1 +1,83 @@
 /* Homepage-specific styling */
+nav {
+    background-color: #333;
+    padding: 5px;
+
+    ul {
+        margin: 0;
+        padding: 0;
+        text-align: right;
+    }
+
+    li {
+        display: inline;
+        margin-right: 1em;
+    }
+
+    a, a:visited {
+        color: #ccc;
+        text-decoration: none;
+    }
+}
+
+hgroup {
+    padding-top: 1em;
+    text-align: center;
+    background-color: #BBD7F9;
+    h2 {
+        margin-bottom: 0;
+        font-size: 2em;
+        margin-top: 0;
+    }
+}
+
+h1 {
+    background: url(@{StaticR logo_home_png}) no-repeat center center;
+    margin: 0 auto;
+    width: 619px;
+    height: 157px;
+    span {
+        display: none;
+    }
+}
+
+section {
+    font-size: 1.2em;
+    h2 {
+        font-weight: normal;
+        text-shadow: #A3B5BA 3px 3px 5px;
+        text-align: right;
+        padding-right: 1.5em;
+        width: 30%;
+    }
+
+    display: table-row;
+    > * {
+        display: table-cell;
+    }
+}
+
+#main {
+    width: 800px;
+    margin: 0 auto;
+}
+
+body {
+    background-color: #E5EEF9;
+}
+
+aside#announcement {
+    margin: 0;
+    background: #353948;
+    color: #B84848;
+    padding: 0.5em;
+}
+aside#announcement a, aside#announcement a:visited {
+    color: #B84848;
+    text-decoration: underline;
+    font-weight: bold;
+}
+aside#announcement span.date {
+    font-style: italic;
+    font-size: 0.8em;
+}

@@ -14,4 +14,5 @@ getRootR = do
             $(widgetFile "homepage")
             toWidget $ unsafeByteString c
     pc <- widgetToPageContent widget
+    (blogLink, post) <- getNewestBlog
     hamletToRepHtml $(hamletFile "templates/homepage-wrapper.hamlet")

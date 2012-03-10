@@ -1,0 +1,20 @@
+<div #wrapper>
+    <article>
+        <hgroup>
+            <h1>#{postTitle post}
+            <h2>#{prettyDay $ postTime post}
+        ^{toWidget $ unsafeByteString content}
+    <nav #archive>
+        <ul>
+            $forall (year, x) <- rev blog
+                <li :currYear year:.open #nav-#{year}>
+                    <span>#{year}
+                    <ul>
+                        $forall (month, y) <- rev x
+                            <li :currMonth year month:.open #nav-#{year}#{toPathPiece month}>
+                                <span>#{pretty month}
+                                <ul>
+                                    $forall (slug, post) <- y
+                                        <li .leaf>
+                                            <a :currPost year month slug:.current href=@{BlogPostR year month slug}>#{postTitle post}
+    <div .clearfix>

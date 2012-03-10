@@ -1,13 +1,16 @@
-<nav>
-    <ul>
-        <li>
-            <g:plusOne>
-        <li>
-            <a href=@{BookR}>Book
-        <li>
-            <a href=@{BlogR}>Blog
-        <li>
-            <a href=@{WikiR "Home"}>Wiki
+<header>
+    <a href=@{RootR}>
+        <img src=@{StaticR logo_topleft_png} alt=Yesod>
+    <nav>
+        <ul>
+            <li>
+                <g:plusOne>
+            <li>
+                <a href=@{BookR}>Book
+            <li>
+                <a href=@{BlogR}>Blog
+            <li>
+                <a href=@{WikiR "Home"}>Wiki
 $maybe msg <- mmsg
     <div #message>#{msg}
 ^{widget}

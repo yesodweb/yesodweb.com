@@ -11,17 +11,9 @@ import Text.Blaze (unsafeByteString)
 import Settings (blogRoot)
 import Data.List (sortBy)
 import Data.Ord (comparing)
-import Data.Maybe (listToMaybe)
 
 getBlogR :: Handler ()
-getBlogR = do
-    Blog blog <- ywBlog <$> getYesod
-    newest <- maybe notFound return $ listToMaybe $ do
-        (year, x) <- take 1 $ reverse $ sortBy (comparing fst) $ Map.toList blog
-        (month, y) <- take 1 $ reverse $ sortBy (comparing fst) $ Map.toList x
-        (slug, _) <- take 1 y
-        return $ BlogPostR year month slug
-    redirect newest
+getBlogR = getNewestBlog >>= redirect . fst
 
 getBlogPostR :: Year -> Month -> Slug -> Handler RepHtml
 getBlogPostR y m s = do
@@ -30,27 +22,14 @@ getBlogPostR y m s = do
     blog'' <- maybe notFound return $ Map.lookup m blog'
     post <- maybe notFound return $ lookup s blog''
     content <- liftIO $ S.readFile $ F.encodeString $ blogRoot F.</> postFP post
+    let currYear y' = y == y'
+        currMonth y' m' = y == y' && m == m'
+        currPost y' m' s' = y == y' && m == m' && s == s'
     defaultLayout $ do
         setTitle $ toHtml $ postTitle post
         let rev :: Ord k => Map.Map k v -> [(k, v)]
             rev = reverse . sortBy (comparing fst) . Map.toList
-        [whamlet|
-<nav #archive>
-    <ul>
-        $forall (year, x) <- rev blog
-            <li>
-                <span>#{year}
-                <ul>
-                    $forall (month, y) <- rev x
-                        <li>
-                            <span>#{pretty month}
-                            <ul>
-                                $forall (slug, post) <- y
-                                    <li>
-                                        <a href=@{BlogPostR year month slug}>#{postTitle post}
-<article>
-    ^{toWidget $ unsafeByteString content}
-|]
+        $(widgetFile "blog")
   where
     pretty 1 = "January"
     pretty 2 = "February"

@@ -32,6 +32,15 @@
                         <a href=@{BlogR}>Blog
                     <li>
                         <a href=@{WikiR "Home"}>Wiki
+            <hgroup>
+                <h1>
+                    <span>Yesod
+                <h2>Web Framework for Haskell
+            <aside #announcement>
+                Last blog post: #
+                <a href=@{blogLink}>#{postTitle post}
+                \ #
+                <span .date>#{prettyDay $ postTime post}
             <div id="main" role="main">
               ^{pageBody pc}
 
