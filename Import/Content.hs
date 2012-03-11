@@ -35,6 +35,7 @@ import Yesod
     )
 import qualified Text.Markdown as Markdown
 import Database.Persist.Store (SqlType (SqlString))
+import Data.Maybe (fromMaybe)
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
@@ -88,15 +89,16 @@ loadContent root (cf:cfs) cp@(ContentPath pieces) = do
 -- | Return some content as a 'Handler'.
 returnContent :: Yesod master
               => FilePath -- ^ root
+              -> Text -- ^ default title
               -> [ContentFormat]
               -> ContentPath
               -> GHandler sub master RepHtml
-returnContent root cfs pieces = do
+returnContent root defTitle cfs pieces = do
     mc <- liftIO $ loadContent root cfs pieces
     case mc of
         Nothing -> notFound
         Just (mtitle, body) -> defaultLayout $ do
-            maybe (return ()) setTitle mtitle
+            setTitle $ fromMaybe (toHtml defTitle) mtitle
             toWidget body
 
 newtype ContentPath = ContentPath { unContentPath :: [Text] }
