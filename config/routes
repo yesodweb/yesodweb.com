@@ -8,6 +8,8 @@
 /wiki/#Text WikiR GET
 /page/*Texts PageR GET
 
+/feed FeedR GET
+
 /blog BlogR GET
 /blog/#Year/#Month/#Slug BlogPostR GET
 

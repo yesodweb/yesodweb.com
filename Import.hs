@@ -8,6 +8,7 @@ module Import
     , module Import.Content
     , module Settings.StaticFiles
     , getNewestBlog
+    , getBlogList
     , prettyDay
     ) where
 
@@ -28,6 +29,20 @@ import System.Locale (defaultTimeLocale)
 infixr 5 <>
 (<>) :: Monoid m => m -> m -> m
 (<>) = mappend
+
+getBlogList :: Handler [(Route YesodWeb, Post)]
+getBlogList = do
+    Blog blog <- ywBlog <$> getYesod
+    return $ concatMap go' $ concatMap go $ reverse $ Map.toList blog
+  where
+    go :: (a, Map.Map b c) -> [(a, b, c)]
+    go (a, m) = do
+        (b, c) <- reverse $ Map.toList m
+        return (a, b, c)
+    go' :: (Year, Month, [(Slug, Post)]) -> [(Route YesodWeb, Post)]
+    go' (y, m, ps) = do
+        (s, p) <- ps
+        return (BlogPostR y m s, p)
 
 getNewestBlog :: Handler (Route YesodWeb, Post)
 getNewestBlog = do

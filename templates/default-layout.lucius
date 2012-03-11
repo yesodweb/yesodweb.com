@@ -27,3 +27,13 @@ header {
 #main {
     margin: 1em;
 }
+
+#feedlink {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    background: url(@{StaticR blog_png});
+    span {
+        display: none;
+    }
+}

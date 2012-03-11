@@ -91,6 +91,7 @@ executable         yesodweb
                  , yesod-static                  >= 0.10       && < 0.11
                  , yesod-default                 >= 0.6        && < 0.7
                  , yesod-form                    >= 0.4        && < 0.5
+                 , yesod-newsfeed                >= 0.4        && < 0.5
                  , mime-mail                     >= 0.3.0.3    && < 0.5
                  , clientsession                 >= 0.7.4.1    && < 0.8
                  , skein                         >= 0.1.0.5    && < 0.2

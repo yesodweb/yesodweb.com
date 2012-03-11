@@ -17,6 +17,7 @@ import Prelude
 import Blog
 import Book
 import Yesod
+import Yesod.AtomFeed (atomLink)
 import Yesod.Static
 import Settings.StaticFiles
 import Yesod.Auth
@@ -92,6 +93,7 @@ instance Yesod YesodWeb where
         -- you to use normal widget features in default-layout.
 
         pc <- widgetToPageContent $ do
+            atomLink FeedR "Yesod Web Framework Blog"
             $(widgetFile "normalize")
             $(widgetFile "default-layout")
         hamletToRepHtml $(hamletFile "templates/default-layout-wrapper.hamlet")

@@ -1,6 +1,7 @@
 module Handler.Blog
     ( getBlogR
     , getBlogPostR
+    , getFeedR
     ) where
 
 import Import
@@ -11,6 +12,7 @@ import Text.Blaze (unsafeByteString)
 import Settings (blogRoot)
 import Data.List (sortBy)
 import Data.Ord (comparing)
+import Yesod.Feed
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
@@ -44,3 +46,30 @@ getBlogPostR y m s = do
     pretty 11 = "November"
     pretty 12 = "December" :: Text
     pretty _ = "Some new month"
+
+getFeedR :: Handler RepAtomRss
+getFeedR = do
+    posts <- getBlogList
+    f <-
+        case posts of
+            [] -> notFound
+            (_, f):_ -> return f
+    entries <- mapM go $ take 5 posts
+    newsFeed Feed
+        { feedTitle = "Yesod Web Framework Blog"
+        , feedLinkSelf = FeedR
+        , feedLinkHome = RootR
+        , feedDescription = "Development blog for the Yesod Web Framework"
+        , feedLanguage = "en"
+        , feedUpdated = postTime f
+        , feedEntries = entries
+        }
+  where
+    go (url, p) = do
+        content <- liftIO $ S.readFile $ F.encodeString $ blogRoot F.</> postFP p
+        return FeedEntry
+            { feedEntryLink = url
+            , feedEntryUpdated = postTime p
+            , feedEntryTitle = postTitle p
+            , feedEntryContent = unsafeByteString content
+            }

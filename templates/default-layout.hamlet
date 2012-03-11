@@ -11,6 +11,9 @@
                 <a href=@{BlogR}>Blog
             <li>
                 <a href=@{WikiR "Home"}>Wiki
+            <li>
+                <a href=@{FeedR} #feedlink>
+                    <span>Newsfeed
 $maybe msg <- mmsg
     <div #message>#{msg}
 ^{widget}
