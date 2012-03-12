@@ -67,7 +67,11 @@ a:visited {
         box-shadow: 0 0 3px #CCC inset;
         padding: 1em;
         margin: 1ex 0;
-        img { border: solid 1px #CCC; }
+        img { 
+            border: solid 1px #CCC;
+            margin: 0 auto;
+            display: block; 
+        }
         figcaption {
             text-size: .9em;
             text-align: center;
