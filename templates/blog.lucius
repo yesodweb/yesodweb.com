@@ -1,3 +1,6 @@
+#container #main {
+    width: 960px;
+}
 #wrapper {
     width: 960px;
     padding-top: 2em;
@@ -62,4 +65,7 @@ hgroup {
         margin-top: 0;
         font-weight: normal;
     }
+}
+.clearfix {
+    clear: both;
 }
