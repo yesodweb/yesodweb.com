@@ -1,9 +1,20 @@
 body {
-    font-family: sans-serif;
+    font-family: Helvetica, sans-serif;
+    background: #FAFAFA;
+    color: #333;
 }
 
-header {
+#main header {
     height: 80px;
+    box-shadow: 0 0 3px #238 inset;
+    background-color: #CCD;
+    color: #EEE;
+    padding: 1em;
+    img { 
+        border: none;
+        padding: 0;
+        box-shadow: none; 
+    }
 
     > a {
         float: left;
@@ -19,13 +30,55 @@ header {
         margin-right: 1em;
     }
     a, a:visited {
-        color: blue;
+        color: #23A;
+        font-weight: bold;
         text-decoration: none;
     }
 }
 
+#main footer {
+    height: 100px;
+    margin-top: 2ex;
+    border-top: solid 1px #CCC;
+    padding: 2ex 0;
+    text-align: right;
+}
+
+a {
+    color: #23A;
+    text-decoration: none;
+}
+a:visited {
+    color: #53A;
+    text-decoration: none;
+}
+
 #main {
-    margin: 1em;
+    margin: 0 auto;
+    width: 720px;
+    line-height: 1.5em;
+    pre {
+        border: solid 1px #CCC;
+        background: #EEE;
+        padding: .5em;
+    }
+    figure {
+        border: 1px solid #CCC;
+        box-shadow: 0 0 3px #CCC inset;
+        padding: 1em;
+        margin: 1ex 0;
+        img { 
+            border: solid 1px #CCC;
+            margin: 0 auto;
+            display: block; 
+        }
+        figcaption {
+            text-size: .9em;
+            text-align: center;
+            color: #555;
+            margin-bottom: 1ex;
+        }
+    }
 }
 
 #feedlink {
@@ -37,3 +90,21 @@ header {
         display: none;
     }
 }
+
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; }
+  td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+  td.sourceCode { padding-left: 5px; }
+  code > span.kw { color: #007020; font-weight: bold; }
+  code > span.dt { color: #902000; }
+  code > span.dv { color: #40a070; }
+  code > span.bn { color: #40a070; }
+  code > span.fl { color: #40a070; }
+  code > span.ch { color: #4070a0; }
+  code > span.st { color: #4070a0; }
+  code > span.co { color: #60a0b0; font-style: italic; }
+  code > span.ot { color: #007020; }
+  code > span.al { color: #ff0000; font-weight: bold; }
+  code > span.fu { color: #06287e; }
+  code > span.er { color: #ff0000; font-weight: bold; }

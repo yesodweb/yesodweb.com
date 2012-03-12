@@ -3,7 +3,7 @@
         <hgroup>
             <h1>#{postTitle post}
             <h2>#{prettyDay $ postTime post}
-        ^{toWidget $ unsafeByteString content}
+        ^{toWidget $ highlightByteString content}
     <nav #archive>
         <ul>
             $forall (year, x) <- rev blog

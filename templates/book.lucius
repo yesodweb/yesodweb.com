@@ -12,3 +12,68 @@ nav.part {
         color: blue;
     }
 }
+
+body {
+    font-family: Helvetica, sans-serif;
+    background: #FAFAFA;
+    color: #333;
+}
+
+#main header {
+    height: 80px;
+
+    img { 
+        border: none; 
+        padding: 0;
+        box-shadow: none; 
+    }
+
+    > a {
+        float: left;
+        margin-left: 5px;
+    }
+
+    nav {
+        text-align: right;
+    }
+
+    li {
+        display: inline;
+        margin-right: 1em;
+    }
+    a, a:visited {
+        color: #23A;
+        text-decoration: none;
+    }
+}
+
+a {
+    color: #23A;
+    text-decoration: none;
+}
+a:visited {
+    color: #53A;
+    text-decoration: none;
+}
+#main {
+    margin: 0 auto;
+    width: 600px;
+    line-height: 1.5em;
+    pre {
+        border: solid 1px #CCC;
+        background: #EEE;
+        padding: .5em;
+    }
+    figure {
+        border: 1px solid #CCC;
+        box-shadow: 0 0 3px #CCC inset;
+        padding: 1em;
+        margin: 2ex 0;
+        figcaption {
+            text-size: .9em;
+            text-align: center;
+            color: #555;
+        }
+        img { border: solid 1px #CCC; }
+    }
+}
