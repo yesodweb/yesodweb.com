@@ -48,7 +48,7 @@ upload (Path obj contents mime) = do
             , poAcl = Just AclPublicRead
             }
     cfg <- liftIO baseConfiguration
-    -- _ <- liftIO $ aws cfg manager po
+    _ <- liftIO $ aws cfg manager po
     return ()
 
 download :: Maybe Text -> Text -> M ()
