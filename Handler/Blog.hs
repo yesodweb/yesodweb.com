@@ -7,12 +7,21 @@ module Handler.Blog
 import Import
 import qualified Data.Map as Map
 import qualified Data.ByteString as S
+import qualified Data.ByteString.Char8 as B
 import qualified Filesystem.Path.CurrentOS as F
 import Text.Blaze (unsafeByteString)
 import Settings (blogRoot)
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import Yesod.Feed
+import Text.Pandoc
+import Text.Pandoc.Highlighting
+
+highlightCode :: String -> Html
+highlightCode = (writeHtml defaultWriterOptions {writerHighlight = True, writerHighlightStyle = pygments}) . readHtml defaultParserState
+
+highlightByteString :: S.ByteString -> Html
+highlightByteString =  highlightCode . B.unpack
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
