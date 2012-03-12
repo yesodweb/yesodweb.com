@@ -38,7 +38,7 @@
             <hgroup>
                 <h1>
                     <span>Yesod
-                <h2>Web Framework for Haskell
+                <h2>Web Framework
             <aside #announcement>
                 Last blog post: #
                 <a href=@{blogLink}>#{postTitle post}
