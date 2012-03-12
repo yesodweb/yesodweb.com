@@ -11,13 +11,16 @@ import qualified Data.ByteString as S
 import qualified Data.ByteString.Lazy as L
 import Data.Set (Set)
 import qualified Data.Set as Set
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, catMaybes)
 import qualified Text.HTML.TagStream as TS
 import Control.Monad.IO.Class (liftIO)
 import Aws
 import Aws.S3
 import Control.Monad (when)
 import Network.HTTP.Types (status200)
+import qualified Data.Attoparsec.ByteString.Lazy as A
+import qualified Data.Attoparsec.ByteString.Char8 as A8
+import Control.Applicative ((<|>), many)
 
 data Path = Path Text L.ByteString S.ByteString
 type Paths = [Path] -> [Path]
@@ -26,18 +29,14 @@ type M = RWST (Text, Manager) () (Set Text) IO
 
 main :: IO ()
 main = do
-    args <- getArgs
-    root <-
-        case args of
-            [x] -> return $ T.pack x
-            _ -> error "Invalid args"
+    let root = "http://localhost:3000"
     manager <- newManager def
     ((), _, ()) <- runRWST (download "/") (root, manager) Set.empty
     return ()
 
 upload :: Path -> M ()
 upload (Path obj contents mime) = do
-    liftIO $ putStrLn $ "Uploading " ++ show obj
+    --liftIO $ putStrLn $ "Uploading " ++ show obj
     (_, manager) <- ask
     let po' = putObject obj "www.yesodweb.com" (RequestBodyLBS contents)
         po = po'
@@ -45,7 +44,7 @@ upload (Path obj contents mime) = do
             , poAcl = Just AclPublicRead
             }
     cfg <- liftIO baseConfiguration
-    _ <- liftIO $ aws cfg manager po
+    -- _ <- liftIO $ aws cfg manager po
     return ()
 
 download :: Text -> M ()
@@ -63,8 +62,10 @@ download raw = do
                 then return ()
                 else do
                     put $ Set.insert path visited
-                    url <- parseUrl $ T.unpack $ T.append root $ T.takeWhile (/= '#') raw
-                    liftIO $ putStrLn $ "Downloading: " ++ show raw ++ " to " ++ show path
+                    url <- parseUrl $ T.unpack $ T.append root
+                                    $ T.takeWhile (/= '#')
+                                    $ T.replace "%20" " " raw
+                    --liftIO $ putStrLn $ "Downloading: " ++ show raw ++ " to " ++ show path
                     res <- runResourceT $ httpLbs url
                         { checkStatus = \_ _ -> Nothing
                         } manager
@@ -74,21 +75,40 @@ download raw = do
                                 Just ct -> do
                                     upload $ Path path (responseBody res) ct
                                     when ("text/html" `S.isPrefixOf` ct) $
-                                        downloadRefs $ responseBody res
-                        else liftIO $ putStrLn $ "Received status code: " ++ show (statusCode res)
+                                        downloadHtmlRefs $ responseBody res
+                                    when ("text/css" `S.isPrefixOf` ct) $
+                                        downloadCssRefs $ responseBody res
+                        else liftIO $ putStrLn $ "Received status code: " ++ show (statusCode res) ++ " for " ++ show path
         Nothing -> return ()
 
-downloadRefs :: L.ByteString -> M ()
-downloadRefs lbs = runResourceT
+downloadHtmlRefs :: L.ByteString -> M ()
+downloadHtmlRefs lbs = runResourceT
      $ CL.sourceList (L.toChunks lbs)
     $$ TS.tokenStream
     =$ CL.concatMap getRefs
     =$ CL.mapM_ download
+  where
+    getRefs :: TS.Token -> [Text]
+    getRefs (TS.TagOpen _ as _) =
+          map decodeUtf8
+        $ (maybe id (:) $ lookup "href" as)
+        $ (maybe id (:) $ lookup "src" as)
+        []
+    getRefs _ = []
 
-getRefs :: TS.Token -> [Text]
-getRefs (TS.TagOpen _ as _) =
-      map decodeUtf8
-    $ (maybe id (:) $ lookup "href" as)
-    $ (maybe id (:) $ lookup "src" as)
-    []
-getRefs _ = []
+downloadCssRefs :: L.ByteString -> M ()
+downloadCssRefs lbs =
+    case A.eitherResult $ A.parse parseUrls lbs of
+        Left s -> liftIO $ putStrLn s
+        Right urls -> do
+            --liftIO $ putStrLn $ "CSS download: " ++ show (catMaybes urls)
+            mapM_ (download . decodeUtf8) $ catMaybes urls
+  where
+    parseUrls = many parseUrl
+    parseUrl = (do
+        A.string "url("
+        url <- A8.takeWhile1 (/= ')')
+        A8.char ')'
+        return $ Just url)
+            <|> (A8.char 'u' >> return Nothing)
+            <|> (A.skip (const True) >> A8.skipWhile (/= 'u') >> return Nothing)
