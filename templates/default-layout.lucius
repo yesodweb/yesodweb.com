@@ -1,9 +1,20 @@
 body {
-    font-family: sans-serif;
+    font-family: Helvetica, sans-serif;
+    background: #FAFAFA;
+    color: #333;
 }
 
-header {
+#main header {
     height: 80px;
+    box-shadow: 0 0 3px #238 inset;
+    background-color: #CCD;
+    color: #EEE;
+    padding: 1em;
+    img { 
+        border: none;
+        padding: 0;
+        box-shadow: none; 
+    }
 
     > a {
         float: left;
@@ -19,13 +30,51 @@ header {
         margin-right: 1em;
     }
     a, a:visited {
-        color: blue;
+        color: #23A;
+        font-weight: bold;
         text-decoration: none;
     }
 }
 
+#main footer {
+    height: 100px;
+    margin-top: 2ex;
+    border-top: solid 1px #CCC;
+    padding: 2ex 0;
+    text-align: right;
+}
+
+a {
+    color: #23A;
+    text-decoration: none;
+}
+a:visited {
+    color: #53A;
+    text-decoration: none;
+}
+
 #main {
-    margin: 1em;
+    margin: 0 auto;
+    width: 720px;
+    line-height: 1.5em;
+    pre {
+        border: solid 1px #CCC;
+        background: #EEE;
+        padding: .5em;
+    }
+    figure {
+        border: 1px solid #CCC;
+        box-shadow: 0 0 3px #CCC inset;
+        padding: 1em;
+        margin: 1ex 0;
+        img { border: solid 1px #CCC; }
+        figcaption {
+            text-size: .9em;
+            text-align: center;
+            color: #555;
+            margin-bottom: 1ex;
+        }
+    }
 }
 
 #feedlink {
