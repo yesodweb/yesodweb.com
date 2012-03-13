@@ -20,6 +20,9 @@ Flag library-only
     Description:   Build for use with "yesod devel"
     Default:       False
 
+Flag upload
+    Default:       False
+
 library
     hs-source-dirs: ., markdown
     if flag(library-only)
@@ -126,3 +129,13 @@ executable         yesodweb
                  , unix
                  , transformers
                  , old-locale
+
+executable         static-upload
+    if flag(upload)
+        Buildable: True
+        Build-depends: xml-types                    >= 0.3.1          && < 0.4
+                     , aws                          >= 0.3.2          && < 0.4
+                     , tagstream-conduit            >= 0.2.2          && < 0.3
+    else
+        Buildable: False
+    main-is: static-upload.hs
