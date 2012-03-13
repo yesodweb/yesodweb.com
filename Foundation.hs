@@ -95,6 +95,7 @@ instance Yesod YesodWeb where
         pc <- widgetToPageContent $ do
             atomLink FeedR "Yesod Web Framework Blog"
             $(widgetFile "normalize")
+            $(widgetFile "highlight")
             $(widgetFile "default-layout")
         hamletToRepHtml $(hamletFile "templates/default-layout-wrapper.hamlet")
 
@@ -112,6 +113,8 @@ instance Yesod YesodWeb where
     -- expiration dates to be set far in the future without worry of
     -- users receiving stale content.
     addStaticContent = addStaticContentExternal minifym base64md5 Settings.staticDir (StaticR . flip StaticRoute [])
+
+    jsLoader _ = BottomOfBody
 
 -- This instance is required to use forms. You can modify renderMessage to
 -- achieve customized and internationalized form validation messages.
