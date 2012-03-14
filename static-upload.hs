@@ -52,7 +52,11 @@ upload (Path obj contents mime) = do
     return ()
 
 download :: Maybe Text -> Text -> M ()
-download msource raw = do
+download msource raw' = do
+    let raw =
+            case (msource >>= T.stripPrefix "wiki/", "/" `T.isInfixOf` raw', ":" `T.isInfixOf` raw') of
+                (Just{}, False, False) -> "/wiki/" `T.append` raw'
+                _ -> raw'
     (root, manager) <- ask
     case T.stripPrefix "/" $ fromMaybe raw $ T.stripPrefix root raw of
         Just noRoot -> do
