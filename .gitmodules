@@ -4,6 +4,3 @@
 [submodule "markdown"]
 	path = markdown
 	url = https://github.com/snoyberg/markdown.git
-[submodule "yesod.wiki"]
-	path = yesod.wiki
-	url = https://github.com/yesodweb/yesod.wiki.git

@@ -11,7 +11,7 @@ module Import.Content
     ) where
 
 import Prelude
-    ( (.), ($), IO, Maybe (..), return, (==), maybe
+    ( (.), ($), IO, Maybe (..), return, (==)
     , Eq, Show, Read
     )
 import Data.Text (Text, splitOn, intercalate)
