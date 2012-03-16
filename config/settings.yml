@@ -14,5 +14,5 @@ Staging:
   <<: *defaults
 
 Production:
-  approot: "http://beta.yesodweb.com"
+  approot: "http://www.yesodweb.com"
   <<: *defaults

@@ -129,6 +129,7 @@ executable         yesodweb
                  , unix
                  , transformers
                  , old-locale
+                 , process
 
 executable         static-upload
     if flag(upload)

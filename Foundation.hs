@@ -27,7 +27,6 @@ import Yesod.Logger (Logger, logMsg, formatLogText)
 import qualified Settings
 import Settings (widgetFile, Extra (..))
 import Text.Jasmine (minifym)
-import Web.ClientSession (getKey)
 import Text.Hamlet (hamletFile)
 import Network.HTTP.Conduit (Manager)
 import Data.Text (Text)

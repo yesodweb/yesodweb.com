@@ -18,7 +18,8 @@ import Network.Wai.Middleware.RequestLogger (logCallback)
 #endif
 import Network.HTTP.Conduit (newManager, def)
 import Data.Maybe (fromMaybe)
-import Data.IORef (newIORef)
+import Data.IORef (newIORef, writeIORef)
+import System.Process (runProcess, waitForProcess)
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -65,3 +66,15 @@ getApplicationDev =
     loader = loadConfig (configSettings Development)
         { csParseExtra = parseExtra
         }
+
+postReloadR :: Handler ()
+postReloadR = do
+    let run x y = liftIO $ runProcess x y (Just "content") Nothing Nothing Nothing Nothing >>= waitForProcess >> return ()
+    run "git" ["fetch"]
+    run "git" ["checkout", "origin/master"]
+    yw <- getYesod
+    mblog <- liftIO loadBlog
+    case mblog of
+        Nothing -> return ()
+        Just blog -> liftIO $ writeIORef (ywBlog yw) blog
+    liftIO $ loadBook >>= writeIORef (ywBook yw)

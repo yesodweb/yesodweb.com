@@ -16,3 +16,5 @@
 /book BookR GET
 /book/#Text ChapterR GET
 /book/image/#Text BookImageR GET
+
+/reload ReloadR POST
