@@ -10,6 +10,8 @@ module Import
     , getNewestBlog
     , getBlogList
     , prettyDay
+    , loadBook
+    , loadBlog
     ) where
 
 import Prelude hiding (writeFile, readFile)
@@ -25,6 +27,11 @@ import Data.Ord (comparing)
 import qualified Data.Map as Map
 import Data.Time
 import System.Locale (defaultTimeLocale)
+import qualified Book
+import qualified Filesystem.Path.CurrentOS as F
+import qualified Data.Yaml
+import Settings (bookRoot, blogRoot)
+import Data.IORef (readIORef)
 
 infixr 5 <>
 (<>) :: Monoid m => m -> m -> m
@@ -32,7 +39,8 @@ infixr 5 <>
 
 getBlogList :: Handler [(Route YesodWeb, Post)]
 getBlogList = do
-    Blog blog <- ywBlog <$> getYesod
+    iblog <- ywBlog <$> getYesod
+    Blog blog <- liftIO $ readIORef iblog
     return $ concatMap go' $ concatMap go $ reverse $ Map.toList blog
   where
     go :: (a, Map.Map b c) -> [(a, b, c)]
@@ -46,7 +54,8 @@ getBlogList = do
 
 getNewestBlog :: Handler (Route YesodWeb, Post)
 getNewestBlog = do
-    Blog blog <- ywBlog <$> getYesod
+    iblog <- ywBlog <$> getYesod
+    Blog blog <- liftIO $ readIORef iblog
     maybe notFound return $ listToMaybe $ do
         (year, x) <- take 1 $ reverse $ sortBy (comparing fst) $ Map.toList blog
         (month, y) <- take 1 $ reverse $ sortBy (comparing fst) $ Map.toList x
@@ -55,3 +64,9 @@ getNewestBlog = do
 
 prettyDay :: UTCTime -> String
 prettyDay = formatTime defaultTimeLocale "%B %e, %Y"
+
+loadBook :: IO Book.Book
+loadBook = Book.loadBook $ bookRoot F.</> "yesod-web-framework-book.toc"
+
+loadBlog :: IO (Maybe Blog)
+loadBlog = Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"

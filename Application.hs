@@ -17,9 +17,8 @@ import Yesod.Logger (Logger, logBS, toProduction)
 import Network.Wai.Middleware.RequestLogger (logCallback)
 #endif
 import Network.HTTP.Conduit (newManager, def)
-import qualified Data.Yaml
-import qualified Filesystem.Path.CurrentOS as F
-import Book
+import Data.Maybe (fromMaybe)
+import Data.IORef (newIORef)
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -42,11 +41,11 @@ getApplication conf logger = do
     manager <- newManager def
     s <- staticSite
 
-    mblog <- Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"
-    book <- loadBook $ bookRoot F.</> "yesod-web-framework-book.toc"
-    blog <- maybe (return $ error "Invalid posts.yaml") return mblog
+    mblog <- loadBlog
+    iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
+    ibook <- loadBook >>= newIORef
 
-    let foundation = YesodWeb conf setLogger s manager blog book
+    let foundation = YesodWeb conf setLogger s manager iblog ibook
     app <- toWaiAppPlain foundation
     return $ logWare app
   where

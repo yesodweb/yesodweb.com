@@ -13,13 +13,15 @@ import Settings (blogRoot)
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import Yesod.Feed
+import Data.IORef (readIORef)
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
 
 getBlogPostR :: Year -> Month -> Slug -> Handler RepHtml
 getBlogPostR y m s = do
-    Blog blog <- ywBlog <$> getYesod
+    iblog <- ywBlog <$> getYesod
+    Blog blog <- liftIO $ readIORef iblog
     blog' <- maybe notFound return $ Map.lookup y blog
     blog'' <- maybe notFound return $ Map.lookup m blog'
     post <- maybe notFound return $ lookup s blog''

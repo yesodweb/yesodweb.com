@@ -15,17 +15,20 @@ import Text.XML.Xml2Html ()
 import Control.Monad (guard)
 import Data.Maybe (fromMaybe)
 import Network.HTTP.Types (status301)
+import Data.IORef (readIORef)
 
 getBookR :: Handler RepHtml
 getBookR = do
-    Book parts _ <- ywBook <$> getYesod
+    ibook <- ywBook <$> getYesod
+    Book parts _ <- liftIO $ readIORef ibook
     defaultLayout $ do
         setTitle "Yesod Web Framework Book"
         $(widgetFile "book")
 
 getChapterR :: Text -> Handler RepHtml
 getChapterR slug = do
-    Book _ m <- ywBook <$> getYesod
+    ibook <- ywBook <$> getYesod
+    Book _ m <- liftIO $ readIORef ibook
     chapter <- maybe notFound return $ Map.lookup slug m
     Document _ (Element _ _ ns) _ <- liftIO $
         Text.XML.readFile def $ chapterPath chapter

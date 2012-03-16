@@ -1,7 +1,7 @@
+{-# OPTIONS_GHC -O0 #-}
 module Foundation
     ( YesodWeb (..)
     , Route (..)
-    , YesodWebMessage (..)
     , resourcesYesodWeb
     , Handler
     , Widget
@@ -24,9 +24,6 @@ import Yesod.Auth
 import Yesod.Default.Config
 import Yesod.Default.Util (addStaticContentExternal)
 import Yesod.Logger (Logger, logMsg, formatLogText)
-#ifdef DEVELOPMENT
-import Yesod.Logger (logLazyText)
-#endif
 import qualified Settings
 import Settings (widgetFile, Extra (..))
 import Text.Jasmine (minifym)
@@ -34,6 +31,7 @@ import Web.ClientSession (getKey)
 import Text.Hamlet (hamletFile)
 import Network.HTTP.Conduit (Manager)
 import Data.Text (Text)
+import Data.IORef (IORef)
 
 -- | The site argument for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -44,12 +42,9 @@ data YesodWeb = YesodWeb
     , getLogger :: Logger
     , getStatic :: Static -- ^ Settings for static file serving.
     , httpManager :: Manager
-    , ywBlog :: Blog
-    , ywBook :: Book
+    , ywBlog :: IORef Blog
+    , ywBook :: IORef Book
     }
-
--- Set up i18n messages. See the message folder.
-mkMessage "YesodWeb" "messages" "en"
 
 -- This is where we define all of the routes in our application. For a full
 -- explanation of the syntax, please see:
@@ -80,7 +75,7 @@ instance Yesod YesodWeb where
     approot = ApprootMaster $ appRoot . settings
 
     -- Place the session key file in the config folder
-    encryptKey _ = fmap Just $ getKey "config/client_session_key.aes"
+    encryptKey _ = return Nothing
 
     defaultLayout widget = do
         y <- getYesod
@@ -115,8 +110,3 @@ instance Yesod YesodWeb where
     addStaticContent = addStaticContentExternal minifym base64md5 Settings.staticDir (StaticR . flip StaticRoute [])
 
     jsLoader _ = BottomOfBody
-
--- This instance is required to use forms. You can modify renderMessage to
--- achieve customized and internationalized form validation messages.
-instance RenderMessage YesodWeb FormMessage where
-    renderMessage _ _ = defaultFormMessage
