@@ -28,11 +28,7 @@ getBlogPostR y m s = do
     blog' <- maybe notFound return $ Map.lookup y blog
     blog'' <- maybe notFound return $ Map.lookup m blog'
     post <- maybe notFound return $ lookup s blog''
-    contentRaw <- liftIO $ S.readFile $ F.encodeString $ blogRoot F.</> postFP post
-    let content =
-            if F.hasExtension (postFP post) "md"
-                then markdown def { msXssProtect = False } $ fromStrict $ decodeUtf8 contentRaw
-                else unsafeByteString contentRaw
+    content <- liftIO $ getContent post
     let currYear y' = y == y'
         currMonth y' m' = y == y' && m == m'
         currPost y' m' s' = y == y' && m == m' && s == s'
@@ -75,10 +71,18 @@ getFeedR = do
         }
   where
     go (url, p) = do
-        content <- liftIO $ S.readFile $ F.encodeString $ blogRoot F.</> postFP p
+        content <- liftIO $ getContent p
         return FeedEntry
             { feedEntryLink = url
             , feedEntryUpdated = postTime p
             , feedEntryTitle = postTitle p
-            , feedEntryContent = unsafeByteString content
+            , feedEntryContent = content
             }
+
+getContent :: Post -> IO Html
+getContent post = do
+    contentRaw <- S.readFile $ F.encodeString $ blogRoot F.</> postFP post
+    return $
+        if F.hasExtension (postFP post) "md"
+            then markdown def { msXssProtect = False } $ fromStrict $ decodeUtf8 contentRaw
+            else unsafeByteString contentRaw
