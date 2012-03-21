@@ -14,6 +14,9 @@ import Data.List (sortBy)
 import Data.Ord (comparing)
 import Yesod.Feed
 import Data.IORef (readIORef)
+import Text.Markdown (markdown, def, msXssProtect)
+import Data.Text.Encoding (decodeUtf8)
+import Data.Text.Lazy (fromStrict)
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
@@ -25,7 +28,11 @@ getBlogPostR y m s = do
     blog' <- maybe notFound return $ Map.lookup y blog
     blog'' <- maybe notFound return $ Map.lookup m blog'
     post <- maybe notFound return $ lookup s blog''
-    content <- liftIO $ S.readFile $ F.encodeString $ blogRoot F.</> postFP post
+    contentRaw <- liftIO $ S.readFile $ F.encodeString $ blogRoot F.</> postFP post
+    let content =
+            if F.hasExtension (postFP post) "md"
+                then markdown def { msXssProtect = False } $ fromStrict $ decodeUtf8 contentRaw
+                else unsafeByteString contentRaw
     let currYear y' = y == y'
         currMonth y' m' = y == y' && m == m'
         currPost y' m' s' = y == y' && m == m' && s == s'

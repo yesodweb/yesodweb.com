@@ -4,7 +4,7 @@
             <h1>#{postTitle post}
             <h2>#{prettyDay $ postTime post}
             <script src="http://www.reddit.com/static/button/button1.js">
-        ^{toWidget $ unsafeByteString content}
+        ^{toWidget content}
     <nav #archive>
         <ul>
             $forall (year, x) <- rev blog
