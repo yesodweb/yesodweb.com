@@ -6,13 +6,15 @@ module Import.Content
     , htmlFormat
     , unsafeHtmlFormat
     , markdownFormat
+    , redirectFormat
     , loadContent
     , returnContent
     ) where
 
 import Prelude
-    ( (.), ($), IO, Maybe (..), return, (==)
+    ( (.), ($), IO, Maybe (..), return, (==), (/=)
     , Eq, Show, Read
+    , Either (..)
     )
 import Data.Text (Text, splitOn, intercalate)
 import qualified Data.Conduit as C
@@ -26,55 +28,60 @@ import Text.HTML.SanitizeXSS (sanitizeBalance)
 import Filesystem.Path.CurrentOS ((</>), fromText, (<.>), FilePath)
 import Filesystem (isFile)
 import Data.List (foldl')
+import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
-import Control.Arrow (second)
 import Yesod
     ( liftIO, GHandler, Yesod, RepHtml, notFound, defaultLayout
     , setTitle, toWidget
     , PersistField (..)
+    , redirectWith
     )
+import Network.HTTP.Types (status301)
 import qualified Text.Markdown as Markdown
 import Database.Persist.Store (SqlType (SqlString))
 import Data.Maybe (fromMaybe)
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
-    , cfLoad :: C.Sink S.ByteString IO (Maybe Html, Html)
+    , cfLoad :: C.Sink S.ByteString IO (Either Text (Maybe Html, Html))
+    -- ^ Left == redirect, Right == title, content
     }
 
 -- | Turn a stream of 'S.ByteString's into an optional title line and the rest
 -- of the text. Assumes UTF8 encoding.
-sinkText :: C.Sink S.ByteString IO (Maybe Html, TL.Text)
-sinkText =
-    go . TL.fromChunks <$> (CT.decode CT.utf8 C.=$ CL.consume)
+sinkText :: (TL.Text -> a) -> C.Sink S.ByteString IO (Either Text (Maybe Html, a))
+sinkText f =
+    Right . go . TL.fromChunks <$> (CT.decode CT.utf8 C.=$ CL.consume)
   where
     go t =
         case TL.stripPrefix "Title: " x of
-            Just title -> (Just $ toHtml title, TL.drop 1 y)
-            Nothing -> (Nothing, t)
+            Just title -> (Just $ toHtml title, f $ TL.drop 1 y)
+            Nothing -> (Nothing, f t)
       where
         (x, y) = TL.break (== '\n') t
 
 -- | HTML content with XSS protection.
 htmlFormat :: ContentFormat
-htmlFormat = ContentFormat "html" $
-    second (preEscapedText . sanitizeBalance . TL.toStrict) <$> sinkText
+htmlFormat = ContentFormat "html" $ sinkText $
+    preEscapedText . sanitizeBalance . TL.toStrict
 
 -- | HTML content without XSS protection.
 unsafeHtmlFormat :: ContentFormat
-unsafeHtmlFormat = ContentFormat "html" $
-    second preEscapedLazyText <$> sinkText
+unsafeHtmlFormat = ContentFormat "html" $ sinkText $ preEscapedLazyText
 
 -- | Markdown content with XSS protection.
 markdownFormat :: ContentFormat
-markdownFormat = ContentFormat "md" $
-    second (Markdown.markdown Markdown.def) <$> sinkText
+markdownFormat = ContentFormat "md" $ sinkText $ Markdown.markdown Markdown.def
+
+-- | 301 redirects
+redirectFormat :: ContentFormat
+redirectFormat = ContentFormat "redirect" $ Left . T.takeWhile (/= '\n') . T.concat <$> (CT.decode CT.utf8 C.=$ CL.consume)
 
 -- | Try to load 'Html' from the given path.
 loadContent :: FilePath -- ^ root
             -> [ContentFormat]
             -> ContentPath
-            -> IO (Maybe (Maybe Html, Html))
+            -> IO (Maybe (Either Text (Maybe Html, Html)))
 loadContent _ [] _ = return Nothing
 loadContent root (cf:cfs) cp@(ContentPath pieces) = do
     e <- isFile path
@@ -97,7 +104,8 @@ returnContent root defTitle cfs pieces = do
     mc <- liftIO $ loadContent root cfs pieces
     case mc of
         Nothing -> notFound
-        Just (mtitle, body) -> defaultLayout $ do
+        Just (Left t) -> redirectWith status301 t
+        Just (Right (mtitle, body)) -> defaultLayout $ do
             setTitle $ fromMaybe (toHtml defTitle) mtitle
             toWidget body
 
