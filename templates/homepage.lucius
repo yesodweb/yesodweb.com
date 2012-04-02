@@ -42,20 +42,33 @@ h1 {
 }
 
 section {
-    font-size: 1.2em;
     h2 {
         font-weight: normal;
         text-shadow: #A3B5BA 3px 3px 5px;
-        text-align: right;
         padding-right: 1.5em;
-        width: 30%;
     }
 
     display: table-cell;
 }
 
+section.why {
+    width: 600px;
+    padding-right: 50px;
+
+    > p {
+        font-weight: bold;
+    }
+}
+
+section.getting-started {
+    width: 400px;
+    ul {
+        font-size: 1.2em;
+    }
+}
+
 #main {
-    width: 800px;
+    width: 1050px;
     margin: 0 auto;
 }
 
@@ -87,4 +100,20 @@ aside#announcement span.date {
     span {
         display: none;
     }
+}
+
+dt {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+dd {
+    margin: 0;
+    line-height: 140%;
+    margin-bottom: 0.5em;
+}
+
+p.what {
+    font-size: 1.4em;
+    padding: 0 200px;
 }

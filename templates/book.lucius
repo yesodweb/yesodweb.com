@@ -1,7 +1,7 @@
 nav.part {
-    display: inline-block;
+	margin-left: 1em;
     ul {
-        margin: 0;
+        margin-left: 1em;
         padding: 0;
     }
     vertical-align: top;

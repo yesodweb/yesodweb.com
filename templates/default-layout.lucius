@@ -91,3 +91,17 @@ a:visited {
         display: none;
     }
 }
+
+table.community {
+    border-collapse: collapse;
+
+    th,td {
+        border-bottom: 1px solid #ccc;
+        padding-top: 10px;
+        vertical-align: top;
+    }
+    th {
+        text-align: right;
+        padding-right: 10px;
+    }
+}
