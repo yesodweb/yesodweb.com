@@ -44,6 +44,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     parsePart (NodeElement (Element "nav" [("title", title)] chapters')) = do
         chapters <- mapM parseChapter chapters'
         return $ Part title chapters
+    parsePart _ = error "Book.parsePart"
 
     parseChapter :: Node -> IO Chapter
     parseChapter (NodeElement (Element "nav" as []))
@@ -51,3 +52,4 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         let href = dir F.</> F.fromText href'
             slug = either id id $ F.toText $ F.basename href
         return $ Chapter title href slug
+    parseChapter _ = error "Book.parseChapter"

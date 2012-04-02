@@ -16,7 +16,7 @@ module Foundation
 import Prelude
 import Blog
 import Book
-import Yesod
+import Yesod hiding (Route)
 import Yesod.AtomFeed (atomLink)
 import Yesod.Static
 import Settings.StaticFiles
@@ -28,7 +28,6 @@ import qualified Settings
 import Settings (widgetFile, Extra (..))
 import Text.Jasmine (minifym)
 import Text.Hamlet (hamletFile)
-import Network.HTTP.Conduit (Manager)
 import Data.Text (Text)
 import Data.IORef (IORef)
 
@@ -40,7 +39,6 @@ data YesodWeb = YesodWeb
     { settings :: AppConfig DefaultEnv Extra
     , getLogger :: Logger
     , getStatic :: Static -- ^ Settings for static file serving.
-    , httpManager :: Manager
     , ywBlog :: IORef Blog
     , ywBook :: IORef Book
     }
@@ -73,8 +71,7 @@ type Form x = Html -> MForm YesodWeb YesodWeb (FormResult x, Widget)
 instance Yesod YesodWeb where
     approot = ApprootMaster $ appRoot . settings
 
-    -- Place the session key file in the config folder
-    encryptKey _ = return Nothing
+    makeSessionBackend _ = return Nothing
 
     defaultLayout widget = do
         y <- getYesod

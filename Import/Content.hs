@@ -16,7 +16,7 @@ import Prelude
     , Eq, Show, Read
     , Either (..)
     )
-import Data.Text (Text, splitOn, intercalate)
+import Data.Text (Text)
 import qualified Data.Conduit as C
 import qualified Data.Conduit.List as CL
 import qualified Data.Conduit.Text as CT
@@ -33,23 +33,21 @@ import qualified Data.Text.Lazy as TL
 import Yesod
     ( liftIO, GHandler, Yesod, RepHtml, notFound, defaultLayout
     , setTitle, toWidget
-    , PersistField (..)
     , redirectWith
     )
 import Network.HTTP.Types (status301)
 import qualified Text.Markdown as Markdown
-import Database.Persist.Store (SqlType (SqlString))
 import Data.Maybe (fromMaybe)
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
-    , cfLoad :: C.Sink S.ByteString IO (Either Text (Maybe Html, Html))
+    , cfLoad :: C.Sink S.ByteString (C.ResourceT IO) (Either Text (Maybe Html, Html))
     -- ^ Left == redirect, Right == title, content
     }
 
 -- | Turn a stream of 'S.ByteString's into an optional title line and the rest
 -- of the text. Assumes UTF8 encoding.
-sinkText :: (TL.Text -> a) -> C.Sink S.ByteString IO (Either Text (Maybe Html, a))
+sinkText :: (TL.Text -> a) -> C.Sink S.ByteString (C.ResourceT IO) (Either Text (Maybe Html, a))
 sinkText f =
     Right . go . TL.fromChunks <$> (CT.decode CT.utf8 C.=$ CL.consume)
   where
@@ -111,9 +109,3 @@ returnContent root defTitle cfs pieces = do
 
 newtype ContentPath = ContentPath { unContentPath :: [Text] }
     deriving (Eq, Show, Read)
-instance PersistField ContentPath where
-    toPersistValue = toPersistValue . intercalate "/" . unContentPath
-    fromPersistValue v = do
-        t <- fromPersistValue v
-        return $ ContentPath $ splitOn "/" t
-    sqlType _ = SqlString

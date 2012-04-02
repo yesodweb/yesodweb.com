@@ -16,7 +16,6 @@ import Network.Wai.Middleware.RequestLogger (logCallbackDev)
 import Yesod.Logger (Logger, logBS, toProduction)
 import Network.Wai.Middleware.RequestLogger (logCallback)
 #endif
-import Network.HTTP.Conduit (newManager, def)
 import Data.Maybe (fromMaybe)
 import Data.IORef (newIORef, writeIORef)
 import System.Process (runProcess, waitForProcess)
@@ -39,14 +38,13 @@ mkYesodDispatch "YesodWeb" resourcesYesodWeb
 -- migrations handled by Yesod.
 getApplication :: AppConfig DefaultEnv Extra -> Logger -> IO Application
 getApplication conf logger = do
-    manager <- newManager def
     s <- staticSite
 
     mblog <- loadBlog
     iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
     ibook <- loadBook >>= newIORef
 
-    let foundation = YesodWeb conf setLogger s manager iblog ibook
+    let foundation = YesodWeb conf setLogger s iblog ibook
     app <- toWaiAppPlain foundation
     return $ logWare app
   where
