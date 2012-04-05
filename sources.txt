@@ -1,0 +1,5 @@
+./
+https://github.com/yesodweb/yesod
+https://github.com/yesodweb/shakespeare
+https://github.com/yesodweb/persistent
+https://github.com/yesodweb/wai
