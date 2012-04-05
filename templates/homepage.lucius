@@ -1,4 +1,6 @@
 /* Homepage-specific styling */
+* { font-family: lucida grande; }
+
 nav {
     background-color: #333;
     padding: 5px;
@@ -23,7 +25,8 @@ nav {
 hgroup {
     padding-top: 1em;
     text-align: center;
-    background-color: #BBD7F9;
+    background-color: #FCFCFC;
+    /*background-color: #BBD7F9;*/
     h2 {
         margin-bottom: 0;
         font-size: 2em;
@@ -43,8 +46,8 @@ h1 {
 
 section {
     h2 {
+        font-size: 2.5em;
         font-weight: normal;
-        text-shadow: #A3B5BA 3px 3px 5px;
         padding-right: 1.5em;
     }
 
@@ -64,6 +67,11 @@ section.getting-started {
     width: 400px;
     ul {
         font-size: 1.2em;
+        margin-left: -39px;
+        margin-bottom: 20px;
+        line-height: 1.5em;
+        list-style-type: none;
+        margin-bottom:50px;
     }
 }
 
@@ -105,6 +113,8 @@ aside#announcement span.date {
 dt {
     font-weight: bold;
     font-size: 1.2em;
+    margin-bottom:1em;
+    margin-top:2em;
 }
 
 dd {
@@ -114,6 +124,7 @@ dd {
 }
 
 p.what {
+    display:none;
     font-size: 1.4em;
     padding: 0 200px;
 }
