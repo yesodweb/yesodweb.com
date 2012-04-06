@@ -17,7 +17,7 @@
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         \<![endif]-->
-
+        <link href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" rel="stylesheet" type="text/css">
         <script>
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
@@ -35,17 +35,20 @@
                     <li>
                         <a href=@{FeedR} #feedlink>
                             <span>Newsfeed
-            <hgroup>
+            <div.headergroup>
                 <h1>
                     <span>Yesod
                 <h2>Web Framework
             <aside #announcement>
-                Last blog post: #
-                <a href=@{blogLink}>#{postTitle post}
-                \ #
-                <span .date>#{prettyDay $ postTime post}
-            <div id="main" role="main">
-              ^{pageBody pc}
+                <div>
+                    Last blog post: #
+                    <a href=@{blogLink}>#{postTitle post}
+                    \ #
+                    <span .date>#{prettyDay $ postTime post}
+            <div id="mainwrap">
+              <div id="fauxcols">
+              <div id="main" role="main">
+                ^{pageBody pc}
 
         <script>
             window._gaq = [['_setAccount','UA-1434510-13'],['_trackPageview'],['_trackPageLoadTime']];

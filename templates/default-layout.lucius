@@ -4,6 +4,10 @@ body {
     color: #333;
 }
 
+dd, p {
+  font-family: 'Droid Serif', serif;
+}
+
 #main header {
     height: 80px;
     box-shadow: 0 0 3px #238 inset;
