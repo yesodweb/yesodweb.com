@@ -9,7 +9,7 @@ import qualified Data.Map as Map
 import qualified Data.ByteString as S
 import qualified Filesystem.Path.CurrentOS as F
 import Text.Blaze (unsafeByteString)
-import Settings (blogRoot)
+import Settings (blogRoot, Author (..))
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import Yesod.Feed
@@ -17,6 +17,10 @@ import Data.IORef (readIORef)
 import Text.Markdown (markdown, def, msXssProtect)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Text.Lazy (fromStrict)
+import Yesod.Default.Config (appExtra)
+import qualified Data.Text as T
+import Data.Digest.Pure.MD5 (md5)
+import qualified Data.ByteString.Lazy.Char8 as L8
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
@@ -24,10 +28,12 @@ getBlogR = getNewestBlog >>= redirect . fst
 getBlogPostR :: Year -> Month -> Slug -> Handler RepHtml
 getBlogPostR y m s = do
     iblog <- ywBlog <$> getYesod
+    authors <- extraAuthors . appExtra . settings <$> getYesod
     Blog blog <- liftIO $ readIORef iblog
     blog' <- maybe notFound return $ Map.lookup y blog
     blog'' <- maybe notFound return $ Map.lookup m blog'
     post <- maybe notFound return $ lookup s blog''
+    let mauthor = Map.lookup (postAuthor post) authors
     content <- liftIO $ getContent post
     let currYear y' = y == y'
         currMonth y' m' = y == y' && m == m'
@@ -86,3 +92,13 @@ getContent post = do
         if F.hasExtension (postFP post) "md"
             then markdown def { msXssProtect = False } $ fromStrict $ decodeUtf8 contentRaw
             else unsafeByteString contentRaw
+
+gravatar :: Text -> Text
+gravatar email = T.concat
+    [ "http://www.gravatar.com/avatar/"
+    , hashEmail email
+    , "?size=80"
+    ]
+  where
+    hashEmail = md5sum . T.toLower . T.strip
+    md5sum = T.pack . show . md5 . L8.pack . T.unpack

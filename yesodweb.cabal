@@ -126,6 +126,7 @@ executable         yesodweb
                  , transformers
                  , old-locale
                  , process
+                 , pureMD5
 
 executable         static-upload
     if flag(upload)

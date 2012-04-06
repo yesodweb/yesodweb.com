@@ -1,7 +1,13 @@
 Default: &defaults
   host: "127.0.0.1"
   port: 3000
-  copyright: Insert copyright statement here
+  authors:
+    michael:
+      name: Michael Snoyman
+      email: michael@snoyman.com
+    greg:
+      name: Greg Weber
+      email: greg@gregweber.info
 
 Development:
   <<: *defaults
