@@ -189,7 +189,7 @@ section.getting-started {
 }
 
 aside#announcement {
-    box-shadow: 0 0 10px 10px rgba(41,55,78,0.12);
+    box-shadow: 0 0 20px 10px rgba(41,55,78,0.12);
     height: 20px;
     margin: 0 auto;
     position: relative;
