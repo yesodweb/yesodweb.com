@@ -11,6 +11,7 @@ module Settings
     , parseExtra
     , blogRoot
     , bookRoot
+    , Author (..)
     ) where
 
 import Prelude
@@ -22,6 +23,8 @@ import Data.Text (Text)
 import Data.Yaml
 import Control.Applicative
 import qualified Filesystem.Path as F
+import Data.Map (Map)
+import Control.Monad (mzero)
 
 blogRoot :: F.FilePath
 blogRoot = "content/blog"
@@ -64,8 +67,19 @@ widgetFile = Yesod.Default.Util.widgetFileNoReload
 #endif
 
 data Extra = Extra
-    { extraCopyright :: Text
+    { extraAuthors :: Map Text Author
+    }
+
+data Author = Author
+    { authorName :: Text
+    , authorEmail :: Text
     }
 
 parseExtra :: DefaultEnv -> Object -> Parser Extra
-parseExtra _ o = Extra <$> o .: "copyright"
+parseExtra _ o = Extra <$> o .: "authors"
+
+instance FromJSON Author where
+    parseJSON (Object o) = Author
+        <$> o .: "name"
+        <*> o .: "email"
+    parseJSON _ = mzero
