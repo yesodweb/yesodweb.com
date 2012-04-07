@@ -23,8 +23,8 @@
         <script>
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
-        <div id="spotlight">
-        <div id="container">
+        <#spotlight>
+        <#container>
             <nav>
                 <ul>
                     <li.googleplus>
@@ -38,17 +38,18 @@
                     <li.feedlink>
                         <a href=@{FeedR} #feedlink>
                             <span>newsfeed
-            <div.headergroup>
-                <div.homepage-logo>
-                  <div.logo-image>
-                  <div.logo-text>Yesod Web Framework
-                <div.homepage-info>
+            <.headergroup>
+                <.homepage-logo>
+                  <.logo-image>
+                  <.logo-text>Yesod Web Framework
+                <.homepage-info>
                   Yesod is a Haskell web framework for productive development of type-safe, RESTful, high performance web applications.
             <aside #announcement>
-                <div .tri-left>
-                <div .tri-right>
-                <div .msg>
-                    last blog post: #
+                <.tri-left>
+                <.tri-right>
+                <p.msg>
+                    <span.subject>
+                        last blog post: #
                     <a href=@{blogLink}>#{postTitle post}
                     \ #
                     <span .date>#{prettyDay $ postTime post}
