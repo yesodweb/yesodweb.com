@@ -18,9 +18,9 @@ a, a:visited {
 
 
 nav {
-    box-shadow: 0 -5px 20px 20px rgba(41,55,78,0.12);  /* rgba(0,0,0,0.1); */
+    box-shadow: 0 -5px 20px 20px rgba(41,55,78,0.12);
     z-index: 100;
-    background-color: #29374e; /*#11233f; */
+    background-color: #29374e;
     padding: 5px;
     font-family: 'Lato';
     font-size: 0.80em;
@@ -76,7 +76,7 @@ div.headergroup {
     padding-bottom: 1.3em;
     div.homepage-logo {
         text-align: center;
-        width: 700px;
+        width: 600px;
         height: 140px;
         margin-left: 75px;
         div.logo-image {
@@ -85,10 +85,10 @@ div.headergroup {
           height: 100px;
         }
         div.logo-text {
-            color: #294864; /* 5A = saturate,  64 = 100% blue */
+            color: #29374e;
             padding-top: 0.3em;
             font-family: 'Lato';
-            font-weight: bold;
+            font-weight: 300;
             font-size: 1.6em;
             padding-bottom: 0.3em;
         }
@@ -97,14 +97,14 @@ div.headergroup {
     div.homepage-info {
        text-align: left;
        font-family: 'Lato';
-       font-weight: 400;
+       font-weight: 300;
        font-size: 0.8em;
        line-height: 1.7em;
        position: absolute;
        left: 600px;
        top: 10px;
        width: 220px;
-       padding: 10px;
+       padding: 30px;
     }
 
     h2 {
@@ -123,8 +123,8 @@ h1, h2, h3, h4, h5, h6, dt {
 }
 
 h1 {
-  font-weight: 700;
-  font-size: 1.1em;
+  font-weight: 300;
+  font-size: 1.8em;
 }
 h2 {
   font-weight: 400;
@@ -139,7 +139,7 @@ h1 {
 
 section {
     h2 {
-        margin-top: 1.8em;
+        margin-top: 2.2em;
         margin-bottom: 0;
     }
 
@@ -150,20 +150,17 @@ section.why {
     width: 600px;
     padding-left: 90px;
     padding-right: 90px;
-
-    h2 { color: #295864; }
 }
 
 section.getting-started {
     background-color: #f4f4f4;
-    width: 350px;
-    text-align: center;
+    width: 300px;
+    padding-left: 50px;
 
     h2 {
         font-size: 1.2em;
         margin-bottom: 0.7em;
         margin-top: 1.8em;
-        color: #294864;
     }
 
     ul {
@@ -173,14 +170,13 @@ section.getting-started {
         margin-bottom: 20px;
         line-height: 2em;
         list-style-type: none;
-        margin-bottom:50px;
+        margin-bottom: 50px;
         padding-left: 0;
     }
 
-    img {
+    div {
         font-family: 'Lato';
         padding-left: 20px;
-        max-width:300px;
     }
 }
 
@@ -194,25 +190,20 @@ section.getting-started {
 
 aside#announcement {
     box-shadow: 0 0 20px 10px rgba(41,55,78,0.12);
-    height: 28px;
+    height: 20px;
     margin: 0 auto;
     position: relative;
     width: 1080px;
     background-color: #29374e;
     color: #eee;
     padding: 0.5em;
+    font-family: 'Lato';
+    font-weight: 400;
+    font-size: 0.8em;
     p.msg {
-        font-family: 'Lato';
-        font-weight: 400;
-        font-size: 1em;
         margin-left: 105px;
     }
     z-index: 50;
-
-    .subject {
-      font-size: 1em;
-      font-weight: 400;
-    }
 
     div.tri-left, div.tri-right {
        width: 0;
@@ -252,8 +243,7 @@ aside#announcement span.date {
     }
 }
 
-dt, #learn-more {
-    color:#3378aa;
+dt {
     font-weight: 400;
     font-size: 1.05em;
     margin-bottom:0.7em;
