@@ -76,7 +76,7 @@ div.headergroup {
     padding-bottom: 1.3em;
     div.homepage-logo {
         text-align: center;
-        width: 600px;
+        width: 700px;
         height: 140px;
         margin-left: 75px;
         div.logo-image {
