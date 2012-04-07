@@ -104,7 +104,7 @@ div.headergroup {
        left: 600px;
        top: 10px;
        width: 220px;
-       padding: 30px;
+       padding: 10px;
     }
 
     h2 {
@@ -156,6 +156,7 @@ section.getting-started {
     background-color: #f4f4f4;
     width: 300px;
     padding-left: 50px;
+    text-align: center;
 
     h2 {
         font-size: 1.2em;
@@ -174,9 +175,10 @@ section.getting-started {
         padding-left: 0;
     }
 
-    div {
+    img {
         font-family: 'Lato';
         padding-left: 20px;
+        max-width:300px;
     }
 }
 
