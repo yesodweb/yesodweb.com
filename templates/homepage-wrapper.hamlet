@@ -17,37 +17,42 @@
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         \<![endif]-->
-        <link href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Crimson+Text:400,400italic,600,600italic,700,700italic" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic" rel="stylesheet" type="text/css">
+
         <script>
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
+        <div id="spotlight">
         <div id="container">
             <nav>
                 <ul>
-                    <li>
+                    <li.googleplus>
                         <g:plusOne>
                     <li>
-                        <a href=@{BookR}>Book
+                        <a href=@{BookR}>book
                     <li>
-                        <a href=@{BlogR}>Blog
+                        <a href=@{BlogR}>blog
                     <li>
-                        <a href=@{WikiR "Home"}>Wiki
-                    <li>
+                        <a href=@{WikiR "Home"}>wiki
+                    <li.feedlink>
                         <a href=@{FeedR} #feedlink>
-                            <span>Newsfeed
+                            <span>newsfeed
             <div.headergroup>
-                <h1>
-                    <span>Yesod
-                <h2>Web Framework
+                <div.homepage-logo>
+                  <div.logo-image>
+                  <div.logo-text>Yesod Web Framework
+                <div.homepage-info>
+                  Yesod is a Haskell web framework for productive development of type-safe, RESTful, high performance web applications.
             <aside #announcement>
-                <div>
-                    Last blog post: #
+                <div .tri-left>
+                <div .tri-right>
+                <div .msg>
+                    last blog post: #
                     <a href=@{blogLink}>#{postTitle post}
                     \ #
                     <span .date>#{prettyDay $ postTime post}
-            <div id="mainwrap">
-              <div id="fauxcols">
-              <div id="main" role="main">
+            <div id="main" role="main">
                 ^{pageBody pc}
 
         <script>
