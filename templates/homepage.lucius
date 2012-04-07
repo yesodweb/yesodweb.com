@@ -253,7 +253,7 @@ aside#announcement span.date {
 }
 
 dt, #learn-more {
-    color:#39a;
+    color:#3378aa;
     font-weight: 400;
     font-size: 1.05em;
     margin-bottom:0.7em;
