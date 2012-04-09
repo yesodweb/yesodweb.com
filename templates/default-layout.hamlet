@@ -1,6 +1,6 @@
 <header>
     <a href=@{RootR}>
-        <img src=@{StaticR logo_topleft_png} alt=Yesod>
+        <img src=@{StaticR logo_home2_no_esod_png} alt=Yesod>
     <nav>
         <ul>
             <li>

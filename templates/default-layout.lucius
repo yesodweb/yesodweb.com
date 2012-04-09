@@ -9,7 +9,7 @@ dd, p {
 }
 
 #main header {
-    height: 80px;
+    height: 100px;
     box-shadow: 0 0 3px #238 inset;
     background-color: #CCD;
     color: #EEE;

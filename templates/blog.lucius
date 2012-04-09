@@ -7,7 +7,7 @@
 }
 
 #archive {
-    float: left;
+    float: right;
     width: 200px;
 
     border: 2px solid #000;
@@ -51,7 +51,7 @@
 }
 
 article {
-    float: right;
+    float: left;
     width: 720px;
 }
 
