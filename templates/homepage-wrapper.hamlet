@@ -47,7 +47,7 @@
             <aside #announcement>
                 <.tri-left>
                 <.tri-right>
-                <p.msg>
+                <.msg>
                     <span.subject>
                         last blog post: #
                     <a href=@{blogLink}>#{postTitle post}
