@@ -66,7 +66,7 @@ prettyDay :: UTCTime -> String
 prettyDay = formatTime defaultTimeLocale "%B %e, %Y"
 
 loadBook :: IO Book.Book
-loadBook = Book.loadBook $ bookRoot F.</> "yesod-web-framework-book.toc"
+loadBook = Book.loadBook $ bookRoot F.</> "yesod-web-framework-book.ditamap"
 
 loadBlog :: IO (Maybe Blog)
 loadBlog = Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"
