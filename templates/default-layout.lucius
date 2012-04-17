@@ -59,7 +59,7 @@ a:visited {
 
 #main {
     margin: 0 auto;
-    width: 720px;
+    max-width: 960px;
     line-height: 1.5em;
     pre {
         border: solid 1px #CCC;
