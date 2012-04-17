@@ -75,6 +75,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     goElem :: Bool -- ^ inside figure?
            -> Element -> [Node]
     goElem _ (Element "apiname" _ [NodeContent t]) = goApiname t
+    goElem _ (Element "codeblock" as [NodeContent t]) | Just "lhaskell" <- lookup "outputclass" as = goLHS t
     goElem _ (Element "codeblock" as [NodeContent t]) | Just "haskell" <- lookup "outputclass" as =
         [NodeElement $ Element "pre" as [NodeElement $ Element "code" [] [NodeContent $ goStartStop t]]]
     goElem insideFigure (Element n as cs)
@@ -173,6 +174,16 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         go True (x:xs) = x : go True xs
         go False (_:xs) = go False xs
 
+    goLHS t0 =
+        map go lhBlocks
+      where
+        ls = T.lines t0
+        lhLines = map lhLine ls
+        lhBlocks = map (fmap T.unlines) $ toBlocks lhLines
+
+        go (LHCode t) = NodeElement $ Element "pre" [] [NodeElement $ Element "code" [] [NodeContent t]]
+        go (LHText t) = NodeElement $ Element "p" [("style", "white-space:pre")] [NodeContent t]
+
     goImage as cs =
         [NodeElement $ Element "img" [("src", href')] cs]
       where
@@ -182,3 +193,21 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
                     let name = either id id $ F.toText $ F.basename $ F.fromText href
                      in T.append "image/" name
                 Nothing -> error "image without href"
+
+data LHask t = LHCode t | LHText t
+
+instance Functor LHask where
+    fmap f (LHCode x) = LHCode (f x)
+    fmap f (LHText x) = LHText (f x)
+
+lhLine :: Text -> LHask [Text]
+lhLine t =
+    case T.stripPrefix "> " t of
+        Nothing -> LHText [t]
+        Just s -> LHCode [s]
+
+toBlocks :: [LHask [Text]] -> [LHask [Text]]
+toBlocks [] = []
+toBlocks (LHCode x:LHCode y:rest) = toBlocks $ LHCode (x ++ y) : rest
+toBlocks (LHText x:LHText y:rest) = toBlocks $ LHText (x ++ y) : rest
+toBlocks (x:rest) = x : toBlocks rest
