@@ -39,6 +39,7 @@ data YesodWeb = YesodWeb
     { settings :: AppConfig DefaultEnv Extra
     , getLogger :: Logger
     , getStatic :: Static -- ^ Settings for static file serving.
+    , getAssets :: Static
     , ywBlog :: IORef Blog
     , ywBook :: IORef Book
     }

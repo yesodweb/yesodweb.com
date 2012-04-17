@@ -114,7 +114,7 @@ executable         yesodweb
                  , system-fileio                 >= 0.3        && < 0.4
                  , attoparsec                    >= 0.10       && < 0.11
                  , attoparsec-conduit            >= 0.4        && < 0.5
-                 , data-default                  >= 0.3        && < 0.4
+                 , data-default
                  , xml-conduit                   >= 0.7        && < 0.8
                  , xml2html                      >= 0.1        && < 0.2
                  , filesystem-conduit            >= 0.4        && < 0.5
@@ -127,6 +127,7 @@ executable         yesodweb
                  , old-locale
                  , process
                  , pureMD5
+                 , wai-app-static
 
 executable         static-upload
     if flag(upload)

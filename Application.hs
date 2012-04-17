@@ -19,6 +19,8 @@ import Network.Wai.Middleware.RequestLogger (logCallback)
 import Data.Maybe (fromMaybe)
 import Data.IORef (newIORef, writeIORef)
 import System.Process (runProcess, waitForProcess)
+import Yesod.Static (Static (Static))
+import Network.Wai.Application.Static (defaultFileServerSettings, ssFolder, fileSystemLookup)
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -39,12 +41,13 @@ mkYesodDispatch "YesodWeb" resourcesYesodWeb
 getApplication :: AppConfig DefaultEnv Extra -> Logger -> IO Application
 getApplication conf logger = do
     s <- staticSite
+    let assets = Static defaultFileServerSettings { ssFolder = fileSystemLookup "content/static" }
 
     mblog <- loadBlog
     iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
     ibook <- loadBook >>= newIORef
 
-    let foundation = YesodWeb conf setLogger s iblog ibook
+    let foundation = YesodWeb conf setLogger s assets iblog ibook
     app <- toWaiAppPlain foundation
     return $ logWare app
   where
