@@ -43,6 +43,7 @@ getBlogPostR y m s = do
         let rev :: Ord k => Map.Map k v -> [(k, v)]
             rev = reverse . sortBy (comparing fst) . Map.toList
         $(widgetFile "blog")
+        $(widgetFile "archive")
   where
     pretty 1 = "January"
     pretty 2 = "February"

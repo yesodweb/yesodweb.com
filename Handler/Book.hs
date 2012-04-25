@@ -23,15 +23,17 @@ getBookR = do
     defaultLayout $ do
         setTitle "Yesod Web Framework Book"
         $(widgetFile "book")
+        $(widgetFile "booklist")
 
 getChapterR :: Text -> Handler RepHtml
 getChapterR slug = do
     ibook <- ywBook <$> getYesod
-    Book _ m <- liftIO $ readIORef ibook
+    Book parts m <- liftIO $ readIORef ibook
     chapter <- maybe notFound return $ Map.lookup slug m
     defaultLayout $ do
         setTitle $ toHtml $ chapterTitle chapter
-        [whamlet|<article>#{chapterHtml chapter}|]
+        [whamlet|<section .why><article>#{chapterHtml chapter}|]
+        $(widgetFile "booklist")
 
 getBookImageR :: Text -> Handler ()
 getBookImageR name
