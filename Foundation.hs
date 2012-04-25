@@ -86,6 +86,7 @@ instance Yesod YesodWeb where
 
         pc <- widgetToPageContent $ do
             atomLink FeedR "Yesod Web Framework Blog"
+            addScriptRemote "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"
             $(widgetFile "normalize")
             $(widgetFile "highlight")
             $(widgetFile "default-layout")
