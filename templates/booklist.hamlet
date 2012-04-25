@@ -1,10 +1,4 @@
-<section .why>
-    <p>
-        Available soon from O'Reilly:
-    <div>
-        <a href="http://shop.oreilly.com/product/0636920023142.do">
-            <img src="http://akamaicovers.oreilly.com/images/0636920023142/cat.gif" alt="Developing Web Applications with Haskell and Yesod">
-    
+<section .getting-started>
     <h2> Chapters
     <ul>
         $forall Part title chapters <- parts

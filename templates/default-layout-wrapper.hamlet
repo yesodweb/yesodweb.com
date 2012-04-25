@@ -8,25 +8,50 @@
         <meta charset="UTF-8">
 
         <title>#{pageTitle pc}
-        <meta name="description" content="">
-        <meta name="author" content="">
+        <meta name="description" content="Yesod is a Haskell web framework for productive development of type-safe, RESTful, high performance web applications.">
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
         ^{pageHead pc}
 
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         \<![endif]-->
-        <link href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Crimson+Text:400,400italic,600,600italic,700,700italic" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic" rel="stylesheet" type="text/css">
+
         <script>
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
-        <div id="container">
+        <#spotlight>
+        <#container>
+            <nav>
+                <ul>
+                    <li.googleplus>
+                        <g:plusOne>
+                    <li>
+                        <a href=@{BookR}>book
+                    <li>
+                        <a href=@{BlogR}>blog
+                    <li>
+                        <a href=@{WikiR "Home"}>wiki
+                    <li.feedlink>
+                        <a href=@{FeedR} #feedlink>
+                            <span>newsfeed
+            <.headergroup>
+              <a href="/">
+                <.homepage-logo>
+                  <.logo-image>
+                  <.logo-text>Yesod Web Framework
+                <.homepage-info>
+                  Yesod is a Haskell web framework for productive development of type-safe, RESTful, high performance web applications.
+            <aside #announcement>
+                <.tri-left>
+                <.tri-right>
+                <.msg>
+                    <span.subject>#{pageTitle pc}
             <div id="main" role="main">
-              ^{pageBody pc}
-              <footer><a href="#main">Return to top &uarr;</a>
+                ^{pageBody pc}
 
         <script>
             window._gaq = [['_setAccount','UA-1434510-13'],['_trackPageview'],['_trackPageLoadTime']];

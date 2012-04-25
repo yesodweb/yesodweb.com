@@ -1,71 +1,8 @@
-#container #main {
-    width: 960px;
+#archive li > span {
+    cursor: pointer;
 }
-#wrapper {
-    width: 960px;
-    padding-top: 2em;
+/*
+#archive li > ul {
+    display: none;
 }
-
-#archive {
-    float: right;
-    width: 200px;
-
-    border: 2px solid #000;
-    border-radius: 5px;
-    padding: 5px;
-    background: #eee;
-
-    ul {
-        padding-left: 20px;
-        margin: 0;
-    }
-
-    a, a:visited {
-        color: blue;
-        text-decoration: none;
-    }
-    a.current, a.current:visited {
-        color: #900;
-        cursor: default;
-    }
-
-    li > ul {
-        display: none;
-    }
-    li {
-        list-style-image: url(@{StaticR toc_closed_png});
-    }
-    li.open {
-        list-style-image: url(@{StaticR toc_open_png});
-    }
-    li.open > ul {
-        display: block;
-    }
-    li.leaf {
-        margin: 0.3em 0;
-        list-style: none;
-    }
-    ul ul ul {
-        padding: 0;
-    }
-}
-
-article {
-    float: left;
-    width: 720px;
-}
-
-hgroup {
-    h1 {
-        margin: 0;
-    }
-    h2 {
-        font-size: 1.1em;
-        font-style: italic;
-        margin-top: 0;
-        font-weight: normal;
-    }
-}
-.clearfix {
-    clear: both;
-}
+*/
