@@ -1,5 +1,8 @@
 /* Homepage-specific styling */
 
+#container {
+  min-width: 1094px;
+}
 
 dd, p {
   text-align: justify;
