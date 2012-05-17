@@ -1,7 +1,7 @@
 module Handler.Root where
 
 import Import
-import Text.Blaze (unsafeByteString)
+import Text.Blaze.Html (unsafeByteString)
 import qualified Data.ByteString as S
 import Text.Hamlet (hamletFile)
 import Yesod.AtomFeed (atomLink)

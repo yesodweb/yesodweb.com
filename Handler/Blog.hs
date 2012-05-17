@@ -8,7 +8,7 @@ import Import
 import qualified Data.Map as Map
 import qualified Data.ByteString as S
 import qualified Filesystem.Path.CurrentOS as F
-import Text.Blaze (unsafeByteString)
+import Text.Blaze.Html (unsafeByteString)
 import Settings (blogRoot, Author (..))
 import Data.List (sortBy)
 import Data.Ord (comparing)

@@ -21,7 +21,7 @@ import qualified Data.Conduit as C
 import qualified Data.Conduit.List as CL
 import qualified Data.Conduit.Text as CT
 import qualified Data.Conduit.Filesystem as CB
-import Text.Blaze (Html, preEscapedText, preEscapedLazyText, toHtml)
+import Text.Blaze.Html (Html, preEscapedToMarkup, preEscapedToMarkup, toHtml)
 import qualified Data.ByteString as S
 import Control.Applicative ((<$>))
 import Text.HTML.SanitizeXSS (sanitizeBalance)
@@ -61,11 +61,11 @@ sinkText f =
 -- | HTML content with XSS protection.
 htmlFormat :: ContentFormat
 htmlFormat = ContentFormat "html" $ sinkText $
-    preEscapedText . sanitizeBalance . TL.toStrict
+    preEscapedToMarkup . sanitizeBalance . TL.toStrict
 
 -- | HTML content without XSS protection.
 unsafeHtmlFormat :: ContentFormat
-unsafeHtmlFormat = ContentFormat "html" $ sinkText $ preEscapedLazyText
+unsafeHtmlFormat = ContentFormat "html" $ sinkText $ preEscapedToMarkup
 
 -- | Markdown content with XSS protection.
 markdownFormat :: ContentFormat

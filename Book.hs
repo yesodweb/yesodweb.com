@@ -13,8 +13,8 @@ import Data.Text (Text)
 import Text.XML as X
 import qualified Filesystem.Path.CurrentOS as F
 import Control.Exception (handle, SomeException, throw)
-import Text.Blaze (Html, toHtml)
-import Text.Blaze.Renderer.Utf8 (renderHtml)
+import Text.Blaze.Html (Html, toHtml)
+import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Data.ByteString.Lazy as L
 import Data.Monoid (mconcat)
 import System.IO (hPutStrLn, stderr)
