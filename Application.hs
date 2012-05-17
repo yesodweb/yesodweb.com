@@ -52,8 +52,11 @@ getApplication conf logger = do
 
     exists <- isDirectory "content"
     unless exists $ do
+        putStrLn "Cloning content"
         ec <- rawSystem "git" ["clone", "https://github.com/yesodweb/yesodweb.com-content.git", "content"]
-        unless (ec == ExitSuccess) $ exitWith ec
+        unless (ec == ExitSuccess) $ do
+            putStrLn "git clone failed, exiting"
+            exitWith ec
 
     s <- staticSite
     let assets = Static defaultFileServerSettings { ssFolder = fileSystemLookup "content/static" }
