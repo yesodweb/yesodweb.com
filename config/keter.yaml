@@ -1,0 +1,4 @@
+exec: ../dist/build/yesodweb/yesodweb
+args:
+    - production
+host: www.yesodweb.com
