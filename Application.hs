@@ -21,6 +21,12 @@ import Data.IORef (newIORef, writeIORef)
 import System.Process (runProcess, waitForProcess)
 import Yesod.Static (Static (Static))
 import Network.Wai.Application.Static (defaultFileServerSettings, ssFolder, fileSystemLookup)
+import Control.Monad (unless, forever)
+import Filesystem (isDirectory)
+import System.Process (rawSystem)
+import System.Exit (ExitCode (ExitSuccess), exitWith)
+import Control.Concurrent (forkIO, threadDelay)
+import Yesod.Logger (flushLogger)
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -40,6 +46,15 @@ mkYesodDispatch "YesodWeb" resourcesYesodWeb
 -- migrations handled by Yesod.
 getApplication :: AppConfig DefaultEnv Extra -> Logger -> IO Application
 getApplication conf logger = do
+    _ <- forkIO $ forever $ do
+        threadDelay $ 1000 * 1000
+        flushLogger logger
+
+    exists <- isDirectory "content"
+    unless exists $ do
+        ec <- rawSystem "git" ["clone", "https://github.com/yesodweb/yesodweb.com-content.git", "content"]
+        unless (ec == ExitSuccess) $ exitWith ec
+
     s <- staticSite
     let assets = Static defaultFileServerSettings { ssFolder = fileSystemLookup "content/static" }
 
