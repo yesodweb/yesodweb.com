@@ -3,3 +3,4 @@ dist/
 *.swp
 static/tmp/
 tmp
+config/client_session_key.aes
