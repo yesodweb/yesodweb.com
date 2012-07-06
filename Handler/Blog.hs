@@ -75,6 +75,7 @@ getFeedR = do
         , feedLanguage = "en"
         , feedUpdated = postTime f
         , feedEntries = entries
+        , feedAuthor = "Yesod Web Framework Team"
         }
   where
     go (url, p) = do

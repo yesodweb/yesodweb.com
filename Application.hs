@@ -10,23 +10,20 @@ import Yesod.Default.Config
 import Yesod.Default.Main
 import Yesod.Default.Handlers
 #if DEVELOPMENT
-import Yesod.Logger (Logger, logBS)
-import Network.Wai.Middleware.RequestLogger (logCallbackDev)
+import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 #else
-import Yesod.Logger (Logger, logBS, toProduction)
-import Network.Wai.Middleware.RequestLogger (logCallback)
+import Network.Wai.Middleware.RequestLogger (logStdout)
 #endif
 import Data.Maybe (fromMaybe)
 import Data.IORef (newIORef, writeIORef)
 import System.Process (runProcess, waitForProcess)
 import Yesod.Static (Static (Static))
-import Network.Wai.Application.Static (defaultFileServerSettings, ssFolder, fileSystemLookup)
+import Network.Wai.Application.Static (defaultFileServerSettings)
 import Control.Monad (unless, forever)
 import Filesystem (isDirectory)
 import System.Process (rawSystem)
 import System.Exit (ExitCode (ExitSuccess), exitWith)
 import Control.Concurrent (forkIO, threadDelay)
-import Yesod.Logger (flushLogger)
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -44,12 +41,8 @@ mkYesodDispatch "YesodWeb" resourcesYesodWeb
 -- performs initialization and creates a WAI application. This is also the
 -- place to put your migrate statements to have automatic database
 -- migrations handled by Yesod.
-getApplication :: AppConfig DefaultEnv Extra -> Logger -> IO Application
-getApplication conf logger = do
-    _ <- forkIO $ forever $ do
-        threadDelay $ 1000 * 1000
-        flushLogger logger
-
+getApplication :: AppConfig DefaultEnv Extra -> IO Application
+getApplication conf = do
     exists <- isDirectory "content"
     unless exists $ do
         putStrLn "Cloning content"
@@ -59,22 +52,20 @@ getApplication conf logger = do
             exitWith ec
 
     s <- staticSite
-    let assets = Static defaultFileServerSettings { ssFolder = fileSystemLookup "content/static" }
+    let assets = Static $ defaultFileServerSettings "content/static"
 
     mblog <- loadBlog
     iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
     ibook <- loadBook >>= newIORef
 
-    let foundation = YesodWeb conf setLogger s assets iblog ibook
+    let foundation = YesodWeb conf s assets iblog ibook
     app <- toWaiAppPlain foundation
     return $ logWare app
   where
 #ifdef DEVELOPMENT
-    logWare = logCallbackDev (logBS setLogger)
-    setLogger = logger
+    logWare = logStdoutDev
 #else
-    setLogger = toProduction logger -- by default the logger is set for development
-    logWare = logCallback (logBS setLogger)
+    logWare = logStdout
 #endif
 
 -- for yesod devel

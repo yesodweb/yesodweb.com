@@ -19,6 +19,7 @@ import Text.Shakespeare.Text (st)
 import Language.Haskell.TH.Syntax
 import Yesod.Default.Config
 import qualified Yesod.Default.Util
+import Data.Default (def)
 import Data.Text (Text)
 import Data.Yaml
 import Control.Applicative
@@ -61,9 +62,9 @@ staticRoot conf = [st|#{appRoot conf}/static|]
 
 widgetFile :: String -> Q Exp
 #if DEVELOPMENT
-widgetFile = Yesod.Default.Util.widgetFileReload
+widgetFile = Yesod.Default.Util.widgetFileReload def
 #else
-widgetFile = Yesod.Default.Util.widgetFileNoReload
+widgetFile = Yesod.Default.Util.widgetFileNoReload def
 #endif
 
 data Extra = Extra

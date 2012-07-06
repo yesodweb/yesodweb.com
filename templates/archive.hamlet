@@ -1,3 +1,4 @@
+$newline never
 <section .getting-started>
   <h2> Archives
   <div #archive>

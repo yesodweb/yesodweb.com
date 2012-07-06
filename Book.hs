@@ -18,7 +18,6 @@ import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Data.ByteString.Lazy as L
 import Data.Monoid (mconcat)
 import System.IO (hPutStrLn, stderr)
-import Text.XML.Xml2Html ()
 import qualified Data.Text as T
 import Data.Char (isUpper)
 
@@ -51,14 +50,14 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     dir = F.directory fp
 
     parsePart :: Node -> IO [Part]
-    parsePart (NodeElement (Element "topichead" [("navtitle", title)] chapters')) = do
+    parsePart (NodeElement (Element "topichead" as chapters')) | Just title <- Map.lookup "navtitle" as = do
         chapters <- mapM parseChapter chapters'
         return [Part title $ concat chapters]
     parsePart NodeContent{} = return []
     parsePart _ = error "Book.parsePart"
 
     parseChapter :: Node -> IO [Chapter]
-    parseChapter (NodeElement (Element "topicref" [("href", href'), ("navtitle", title)] _)) = do
+    parseChapter (NodeElement (Element "topicref" as _)) | Just href' <- Map.lookup "href" as, Just title <- Map.lookup "navtitle" as = do
         let href = dir F.</> F.fromText href'
             slug = either id id $ F.toText $ F.basename href
         Document _ (Element _ _ ns) _ <- X.readFile def href
@@ -75,17 +74,17 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     goElem :: Bool -- ^ inside figure?
            -> Element -> [Node]
     goElem _ (Element "apiname" _ [NodeContent t]) = goApiname t
-    goElem _ (Element "codeblock" as [NodeContent t]) | Just "lhaskell" <- lookup "outputclass" as = goLHS t
-    goElem _ (Element "codeblock" as [NodeContent t]) | Just "haskell" <- lookup "outputclass" as =
-        [NodeElement $ Element "pre" as [NodeElement $ Element "code" [] [NodeContent $ goStartStop t]]]
+    goElem _ (Element "codeblock" as [NodeContent t]) | Just "lhaskell" <- Map.lookup "outputclass" as = goLHS t
+    goElem _ (Element "codeblock" as [NodeContent t]) | Just "haskell" <- Map.lookup "outputclass" as =
+        [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty [NodeContent $ goStartStop t]]]
     goElem insideFigure (Element n as cs)
         | insideFigure && n == "h1" = [NodeElement $ Element "figcaption" as cs']
         | nameLocalName n `Set.member` unchanged = [NodeElement $ Element n as cs']
         | Just n' <- Map.lookup n simples = [NodeElement $ Element n' as cs']
-        | Just (n', clazz) <- Map.lookup n classes = [NodeElement $ Element n' (("class", clazz):as) cs']
+        | Just (n', clazz) <- Map.lookup n classes = [NodeElement $ Element n' (Map.insert "class" clazz as) cs']
         | n `Set.member` deleted = []
         | n `Set.member` stripped = cs'
-        | n == "codeblock" = [NodeElement $ Element "pre" as [NodeElement $ Element "code" [] cs']]
+        | n == "codeblock" = [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty cs']]
         | n == "xref" = goXref as cs'
         | n == "image" = goImage as cs'
         | otherwise = error $ "Unknown: " ++ show (nameLocalName n)
@@ -126,7 +125,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         ]
 
     goApiname t =
-        [NodeElement $ Element "a" [("href", href)] [NodeContent text]]
+        [NodeElement $ Element "a" (Map.singleton "href" href) [NodeContent text]]
       where
         (href, text) =
             case T.split (== ':') t of
@@ -150,10 +149,10 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
                 xs -> error $ show xs
 
     goXref as cs =
-        [NodeElement $ Element "a" [("href", href')] cs]
+        [NodeElement $ Element "a" (Map.singleton "href" href') cs]
       where
         href' =
-            case lookup "href" as of
+            case Map.lookup "href" as of
                 Just href
                     | "/" `T.isPrefixOf` href || "://" `T.isInfixOf` href -> href
                     | otherwise ->
@@ -181,14 +180,14 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         lhLines = map lhLine ls
         lhBlocks = map (fmap T.unlines) $ toBlocks lhLines
 
-        go (LHCode t) = NodeElement $ Element "pre" [] [NodeElement $ Element "code" [] [NodeContent t]]
-        go (LHText t) = NodeElement $ Element "p" [("style", "white-space:pre")] [NodeContent t]
+        go (LHCode t) = NodeElement $ Element "pre" Map.empty [NodeElement $ Element "code" Map.empty [NodeContent t]]
+        go (LHText t) = NodeElement $ Element "p" (Map.singleton "style" "white-space:pre") [NodeContent t]
 
     goImage as cs =
-        [NodeElement $ Element "img" [("src", href')] cs]
+        [NodeElement $ Element "img" (Map.singleton "src" href') cs]
       where
         href' =
-            case lookup "href" as of
+            case Map.lookup "href" as of
                 Just href ->
                     let name = either id id $ F.toText $ F.basename $ F.fromText href
                      in T.append "image/" name
