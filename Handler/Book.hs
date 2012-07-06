@@ -32,7 +32,7 @@ getChapterR slug = do
     chapter <- maybe notFound return $ Map.lookup slug m
     defaultLayout $ do
         setTitle $ toHtml $ chapterTitle chapter
-        [whamlet|<section .why><article>#{chapterHtml chapter}|]
+        $(widgetFile "chapter")
         $(widgetFile "booklist")
 
 getBookImageR :: Text -> Handler ()
