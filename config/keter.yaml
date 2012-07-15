@@ -2,3 +2,4 @@ exec: ../dist/build/yesodweb/yesodweb
 args:
     - production
 host: www.yesodweb.com
+copy-to: ubuntu@www.yesodweb.com:/opt/keter/incoming
