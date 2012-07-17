@@ -4,7 +4,6 @@ $newline never
         <hgroup>
             <h1>#{postTitle post}
             <h2>#{prettyDay $ postTime post}
-            <script src="http://www.reddit.com/static/button/button1.js">
             $maybe author <- mauthor
                 <h3>
                     <img src=#{gravatar $ authorEmail author} alt=Gravatar>
