@@ -28,7 +28,7 @@ getBlogR = getNewestBlog >>= redirect . fst
 getBlogPostR :: Year -> Month -> Slug -> Handler RepHtml
 getBlogPostR y m s = do
     iblog <- ywBlog <$> getYesod
-    authors <- extraAuthors . appExtra . settings <$> getYesod
+    authors <- (ywAuthors <$> getYesod) >>= liftIO . readIORef
     Blog blog <- liftIO $ readIORef iblog
     blog' <- maybe notFound return $ Map.lookup y blog
     blog'' <- maybe notFound return $ Map.lookup m blog'

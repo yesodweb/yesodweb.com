@@ -68,8 +68,6 @@ widgetFile = Yesod.Default.Util.widgetFileNoReload def
 #endif
 
 data Extra = Extra
-    { extraAuthors :: Map Text Author
-    }
 
 data Author = Author
     { authorName :: Text
@@ -77,7 +75,7 @@ data Author = Author
     }
 
 parseExtra :: DefaultEnv -> Object -> Parser Extra
-parseExtra _ o = Extra <$> o .: "authors"
+parseExtra _ o = pure Extra
 
 instance FromJSON Author where
     parseJSON (Object o) = Author

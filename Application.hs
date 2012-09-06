@@ -57,8 +57,9 @@ getApplication conf = do
     mblog <- loadBlog
     iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
     ibook <- loadBook >>= newIORef
+    iauthors <- loadAuthors >>= newIORef
 
-    let foundation = YesodWeb conf s assets iblog ibook
+    let foundation = YesodWeb conf s assets iblog ibook iauthors
     app <- toWaiAppPlain foundation
     return $ logWare app
   where
@@ -88,3 +89,4 @@ postReloadR = do
         Nothing -> return ()
         Just blog -> liftIO $ writeIORef (ywBlog yw) blog
     liftIO $ loadBook >>= writeIORef (ywBook yw)
+    liftIO $ loadAuthors >>= writeIORef (ywAuthors yw)

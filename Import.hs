@@ -12,6 +12,7 @@ module Import
     , prettyDay
     , loadBook
     , loadBlog
+    , loadAuthors
     ) where
 
 import Prelude hiding (writeFile, readFile)
@@ -21,7 +22,7 @@ import Control.Applicative ((<$>), (<*>), pure)
 import Data.Text (Text)
 import Import.Content
 import Settings.StaticFiles
-import Data.Maybe (listToMaybe)
+import Data.Maybe (listToMaybe, fromMaybe)
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import qualified Data.Map as Map
@@ -30,7 +31,7 @@ import System.Locale (defaultTimeLocale)
 import qualified Book
 import qualified Filesystem.Path.CurrentOS as F
 import qualified Data.Yaml
-import Settings (bookRoot, blogRoot)
+import Settings (bookRoot, blogRoot, Author)
 import Data.IORef (readIORef)
 
 infixr 5 <>
@@ -70,3 +71,7 @@ loadBook = Book.loadBook $ bookRoot F.</> "yesod-web-framework-book.ditamap"
 
 loadBlog :: IO (Maybe Blog)
 loadBlog = Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"
+
+loadAuthors :: IO (Map.Map Text Author)
+loadAuthors = fromMaybe Map.empty <$> (Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "authors.yaml")
+

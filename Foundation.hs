@@ -29,6 +29,7 @@ import Text.Jasmine (minifym)
 import Text.Hamlet (hamletFile)
 import Data.Text (Text)
 import Data.IORef (IORef)
+import Data.Map (Map)
 
 -- | The site argument for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -40,6 +41,7 @@ data YesodWeb = YesodWeb
     , getAssets :: Static
     , ywBlog :: IORef Blog
     , ywBook :: IORef Book
+    , ywAuthors :: IORef (Map Text Settings.Author)
     }
 
 -- This is where we define all of the routes in our application. For a full
