@@ -24,7 +24,6 @@ Flag upload
     Default:       False
 
 library
-    hs-source-dirs: ., markdown
     if flag(library-only)
         Buildable: True
     else
@@ -36,9 +35,6 @@ library
                      Book
                      Import
                      Import.Content
-                     Text.Markdown
-                     Text.Markdown.Block
-                     Text.Markdown.Inline
                      Settings
                      Settings.StaticFiles
                      Handler.Root
@@ -64,7 +60,6 @@ library
                 PatternGuards
 
 executable         yesodweb
-    hs-source-dirs: ., markdown
     if flag(library-only)
         Buildable: False
 
@@ -110,7 +105,7 @@ executable         yesodweb
                  , yaml                          >= 0.8        && < 0.9
                  , blaze-html                    >= 0.5        && < 0.6
                  , conduit                       >= 0.5.2.1    && < 0.6
-                 , resourcet                     >= 0.3        && < 0.4
+                 , resourcet                     >= 0.3        && < 0.5
                  , xss-sanitize                  >= 0.3.1      && < 0.4
                  , system-filepath               >= 0.4.4      && < 0.5
                  , system-fileio                 >= 0.3        && < 0.4
@@ -129,6 +124,7 @@ executable         yesodweb
                  , process
                  , pureMD5
                  , wai-app-static
+                 , markdown
 
 executable         static-upload
     if flag(upload)
