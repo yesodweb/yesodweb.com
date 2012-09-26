@@ -134,7 +134,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
                     [ "http://hackage.haskell.org/packages/archive/"
                     , x
                     , "/latest/doc/html/"
-                    , T.replace "/" "." y
+                    , T.replace "." "-" y
                     , ".html"
                     ], y)
                 [x, y, z] -> (T.concat
