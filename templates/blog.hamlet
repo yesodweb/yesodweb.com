@@ -2,13 +2,13 @@ $newline never
 <section .why>
     <article>
         <hgroup>
-            <h1>#{postTitle post}
+            <h1 itemprop=name>#{postTitle post}
             <h2>#{prettyDay $ postTime post}
             $maybe author <- mauthor
                 <h3>
-                    <img src=#{gravatar $ authorEmail author} alt=Gravatar>
+                    <img itemprop=image src=#{gravatar $ authorEmail author} alt=Gravatar>
                     #{authorName author}
-        ^{toWidget content}
+        <div itemprop=description>^{toWidget content}
 
     <h1 #comments>Comments
     <div id="disqus_thread">

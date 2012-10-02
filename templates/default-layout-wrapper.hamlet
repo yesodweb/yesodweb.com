@@ -23,7 +23,7 @@ $newline never
 
         <script>
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
-    <body>
+    <body itemscope itemtype=http://schema.org/Product>
         <#spotlight>
         <#container>
             <nav>
