@@ -11,3 +11,7 @@
     border-top: 1px dashed #000;
     padding-top: 1em;
 }
+
+code {
+    background-color: #f4f4f4;
+}
