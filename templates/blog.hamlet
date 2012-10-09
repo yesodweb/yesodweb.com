@@ -8,6 +8,8 @@ $newline never
                 <h3>
                     <img itemprop=image src=#{gravatar $ authorEmail author} alt=Gravatar>
                     #{authorName author}
+        <p .github-link>
+            <a href="https://github.com/yesodweb/yesodweb.com-content/tree/master/blog/#{either id id $ F.toText $ postFP post}">View source on Github
         <div itemprop=description>^{toWidget content}
 
     <h1 #comments>Comments

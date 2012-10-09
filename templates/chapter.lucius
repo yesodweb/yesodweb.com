@@ -2,3 +2,13 @@ aside.note {
     padding: 0.5em;
     border: 1px dotted #000;
 }
+.github-link {
+    font-size: 0.6em;
+    a, a:visited {
+        text-decoration: none;
+    }
+}
+
+article > h1:first-child {
+    margin-top: 0;
+}
