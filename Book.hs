@@ -62,7 +62,6 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
             slug = either id id $ F.toText $ F.basename href
         Document _ (Element _ _ ns) _ <- X.readFile def href
         let content = mconcat $ map toHtml $ concatMap (goNode False) ns
-        handle (\(e :: SomeException) -> hPutStrLn stderr $ show e) $ L.writeFile "tmp" $ renderHtml content -- FIXME remove
         return [Chapter title href slug content]
     parseChapter NodeContent{} = return []
     parseChapter _ = error "Book.parseChapter"
