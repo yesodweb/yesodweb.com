@@ -51,7 +51,7 @@ Finally we need to upgrade `alex` as HP ships a version that is too old.
     cabal install alex
 
 
-### Getting yeshodweb.com
+### Getting yesodweb.com
 
 Since `yesodweb.com` changes often we advise anyone to get it through
 `git` (available on [most platforms](http://git-scm.com/download)) so it
