@@ -3,3 +3,6 @@ args:
     - production
 host: www.yesodweb.com
 copy-to: ubuntu@www.yesodweb.com:/opt/keter/incoming
+static-hosts:
+    - host: static.yesodweb.com
+      root: ../static

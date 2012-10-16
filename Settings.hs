@@ -54,7 +54,12 @@ staticDir = "static"
 --
 -- To see how this value is used, see urlRenderOverride in Foundation.hs
 staticRoot :: AppConfig DefaultEnv x ->  Text
-staticRoot conf = [st|#{appRoot conf}/static|]
+staticRoot _conf =
+#if DEVELOPMENT
+    [st|#{appRoot _conf}/static|]
+#else
+    "http://static.yesodweb.com"
+#endif
 
 
 -- The rest of this file contains settings which rarely need changing by a
