@@ -168,7 +168,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
 
         go _ [] = []
         go _ ("-- START":xs) = go True xs
-        go _ ("-- STOP":xs) = go True xs
+        go _ ("-- STOP":xs) = go False xs
         go True (x:xs) = x : go True xs
         go False (_:xs) = go False xs
 
