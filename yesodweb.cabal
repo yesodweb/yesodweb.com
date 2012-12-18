@@ -90,14 +90,14 @@ executable         yesodweb
                  , yesod-auth                    >= 1.1        && < 1.2
                  , yesod-static                  >= 1.1        && < 1.2
                  , yesod-default                 >= 1.1        && < 1.2
-                 , yesod-form                    >= 1.1        && < 1.2
+                 , yesod-form                    >= 1.2        && < 1.3
                  , yesod-newsfeed                >= 1.1        && < 1.2
                  , bytestring                    >= 0.9        && < 0.10
                  , text                          >= 0.11       && < 0.12
                  , template-haskell
                  , hamlet                        >= 1.1        && < 1.2
                  , shakespeare-css               >= 1.0        && < 1.1
-                 , shakespeare-js                >= 1.0        && < 1.1
+                 , shakespeare-js                >= 1.1        && < 1.2
                  , shakespeare-text              >= 1.0        && < 1.1
                  , hjsmin                        >= 0.0.14
                  , monad-control                 >= 0.3        && < 0.4
