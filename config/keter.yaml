@@ -6,3 +6,10 @@ copy-to: ubuntu@www.yesodweb.com:/opt/keter/incoming
 static-hosts:
     - host: static.yesodweb.com
       root: ../static
+redirects:
+    - from: www.yesodweb.org
+      to: www.yesodweb.com
+    - from: yesodweb.org
+      to: www.yesodweb.com
+    - from: yesodweb.com
+      to: www.yesodweb.com
