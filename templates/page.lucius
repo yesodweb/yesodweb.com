@@ -1,0 +1,16 @@
+.wrapper {
+    padding: 3em;
+}
+
+.community {
+    th {
+        text-align: right;
+        padding-right: 0.5em;
+        width: 200px;
+    }
+    th, td {
+        vertical-align: top;
+        padding-bottom: 1em;
+        line-height: 120%;
+    }
+}

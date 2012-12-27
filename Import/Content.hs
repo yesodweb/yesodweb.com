@@ -38,6 +38,7 @@ import Yesod
 import Network.HTTP.Types (status301)
 import qualified Text.Markdown as Markdown
 import Data.Maybe (fromMaybe)
+import Settings (widgetFile)
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
@@ -105,7 +106,7 @@ returnContent root defTitle cfs pieces = do
         Just (Left t) -> redirectWith status301 t
         Just (Right (mtitle, body)) -> defaultLayout $ do
             setTitle $ fromMaybe (toHtml defTitle) mtitle
-            toWidget body
+            $(widgetFile "page")
 
 newtype ContentPath = ContentPath { unContentPath :: [Text] }
     deriving (Eq, Show, Read)
