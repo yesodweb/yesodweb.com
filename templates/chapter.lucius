@@ -12,3 +12,7 @@ aside.note {
 article > h1:first-child {
     margin-top: 0;
 }
+
+figure > h1 {
+    margin: 0;
+}
