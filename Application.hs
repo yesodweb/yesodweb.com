@@ -9,6 +9,8 @@ import Settings
 import Yesod.Default.Config
 import Yesod.Default.Main
 import Yesod.Default.Handlers
+import Network.Wai.Middleware.Gzip
+import Network.Wai.Middleware.Autohead
 #if DEVELOPMENT
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 #else
@@ -60,8 +62,11 @@ getApplication conf = do
     iauthors <- loadAuthors >>= newIORef
 
     let foundation = YesodWeb conf s assets iblog ibook iauthors
-    app <- toWaiAppPlain foundation
-    return $ logWare app
+    app <- toWaiApp foundation
+    return $ gzip def
+           $ autohead
+           $ logWare
+             app
   where
 #ifdef DEVELOPMENT
     logWare = logStdoutDev

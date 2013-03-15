@@ -59,7 +59,7 @@ getBlogPostR y m s = do
     pretty 12 = "December" :: Text
     pretty _ = "Some new month"
 
-getFeedR :: Handler RepAtomRss
+getFeedR :: Handler TypedContent
 getFeedR = do
     posts <- getBlogList
     f <-

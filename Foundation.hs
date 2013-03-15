@@ -65,7 +65,7 @@ data YesodWeb = YesodWeb
 -- split these actions into two functions and place them in separate files.
 mkYesodData "YesodWeb" $(parseRoutesFile "config/routes")
 
-type Form x = Html -> MForm YesodWeb YesodWeb (FormResult x, Widget)
+type Form x = Html -> MForm Handler (FormResult x, Widget)
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
