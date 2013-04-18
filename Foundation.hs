@@ -16,6 +16,7 @@ module Foundation
 import Prelude
 import Blog
 import Book
+import Book.Routes
 import Yesod hiding (Route)
 import Yesod.AtomFeed (atomLink)
 import Yesod.Static
@@ -40,8 +41,9 @@ data YesodWeb = YesodWeb
     , getStatic :: Static -- ^ Settings for static file serving.
     , getAssets :: Static
     , ywBlog :: IORef Blog
-    , ywBook :: IORef Book
     , ywAuthors :: IORef (Map Text Settings.Author)
+    , getBook12 :: BookSub
+    , getBook11 :: BookSub
     }
 
 -- This is where we define all of the routes in our application. For a full

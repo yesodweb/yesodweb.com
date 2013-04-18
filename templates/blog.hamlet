@@ -10,7 +10,7 @@ $newline never
                     #{authorName author}
         <p .github-link>
             <a href="https://github.com/yesodweb/yesodweb.com-content/tree/master/blog/#{either id id $ F.toText $ postFP post}">View source on Github
-        <div itemprop=description>^{toWidget content}
+        <div itemprop=description>^{content}
 
     <h1 #comments>Comments
     <div id="disqus_thread">

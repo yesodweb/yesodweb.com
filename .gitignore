@@ -4,3 +4,4 @@ dist/
 static/tmp/
 tmp
 config/client_session_key.aes
+content-1.1/

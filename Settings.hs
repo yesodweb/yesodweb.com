@@ -10,7 +10,6 @@ module Settings
     , Extra (..)
     , parseExtra
     , blogRoot
-    , bookRoot
     , Author (..)
     ) where
 
@@ -29,9 +28,6 @@ import Control.Monad (mzero)
 
 blogRoot :: F.FilePath
 blogRoot = "content/blog"
-
-bookRoot :: F.FilePath
-bookRoot = "content/book"
 
 -- Static setting below. Changing these requires a recompile
 

@@ -1,5 +1,5 @@
 module Handler.Book
-    ( getBookR
+    ( getBookHomeR
     , getChapterR
     , getBookImageR
     ) where
@@ -7,7 +7,6 @@ module Handler.Book
 import Import
 import qualified Data.Text as T
 import qualified Filesystem.Path.CurrentOS as F
-import Settings (bookRoot)
 import Book
 import qualified Data.Map as Map
 import Text.XML
@@ -15,31 +14,41 @@ import Control.Monad (guard)
 import Data.Maybe (fromMaybe)
 import Network.HTTP.Types (status301)
 import Data.IORef (readIORef)
+import Book.Routes
 
-getBookR :: Handler RepHtml
-getBookR = do
-    ibook <- ywBook <$> getYesod
+getBookHomeR :: HandlerT BookSub Handler RepHtml
+getBookHomeR = do
+    bs <- getYesod
+    let ibook = bsBook bs
     Book parts _ <- liftIO $ readIORef ibook
-    defaultLayout $ do
-        setTitle "Yesod Web Framework Book"
+    toMaster <- getRouteToParent
+    lift $ defaultLayout $ do
+        setTitle $ bsTitle bs
         $(widgetFile "book")
         $(widgetFile "booklist")
 
-getChapterR :: Text -> Handler RepHtml
+getChapterR :: Text -> HandlerT BookSub Handler RepHtml
 getChapterR slug = do
-    ibook <- ywBook <$> getYesod
+    bs <- getYesod
+    let ibook = bsBook bs
     Book parts m <- liftIO $ readIORef ibook
     chapter <- maybe notFound return $ Map.lookup slug m
-    defaultLayout $ do
-        setTitle $ toHtml $ chapterTitle chapter
+    toMaster <- getRouteToParent
+    lift $ defaultLayout $ do
+        setTitle $ mconcat
+            [ toHtml $ chapterTitle chapter
+            , " :: "
+            , bsTitle bs
+            ]
         $(widgetFile "chapter")
         $(widgetFile "booklist")
 
-getBookImageR :: Text -> Handler ()
+getBookImageR :: Text -> HandlerT BookSub Handler ()
 getBookImageR name
-    | name' == name'' =
+    | name' == name'' = do
+        bs <- getYesod
         sendFile "image/png" $ F.encodeString $
-            bookRoot F.</> "images" F.</> name' F.<.> "png"
+            bsRoot bs F.</> "images" F.</> name' F.<.> "png"
     | otherwise = redirectWith status301 $ BookImageR $ either id id $ F.toText name'
   where
     name' = F.basename name''

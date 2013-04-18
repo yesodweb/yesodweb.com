@@ -31,7 +31,7 @@ $newline never
                     <li.googleplus>
                         <g:plusOne>
                     <li>
-                        <a href=@{BookR}>book
+                        <a href=@{BookR BookHomeR}>book
                     <li>
                         <a href="https://github.com/yesodweb/yesod/wiki/Cookbook">cookbook
                     <li>

@@ -31,7 +31,7 @@ import System.Locale (defaultTimeLocale)
 import qualified Book
 import qualified Filesystem.Path.CurrentOS as F
 import qualified Data.Yaml
-import Settings (bookRoot, blogRoot, Author)
+import Settings (blogRoot, Author)
 import Data.IORef (readIORef)
 
 infixr 5 <>
@@ -66,8 +66,8 @@ getNewestBlog = do
 prettyDay :: UTCTime -> String
 prettyDay = formatTime defaultTimeLocale "%B %e, %Y"
 
-loadBook :: IO Book.Book
-loadBook = Book.loadBook $ bookRoot F.</> "yesod-web-framework-book.ditamap"
+loadBook :: F.FilePath -> IO Book.Book
+loadBook root = Book.loadBook $ root F.</> "yesod-web-framework-book.ditamap"
 
 loadBlog :: IO (Maybe Blog)
 loadBlog = Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"

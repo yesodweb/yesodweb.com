@@ -57,6 +57,7 @@ library
                 GADTs
                 GeneralizedNewtypeDeriving
                 FlexibleContexts
+                FlexibleInstances
                 PatternGuards
 
 executable         yesodweb
