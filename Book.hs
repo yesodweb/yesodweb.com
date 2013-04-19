@@ -1,4 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE BangPatterns #-}
 module Book
     ( Book (..)
     , Part (..)
@@ -13,13 +15,14 @@ import Data.Text (Text)
 import Text.XML as X
 import qualified Filesystem.Path.CurrentOS as F
 import Control.Exception (handle, SomeException, throw)
-import Text.Blaze.Html (Html, toHtml)
+import Text.Blaze.Html (Html, toHtml, unsafeLazyByteString)
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Data.ByteString.Lazy as L
 import Data.Monoid (mconcat)
 import System.IO (hPutStrLn, stderr)
 import qualified Data.Text as T
 import Data.Char (isUpper)
+import Control.Exception (evaluate)
 
 data Book = Book
     { bookParts :: [Part]
@@ -38,6 +41,14 @@ data Chapter = Chapter
     , chapterHtml :: Html
     }
 
+getTitle =
+    go id
+  where
+    go _ [] = error "Title not found"
+    go front ((NodeElement (Element "title" _ [NodeContent t])):rest) =
+        return (t, front rest)
+    go front (n:ns) = go (front . (n:)) ns
+
 loadBook :: F.FilePath -> IO Book
 loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     Document _ (Element _ _ parts') _ <- X.readFile def fp
@@ -50,19 +61,27 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     dir = F.directory fp
 
     parsePart :: Node -> IO [Part]
-    parsePart (NodeElement (Element "topichead" as chapters')) | Just title <- Map.lookup "navtitle" as = do
+    parsePart (NodeElement (Element "part" as cs)) = do
+        (title, chapters') <- getTitle cs
         chapters <- mapM parseChapter chapters'
         return [Part title $ concat chapters]
+    parsePart (NodeElement (Element "title" _ _)) = return []
     parsePart NodeContent{} = return []
     parsePart _ = error "Book.parsePart"
 
     parseChapter :: Node -> IO [Chapter]
-    parseChapter (NodeElement (Element "topicref" as _)) | Just href' <- Map.lookup "href" as, Just title <- Map.lookup "navtitle" as = do
-        let href = dir F.</> F.fromText href'
-            slug = either id id $ F.toText $ F.basename href
-        Document _ (Element _ _ ns) _ <- X.readFile def href
-        let content = mconcat $ map toHtml $ concatMap (goNode False) ns
-        return [Chapter title href slug content]
+    parseChapter (NodeElement (Element "{http://www.w3.org/2001/XInclude}include" as _)) = do
+        Just href <- return $ Map.lookup "href" as
+        let fp = dir F.</> F.fromText href
+            slug = either id id $ F.toText $ F.basename fp
+        if slug == "ch00"
+            then return []
+            else do
+                Document _ (Element _ _ cs) _ <- X.readFile def fp
+                (title, rest) <- getTitle cs
+                let content = mconcat $ map toHtml $ concatMap (goNode False) rest
+                !_ <- evaluate $ L.length $ renderHtml content -- FIXME comment out to avoid eager error checking
+                return [Chapter title fp slug content]
     parseChapter NodeContent{} = return []
     parseChapter _ = error "Book.parseChapter"
 
@@ -72,56 +91,78 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
 
     goElem :: Bool -- ^ inside figure?
            -> Element -> [Node]
+    {-
     goElem _ (Element "apiname" _ [NodeContent t]) = goApiname t
-    goElem _ (Element "codeblock" as [NodeContent t]) | Just "lhaskell" <- Map.lookup "outputclass" as = goLHS t
-    goElem _ (Element "codeblock" as [NodeContent t]) | Just "haskell" <- Map.lookup "outputclass" as =
+    -}
+    goElem _ (Element "programlisting" as [NodeContent t]) | Just "lhaskell" <- Map.lookup "language" as = goLHS t
+    goElem _ (Element "programlisting" as [NodeContent t]) | Just "haskell" <- Map.lookup "language" as =
         [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty [NodeContent $ goStartStop t]]]
     goElem insideFigure (Element n as cs)
+    {-
         | insideFigure && n == "h1" = [NodeElement $ Element "figcaption" as cs']
+        -}
         | nameLocalName n `Set.member` unchanged = [NodeElement $ Element n as cs']
         | Just n' <- Map.lookup n simples = [NodeElement $ Element n' as cs']
         | Just (n', clazz) <- Map.lookup n classes = [NodeElement $ Element n' (Map.insert "class" clazz as) cs']
         | n `Set.member` deleted = []
         | n `Set.member` stripped = cs'
-        | n == "codeblock" = [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty cs']]
-        | n == "xref" = goXref as cs'
-        | n == "image" = goImage as cs'
+        | n == "programlisting" = [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty cs']]
+        | n == "imagedata" = goImage as cs'
         | otherwise = error $ "Unknown: " ++ show (nameLocalName n)
       where
-        cs' = concatMap (goNode $ insideFigure || n == "fig") cs
+        cs' = concatMap (goNode $ insideFigure || n == "figure") cs
 
-    unchanged = Set.fromList $ T.words "p ul li i ol b dl dt dd cite q"
+    unchanged = Set.fromList $ T.words "section figure table tgroup thead tbody blockquote" -- "b"
 
     simples = Map.fromList
-        [ ("concept", "section")
-        , ("codeph", "code")
+        [ ("para", "p")
+        , ("emphasis", "em")
         , ("title", "h1")
-        , ("lq", "blockquote")
-        , ("simpletable", "table")
-        , ("sthead", "thead")
-        , ("stentry", "td")
-        , ("strow", "tr")
-        , ("fig", "figure")
+        , ("itemizedlist", "ul")
+        , ("orderedlist", "ol")
+        , ("listitem", "li")
+        , ("link", "a")
+        , ("variablelist", "dl")
+        , ("term", "dt")
+        , ("literal", "code")
+        , ("quote", "q")
+        , ("row", "tr")
+        , ("entry", "td")
+        , ("citation", "cite")
         ]
+        {-
+        , ("title", "h1")
+        ]
+        -}
 
     classes = Map.fromList
-        [ ("note", ("aside", "note"))
-        , ("term", ("span", "term"))
-        , ("cmdname", ("span", "cmdname"))
-        , ("filepath", ("span", "filepath"))
+        [ ("glossterm", ("span", "term"))
+        , ("function", ("span", "apiname"))
+        , ("command", ("span", "cmdname"))
+        , ("note", ("aside", "note"))
         , ("userinput", ("span", "userinput"))
         , ("varname", ("span", "varname"))
+        , ("filename", ("span", "filepath"))
+        ]
+        {-
         , ("msgblock", ("pre", "msgblock"))
         ]
+        -}
 
     deleted = Set.fromList
         [
         ]
 
     stripped = Set.fromList
+        [ "varlistentry" -- FIXME special handling so child term is turned into a dd
+        , "mediaobject"
+        , "imageobject"
+        ]
+        {-
         [ "conbody"
         , "dlentry"
         ]
+        -}
 
     goApiname t =
         [NodeElement $ Element "a" (Map.singleton "href" href) [NodeContent text]]
@@ -186,7 +227,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         [NodeElement $ Element "img" (Map.singleton "src" href') cs]
       where
         href' =
-            case Map.lookup "href" as of
+            case Map.lookup "fileref" as of
                 Just href ->
                     let name = either id id $ F.toText $ F.basename $ F.fromText href
                      in T.append "image/" name
