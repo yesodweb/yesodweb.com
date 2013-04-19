@@ -85,7 +85,7 @@ getApplication conf = do
             , getBook12 = booksub12
             , getBook11 = booksub11
             }
-    app <- toWaiApp foundation
+    app <- toWaiAppPlain foundation
     return $ gzip def
            $ autohead
            $ logWare
