@@ -98,8 +98,9 @@ getApplication conf = do
 #endif
 
 mkBookSub :: Html -> Text -> F.FilePath -> IO BookSub
-mkBookSub title warning root = do
-    ibook <- loadBook (root F.</> "book") >>= newIORef
+mkBookSub title warning root' = do
+    let root = root' F.</> "book"
+    ibook <- loadBook root >>= newIORef
     return BookSub
         { bsRoot = root
         , bsBook = ibook
