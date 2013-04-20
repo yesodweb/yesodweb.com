@@ -108,6 +108,12 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         | n `Set.member` stripped = cs'
         | n == "programlisting" = [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty cs']]
         | n == "imagedata" = goImage as cs'
+        | n == "ulink", Just url <- Map.lookup "url" as =
+            [ NodeElement $ Element
+                "a"
+                (Map.delete "url" $ Map.insert "href" url as)
+                cs'
+            ]
         | otherwise = error $ "Unknown: " ++ show (nameLocalName n)
       where
         cs' = concatMap (goNode $ insideFigure || n == "figure") cs
