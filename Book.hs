@@ -118,7 +118,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
       where
         cs' = concatMap (goNode $ insideFigure || n == "figure") cs
 
-    unchanged = Set.fromList $ T.words "section figure table tgroup thead tbody blockquote" -- "b"
+    unchanged = Set.fromList $ T.words "section figure table tgroup thead tbody blockquote code"
 
     simples = Map.fromList
         [ ("para", "p")

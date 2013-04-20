@@ -150,9 +150,15 @@ h1 {
   font-weight: 300;
   font-size: 1.8em;
 }
-h2 {
+h2, section > section > h1 {
   font-weight: 400;
   font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+h3, section > section > section > h1 {
+  font-weight: 400;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
 }
 
 h1 {
