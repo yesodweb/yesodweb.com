@@ -13,6 +13,7 @@ data BookSub = BookSub
     , bsReload :: IO ()
     , bsTitle :: Html
     , bsWarning :: Maybe Html
+    , bsBranch :: Text
     }
 
 mkYesodSubData "BookSub" [parseRoutes|

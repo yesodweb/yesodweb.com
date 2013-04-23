@@ -99,6 +99,7 @@ getApplication conf = do
 
 mkBookSub :: Html -> Text -> F.FilePath -> IO BookSub
 mkBookSub title warning root' = do
+    Just branch <- return $ lookup (F.encodeString root') branches
     let root = root' F.</> "book"
     ibook <- loadBook root >>= newIORef
     return BookSub
@@ -107,6 +108,7 @@ mkBookSub title warning root' = do
         , bsReload = loadBook root >>= writeIORef ibook
         , bsTitle = title
         , bsWarning = if T.null warning then Nothing else Just (toHtml warning)
+        , bsBranch = T.pack branch
         }
 
 -- for yesod devel
