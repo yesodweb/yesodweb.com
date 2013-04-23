@@ -108,6 +108,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         | n `Set.member` stripped = cs'
         | n == "programlisting" = [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty cs']]
         | n == "imagedata" = goImage as cs'
+        | n == "varlistentry" = goVarListEntry insideFigure cs
         | n == "ulink", Just url <- Map.lookup "url" as =
             [ NodeElement $ Element
                 "a"
@@ -160,8 +161,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         ]
 
     stripped = Set.fromList
-        [ "varlistentry" -- FIXME special handling so child term is turned into a dd
-        , "mediaobject"
+        [ "mediaobject"
         , "imageobject"
         ]
         {-
@@ -169,6 +169,19 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         , "dlentry"
         ]
         -}
+
+    goVarListEntry insideFigure =
+        concatMap go
+      where
+        go (NodeElement (Element "term" _ cs)) =
+            [ NodeElement $ Element "dt" Map.empty $
+                concatMap (goNode insideFigure) cs
+            ]
+        go (NodeElement (Element "listitem" _ cs)) =
+            [ NodeElement $ Element "dd" Map.empty $
+                concatMap (goNode insideFigure) cs
+            ]
+        go _ = []
 
     goApiname t =
         [NodeElement $ Element "a" (Map.singleton "href" href) [NodeContent text]]
