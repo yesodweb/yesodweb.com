@@ -14,15 +14,18 @@ import qualified Data.Set as Set
 import Data.Text (Text)
 import Text.XML as X
 import qualified Filesystem.Path.CurrentOS as F
-import Control.Exception (handle, SomeException, throw)
+import Control.Exception (handle, SomeException, throw, throwIO)
 import Text.Blaze.Html (Html, toHtml, unsafeLazyByteString)
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Data.ByteString.Lazy as L
+import qualified Data.ByteString.Lazy.Char8 as L8
 import Data.Monoid (mconcat)
 import System.IO (hPutStrLn, stderr)
 import qualified Data.Text as T
 import Data.Char (isUpper)
 import Control.Exception (evaluate)
+import System.Process (readProcess)
+import Data.Maybe (mapMaybe, listToMaybe)
 
 data Book = Book
     { bookParts :: [Part]
@@ -69,6 +72,24 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     parsePart NodeContent{} = return []
     parsePart _ = error "Book.parsePart"
 
+    -- Read a chapter as an XML file, converting from AsciiDoc as necessary
+    chapterToDoc fp
+        | F.hasExtension fp "ad" = do
+            str <- readProcess
+                "asciidoc"
+                [ "-b"
+                , "docbook45"
+                , "-o"
+                , "-"
+                , F.encodeString fp
+                ]
+                ""
+            either throwIO return $ X.parseLBS def $ L8.pack str
+        | otherwise = X.readFile def fp
+
+    getSection (NodeElement e@(Element "section" _ _)) = Just e
+    getSection _ = Nothing
+
     parseChapter :: Node -> IO [Chapter]
     parseChapter (NodeElement (Element "{http://www.w3.org/2001/XInclude}include" as _)) = do
         Just href <- return $ Map.lookup "href" as
@@ -77,7 +98,15 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         if slug == "ch00"
             then return []
             else do
-                Document _ (Element _ _ cs) _ <- X.readFile def fp
+                Document _ (Element name _ csOrig) _ <- chapterToDoc fp
+                cs <-
+                    case name of
+                        "article" ->
+                            case listToMaybe $ mapMaybe getSection csOrig of
+                                Nothing -> error $ "article without child section"
+                                Just (Element _ _ cs) -> return cs
+                        "chapter" -> return csOrig
+                        _ -> error $ "Unknown root element: " ++ show name
                 (title, rest) <- getTitle cs
                 let content = mconcat $ map toHtml $ concatMap (goNode False) rest
                 !_ <- evaluate $ L.length $ renderHtml content -- FIXME comment out to avoid eager error checking
@@ -123,6 +152,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
 
     simples = Map.fromList
         [ ("para", "p")
+        , ("simpara", "p")
         , ("emphasis", "em")
         , ("title", "h1")
         , ("itemizedlist", "ul")
@@ -132,10 +162,12 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         , ("variablelist", "dl")
         , ("term", "dt")
         , ("literal", "code")
+        , ("screen", "code")
         , ("quote", "q")
         , ("row", "tr")
         , ("entry", "td")
         , ("citation", "cite")
+        , ("literallayout", "pre")
         ]
         {-
         , ("title", "h1")
@@ -157,7 +189,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         -}
 
     deleted = Set.fromList
-        [
+        [ "textobject"
         ]
 
     stripped = Set.fromList
