@@ -74,7 +74,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
 
     -- Read a chapter as an XML file, converting from AsciiDoc as necessary
     chapterToDoc fp
-        | F.hasExtension fp "ad" = do
+        | F.hasExtension fp "ad" || F.hasExtension fp "asciidoc" = do
             str <- readProcess
                 "asciidoc"
                 [ "-b"
