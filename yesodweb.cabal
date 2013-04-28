@@ -125,6 +125,7 @@ executable         yesodweb
                  , pureMD5
                  , wai-app-static
                  , markdown
+                 , process-conduit
 
 executable         static-upload
     if flag(upload)

@@ -26,6 +26,8 @@ import Data.Char (isUpper)
 import Control.Exception (evaluate)
 import System.Process (readProcess)
 import Data.Maybe (mapMaybe, listToMaybe)
+import Data.Conduit.Process
+import Data.Conduit (($$), runResourceT)
 
 data Book = Book
     { bookParts :: [Part]
@@ -74,17 +76,14 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
 
     -- Read a chapter as an XML file, converting from AsciiDoc as necessary
     chapterToDoc fp
-        | F.hasExtension fp "ad" || F.hasExtension fp "asciidoc" = do
-            str <- readProcess
-                "asciidoc"
+        | F.hasExtension fp "ad" || F.hasExtension fp "asciidoc" =
+            runResourceT $ sourceProcess (proc "asciidoc"
                 [ "-b"
                 , "docbook45"
                 , "-o"
                 , "-"
                 , F.encodeString fp
-                ]
-                ""
-            either throwIO return $ X.parseLBS def $ L8.pack str
+                ]) $$ X.sinkDoc def
         | otherwise = X.readFile def fp
 
     getSection (NodeElement e@(Element "section" _ _)) = Just e
