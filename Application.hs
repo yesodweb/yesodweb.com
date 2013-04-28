@@ -130,15 +130,17 @@ branches =
 
 postReloadR :: Handler ()
 postReloadR = do
-    forM_ branches $ \(dir, branch) -> do
-        let run x y = liftIO $ runProcess x y (Just dir) Nothing Nothing Nothing Nothing >>= waitForProcess >> return ()
-        run "git" ["fetch"]
-        run "git" ["checkout", "origin/" ++ branch]
     yw <- getYesod
-    mblog <- liftIO loadBlog
-    case mblog of
-        Nothing -> return ()
-        Just blog -> liftIO $ writeIORef (ywBlog yw) blog
-    liftIO $ bsReload $ getBook12 yw
-    liftIO $ bsReload $ getBook11 yw
-    liftIO $ loadAuthors >>= writeIORef (ywAuthors yw)
+    _ <- liftIO $ forkIO $ do
+        forM_ branches $ \(dir, branch) -> do
+            let run x y = runProcess x y (Just dir) Nothing Nothing Nothing Nothing >>= waitForProcess >> return ()
+            run "git" ["fetch"]
+            run "git" ["checkout", "origin/" ++ branch]
+        mblog <- loadBlog
+        case mblog of
+            Nothing -> return ()
+            Just blog -> writeIORef (ywBlog yw) blog
+        bsReload $ getBook12 yw
+        bsReload $ getBook11 yw
+        loadAuthors >>= writeIORef (ywAuthors yw)
+    return ()
