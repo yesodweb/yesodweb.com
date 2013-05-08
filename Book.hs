@@ -56,7 +56,7 @@ getTitle =
 
 loadBook :: F.FilePath -> IO Book
 loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
-    Document _ (Element _ _ parts') _ <- X.readFile def fp
+    Document _ (Element _ _ parts') _ <- X.readFile ps fp
     parts <- fmap concat $ mapM parsePart parts'
     let m = Map.fromList $ concatMap goP parts
         goC c = (chapterSlug c, c)
@@ -74,6 +74,8 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     parsePart NodeContent{} = return []
     parsePart _ = error "Book.parsePart"
 
+    ps = def { psDecodeEntities = decodeHtmlEntities }
+
     -- Read a chapter as an XML file, converting from AsciiDoc as necessary
     chapterToDoc fp
         | F.hasExtension fp "ad" || F.hasExtension fp "asciidoc" =
@@ -83,8 +85,8 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
                 , "-o"
                 , "-"
                 , F.encodeString fp
-                ]) $$ X.sinkDoc def
-        | otherwise = X.readFile def fp
+                ]) $$ X.sinkDoc ps
+        | otherwise = X.readFile ps fp
 
     getSection (NodeElement e@(Element "section" _ _)) = Just e
     getSection _ = Nothing
@@ -167,6 +169,8 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         , ("entry", "td")
         , ("citation", "cite")
         , ("literallayout", "pre")
+        , ("informaltable", "table")
+        , ("formalpara", "section")
         ]
         {-
         , ("title", "h1")
@@ -189,6 +193,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
 
     deleted = Set.fromList
         [ "textobject"
+        , "colspec"
         ]
 
     stripped = Set.fromList
