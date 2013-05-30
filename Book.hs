@@ -8,6 +8,7 @@ module Book
     , loadBook
     ) where
 
+import Control.Monad.Trans.Writer
 import Prelude
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -28,6 +29,7 @@ import System.Process (readProcess)
 import Data.Maybe (mapMaybe, listToMaybe)
 import Data.Conduit.Process
 import Data.Conduit (($$), runResourceT)
+import Control.Monad (when)
 
 data Book = Book
     { bookParts :: [Part]
@@ -126,7 +128,21 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     -}
     goElem _ (Element "programlisting" as [NodeContent t]) | Just "lhaskell" <- Map.lookup "language" as = goLHS t
     goElem _ (Element "programlisting" as [NodeContent t]) | Just "haskell" <- Map.lookup "language" as =
-        [NodeElement $ Element "pre" as [NodeElement $ Element "code" Map.empty [NodeContent $ goStartStop t]]]
+        [ NodeElement $ Element "pre" as
+            [ NodeElement $ Element
+                "code"
+                (Map.singleton "class" $ T.unwords $ execWriter $ do
+                    tell ["haskell"]
+                    case filter ("main = " `T.isPrefixOf`) $ T.lines t of
+                        rest:_ -> do
+                            tell ["active"]
+                            when ("warp" `elem` T.words rest) $ tell ["web"]
+                        [] -> return ()
+                    )
+                [ NodeContent $ goStartStop t
+                ]
+            ]
+        ]
     goElem insideFigure (Element n as cs)
     {-
         | insideFigure && n == "h1" = [NodeElement $ Element "figcaption" as cs']

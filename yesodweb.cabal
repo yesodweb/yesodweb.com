@@ -126,6 +126,7 @@ executable         yesodweb
                  , wai-app-static
                  , markdown
                  , process-conduit
+                 , html-conduit
 
 executable         static-upload
     if flag(upload)
