@@ -68,7 +68,7 @@ getChapterR slug = do
 
 fixSOH :: Node -> Node
 fixSOH (NodeElement (Element "code" attrs [NodeContent t])) =
-    NodeElement $ Element "code" attrs [NodeContent $ T.unlines $ map go $ T.lines t]
+    NodeElement $ Element "code" attrs [NodeContent $ T.intercalate "\n" $ map go $ T.splitOn "\n" t]
   where
     go = T.replace "warp 3000" "warpEnv"
 fixSOH (NodeElement (Element "img" attrs nodes)) =
