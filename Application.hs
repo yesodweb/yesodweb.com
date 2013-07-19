@@ -72,8 +72,8 @@ getApplication conf = do
 
     mblog <- loadBlog
     iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
-    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2 (beta)" "Note: This version of the book is not yet complete" $ F.decodeString dirCurrent
-    booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "" $ F.decodeString dir11
+    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2 (beta)" "Note: This version of the book is not yet complete, only the first part of the book (the first 11 chapters) are guaranteed to be accurate" $ F.decodeString dirCurrent
+    booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is one version behind" $ F.decodeString dir11
     iauthors <- loadAuthors >>= newIORef
 
     let foundation = YesodWeb

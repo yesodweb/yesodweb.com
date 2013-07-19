@@ -187,6 +187,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         , ("literallayout", "pre")
         , ("informaltable", "table")
         , ("formalpara", "section")
+        , ("attribution", "cite")
         ]
         {-
         , ("title", "h1")
