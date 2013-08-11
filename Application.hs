@@ -13,11 +13,7 @@ import Yesod.Default.Handlers
 import Network.Wai.Middleware.Gzip
 import Network.Wai.Middleware.Autohead
 import Book.Routes
-#if DEVELOPMENT
-import Network.Wai.Middleware.RequestLogger (logStdoutDev)
-#else
-import Network.Wai.Middleware.RequestLogger (logStdout)
-#endif
+import Network.Wai.Middleware.RequestLogger
 import Data.Maybe (fromMaybe)
 import Data.IORef (newIORef, writeIORef)
 import System.Process (runProcess, waitForProcess)
@@ -86,15 +82,18 @@ getApplication conf = do
             , getBook11 = booksub11
             }
     app <- toWaiAppPlain foundation
+    logWare <- mkLogWare
     return $ gzip def
            $ autohead
            $ logWare
              app
   where
 #ifdef DEVELOPMENT
-    logWare = logStdoutDev
+    mkLogWare = return logStdoutDev
 #else
-    logWare = logStdout
+    mkLogWare = mkRequestLogger def
+        { outputFormat = Apache FromHeader
+        }
 #endif
 
 mkBookSub :: Html -> Text -> F.FilePath -> IO BookSub
