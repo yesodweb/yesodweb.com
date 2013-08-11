@@ -23,6 +23,7 @@ import Control.Monad (unless, forever, forM_)
 import Filesystem (isDirectory)
 import System.Process (rawSystem)
 import System.Exit (ExitCode (ExitSuccess), exitWith)
+import System.Environment (getEnv, getEnvironment)
 import Control.Concurrent (forkIO, threadDelay)
 import qualified Filesystem.Path.CurrentOS as F
 import qualified Data.Text as T
@@ -48,6 +49,8 @@ mkYesodDispatch "YesodWeb" resourcesYesodWeb
 -- migrations handled by Yesod.
 getApplication :: AppConfig DefaultEnv Extra -> IO Application
 getApplication conf = do
+    env <- getEnvironment
+    mapM_ print env
     forM_ branches $ \(dir, branch) -> do
         exists <- isDirectory $ F.decodeString dir
         unless exists $ do
@@ -56,7 +59,8 @@ getApplication conf = do
                 [ "clone"
                 , "-b"
                 , branch
-                , "https://github.com/yesodweb/yesodweb.com-content.git"
+                , fromMaybe "https://github.com/yesodweb/yesodweb.com-content.git"
+                  $ lookup "CONTENT_REPO" env
                 , dir
                 ]
             unless (ec == ExitSuccess) $ do
@@ -100,7 +104,8 @@ mkBookSub :: Html -> Text -> F.FilePath -> IO BookSub
 mkBookSub title warning root' = do
     Just branch <- return $ lookup (F.encodeString root') branches
     let root = root' F.</> "book"
-    ibook <- loadBook root >>= newIORef
+    ibook <- newIORef $ error "Still loading"
+    _ <- forkIO $ loadBook root >>= writeIORef ibook
     return BookSub
         { bsRoot = root
         , bsBook = ibook

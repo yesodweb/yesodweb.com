@@ -1,15 +1,27 @@
-exec: ../dist/build/yesodweb/yesodweb
-args:
-    - production
-host: www.yesodweb.com
-copy-to: ubuntu@www.yesodweb.com:/opt/keter/incoming
-static-hosts:
-    - host: static.yesodweb.com
+stanzas:
+    - type: webapp
+      exec: ../dist/build/yesodweb/yesodweb
+      args:
+        - production
+#      env:
+#        CONTENT_REPO: /home/ubuntu/sites/yesodweb.com/content
+      hosts:
+        - www.yesodweb.com
+
+    - type: static-files
+      host: static.yesodweb.com
       root: ../static
-redirects:
-    - from: www.yesodweb.org
-      to: www.yesodweb.com
-    - from: yesodweb.org
-      to: www.yesodweb.com
-    - from: yesodweb.com
-      to: www.yesodweb.com
+      directory-listing: false
+
+    - type: redirect
+      hosts:
+        - www.yesodweb.org
+        - yesodweb.org
+        - yesodweb.com
+      status: 301
+      actions:
+        - host: www.yesodweb.com
+          port: 80
+
+exec: ../dist/build/yesodweb/yesodweb
+#copy-to: ubuntu@www.yesodweb.com:/opt/keter/incoming
