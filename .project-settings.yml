@@ -1,0 +1,55 @@
+extensions:
+  TemplateHaskell: true
+  FlexibleInstances: true
+  ImplicitPrelude: false
+  MultiParamTypeClasses: true
+  TypeFamilies: true
+  QuasiQuotes: true
+  GeneralizedNewtypeDeriving: true
+  CPP: true
+  PatternGuards: true
+  GADTs: true
+  FlexibleContexts: true
+  OverloadedStrings: true
+cabal-file: project.cabal
+version: 1
+environment: null
+module-template: ! 'module MODULE_NAME where
+
+'
+ghc-args: []
+modules:
+  Main(main.hs):
+    filename: main.hs
+  Foundation:
+    filename: Foundation.hs
+  Book.Routes:
+    filename: Book/Routes.hs
+  Import:
+    filename: Import.hs
+  Import.Content:
+    filename: Import/Content.hs
+  Main(devel.hs):
+    filename: devel.hs
+  Application:
+    filename: Application.hs
+  Blog:
+    filename: Blog.hs
+  Settings.StaticFiles:
+    filename: Settings/StaticFiles.hs
+  Handler.Wiki:
+    filename: Handler/Wiki.hs
+  Settings:
+    filename: Settings.hs
+  Main(static-upload.hs):
+    filename: static-upload.hs
+  Handler.Page:
+    filename: Handler/Page.hs
+  Handler.Book:
+    filename: Handler/Book.hs
+  Book:
+    filename: Book.hs
+  Handler.Blog:
+    filename: Handler/Blog.hs
+  Handler.Root:
+    filename: Handler/Root.hs
