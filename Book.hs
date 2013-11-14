@@ -81,13 +81,8 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     -- Read a chapter as an XML file, converting from AsciiDoc as necessary
     chapterToDoc fp
         | F.hasExtension fp "ad" || F.hasExtension fp "asciidoc" =
-            runResourceT $ sourceProcess (proc "asciidoc"
-                [ "-b"
-                , "docbook45"
-                , "-o"
-                , "-"
-                , F.encodeString fp
-                ]) $$ X.sinkDoc ps
+            let fp' = F.directory fp F.</> "../generated-xml" F.</> F.replaceExtension (F.filename fp) "xml"
+             in X.readFile ps fp'
         | otherwise = X.readFile ps fp
 
     getSection (NodeElement e@(Element "section" _ _)) = Just e
