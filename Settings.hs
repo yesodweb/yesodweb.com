@@ -14,7 +14,6 @@ module Settings
     ) where
 
 import Prelude
-import Text.Shakespeare.Text (st)
 import Language.Haskell.TH.Syntax
 import Yesod.Default.Config
 import qualified Yesod.Default.Util
@@ -23,8 +22,8 @@ import Data.Text (Text)
 import Data.Yaml
 import Control.Applicative
 import qualified Filesystem.Path as F
-import Data.Map (Map)
 import Control.Monad (mzero)
+import Data.Monoid ((<>))
 
 blogRoot :: F.FilePath
 blogRoot = "content/blog"
@@ -50,13 +49,10 @@ staticDir = "static"
 --
 -- To see how this value is used, see urlRenderOverride in Foundation.hs
 staticRoot :: AppConfig DefaultEnv x ->  Text
-staticRoot _conf =
-#if DEVELOPMENT
-    [st|#{appRoot _conf}/static|]
-#else
-    "http://static.yesodweb.com"
-#endif
-
+staticRoot conf =
+    case appEnv conf of
+        Development -> appRoot conf <> "/static"
+        _ -> "http://static.yesodweb.com"
 
 -- The rest of this file contains settings which rarely need changing by a
 -- user.
@@ -76,7 +72,7 @@ data Author = Author
     }
 
 parseExtra :: DefaultEnv -> Object -> Parser Extra
-parseExtra _ o = pure Extra
+parseExtra _ _ = pure Extra
 
 instance FromJSON Author where
     parseJSON (Object o) = Author

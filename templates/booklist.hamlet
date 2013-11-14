@@ -7,6 +7,6 @@
             <li>
                 #{title}
                 <ul>
-                    $forall Chapter title _ slug _ <- chapters
+                    $forall Chapter title' _ slug' _ <- chapters
                         <li>
-                            <a href=@{toMaster $ ChapterR slug}>#{title}
+                            <a href=@{toMaster $ ChapterR slug'}>#{title'}

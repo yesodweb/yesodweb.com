@@ -14,8 +14,9 @@ extensions:
   MultiParamTypeClasses: true
   PatternGuards: true
   FlexibleContexts: true
-environment: null
+environment: ghc-7.4.2-stable-13.09
 cabal-file: project.cabal
+hidden-packages: ''
 modules:
   Handler.Book:
     filename: Handler/Book.hs
@@ -52,4 +53,7 @@ modules:
   Main(static-upload.hs):
     filename: static-upload.hs
 version: 1
-ghc-args: []
+extra-packages: ''
+ghc-args:
+- -Wall
+- -Werror

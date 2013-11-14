@@ -19,12 +19,12 @@ import Data.IORef (newIORef, writeIORef)
 import System.Process (runProcess, waitForProcess)
 import Yesod.Static (Static (Static))
 import Network.Wai.Application.Static (defaultFileServerSettings)
-import Control.Monad (unless, forever, forM_)
+import Control.Monad (unless, forM_)
 import Filesystem (isDirectory)
 import System.Process (rawSystem)
 import System.Exit (ExitCode (ExitSuccess), exitWith)
-import System.Environment (getEnv, getEnvironment)
-import Control.Concurrent (forkIO, threadDelay)
+import System.Environment (getEnvironment)
+import Control.Concurrent (forkIO)
 import qualified Filesystem.Path.CurrentOS as F
 import qualified Data.Text as T
 
@@ -50,7 +50,6 @@ mkYesodDispatch "YesodWeb" resourcesYesodWeb
 getApplication :: AppConfig DefaultEnv Extra -> IO Application
 getApplication conf = do
     env <- getEnvironment
-    mapM_ print env
     forM_ branches $ \(dir, branch) -> do
         exists <- isDirectory $ F.decodeString dir
         unless exists $ do
@@ -124,9 +123,13 @@ getApplicationDev =
         { csParseExtra = parseExtra
         }
 
+dirCurrent :: FilePath
 dirCurrent = "content"
+
+dir11 :: FilePath
 dir11 = "content-1.1"
 
+branches :: [(FilePath, String)]
 branches =
     [ (dirCurrent, "master")
     , (dir11, "version1.1")

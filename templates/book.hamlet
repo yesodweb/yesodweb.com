@@ -3,7 +3,7 @@
         Available from O'Reilly:
     <div>
         <a href="http://shop.oreilly.com/product/0636920023142.do">
-            <img src="http://akamaicovers.oreilly.com/images/0636920023142/cat.gif" alt="Developing Web Applications with Haskell and Yesod">
+            <img src="//akamaicovers.oreilly.com/images/0636920023142/cat.gif" alt="Developing Web Applications with Haskell and Yesod">
 
     <p>
         Note that the book is available for either
@@ -18,6 +18,6 @@
             <li>
                 #{title}
                 <ul>
-                    $forall Chapter title _ slug _ <- chapters
+                    $forall Chapter title' _ slug _ <- chapters
                         <li>
-                            <a href=@{toMaster $ ChapterR slug}>#{title}
+                            <a href=@{toMaster $ ChapterR slug}>#{title'}

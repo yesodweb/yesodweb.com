@@ -31,8 +31,8 @@ import Data.List (foldl')
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Yesod
-    ( liftIO, HandlerT, Yesod, RepHtml, notFound, defaultLayout
-    , setTitle, toWidget
+    ( liftIO, HandlerT, Yesod, notFound, defaultLayout
+    , setTitle
     , redirectWith
     )
 import Network.HTTP.Types (status301)
@@ -98,7 +98,7 @@ returnContent :: Yesod master
               -> Text -- ^ default title
               -> [ContentFormat]
               -> ContentPath
-              -> HandlerT master IO RepHtml
+              -> HandlerT master IO Html
 returnContent root defTitle cfs pieces = do
     mc <- liftIO $ loadContent root cfs pieces
     case mc of

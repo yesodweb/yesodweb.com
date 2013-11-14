@@ -15,7 +15,6 @@ module Foundation
 
 import Prelude
 import Blog
-import Book
 import Book.Routes
 import Yesod hiding (Route)
 import Yesod.AtomFeed (atomLink)

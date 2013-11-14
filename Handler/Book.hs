@@ -10,17 +10,14 @@ import qualified Filesystem.Path.CurrentOS as F
 import Book
 import qualified Data.Map as Map
 import Text.XML
-import Control.Monad (guard)
-import Data.Maybe (fromMaybe)
 import Network.HTTP.Types (status301)
 import Data.IORef (readIORef)
 import Book.Routes
-import Text.Hamlet (shamlet)
 import qualified Text.Blaze.Html5 as H
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Text.HTML.DOM
 
-getBookHomeR :: HandlerT BookSub Handler RepHtml
+getBookHomeR :: HandlerT BookSub Handler Html
 getBookHomeR = do
     bs <- getYesod
     let ibook = bsBook bs
@@ -31,7 +28,7 @@ getBookHomeR = do
         $(widgetFile "book")
         $(widgetFile "booklist")
 
-getChapterR :: Text -> HandlerT BookSub Handler RepHtml
+getChapterR :: Text -> HandlerT BookSub Handler Html
 getChapterR slug = do
     bs <- getYesod
     let ibook = bsBook bs
