@@ -6,7 +6,7 @@ import qualified Data.ByteString as S
 import Text.Hamlet (hamletFile)
 import Yesod.AtomFeed (atomLink)
 
-getRootR :: Handler RepHtml
+getRootR :: Handler Html
 getRootR = do
     c <- liftIO $ S.readFile "content/homepage.html"
     let widget = do
