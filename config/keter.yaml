@@ -18,6 +18,7 @@ stanzas:
         - www.yesodweb.org
         - yesodweb.org
         - yesodweb.com
+        - docs.yesodweb.com
       status: 301
       actions:
         - host: www.yesodweb.com
