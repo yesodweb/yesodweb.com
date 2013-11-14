@@ -51,7 +51,7 @@ staticDir = "static"
 -- To see how this value is used, see urlRenderOverride in Foundation.hs
 staticRoot :: AppConfig DefaultEnv x ->  Text
 staticRoot _conf =
-#if DEVELOPMENT
+#if DEVELOPMENT || FPHC
     [st|#{appRoot _conf}/static|]
 #else
     "http://static.yesodweb.com"
