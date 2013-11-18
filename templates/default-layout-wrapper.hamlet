@@ -55,6 +55,7 @@ $newline never
                     <span.subject>#{pageTitle pc}
             <div id="main" role="main">
                 ^{pageBody pc}
+                #{license}
 
         <script>
             window._gaq = [['_setAccount','UA-1434510-13'],['_trackPageview'],['_trackPageLoadTime']];

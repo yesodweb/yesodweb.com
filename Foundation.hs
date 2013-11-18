@@ -11,6 +11,7 @@ module Foundation
     , module Yesod
     , module Settings
     , module Blog
+    , license
     ) where
 
 import Prelude
@@ -107,3 +108,11 @@ instance Yesod YesodWeb where
     addStaticContent = addStaticContentExternal minifym base64md5 Settings.staticDir (StaticR . flip StaticRoute [])
 
     jsLoader _ = BottomOfBody
+
+license =
+    [shamlet|
+        <footer #license style="text-align:center;font-size:0.8em">
+            All content on this site is dual licensed MIT and Create Commons Attribution 3.0. For more information, please
+            <a href=https://raw.github.com/yesodweb/yesodweb.com-content/master/LICENSE>see the license file#
+            .
+    |]
