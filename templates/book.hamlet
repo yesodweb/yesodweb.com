@@ -6,11 +6,11 @@
             <img src="http://akamaicovers.oreilly.com/images/0636920023142/cat.gif" alt="Developing Web Applications with Haskell and Yesod">
 
     <p>
-        Note that the book is available for either
+        The current version of the book
+        <a href=@{Book12R BookHomeR}>covers Yesod 1.2#
+        . We also maintain a copy of
         <a href=@{Book11R BookHomeR}>version 1.1
-        or
-        <a href=@{Book12R BookHomeR}>the 1.2 work-in-progress#
-        .
+        of the book.
     
     <h2> Chapters
     <ul>
