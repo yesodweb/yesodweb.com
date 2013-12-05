@@ -86,6 +86,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         | otherwise = X.readFile ps fp
 
     getSection (NodeElement e@(Element "section" _ _)) = Just e
+    getSection (NodeElement e@(Element "appendix" _ _)) = Just e
     getSection _ = Nothing
 
     parseChapter :: Node -> IO [Chapter]
