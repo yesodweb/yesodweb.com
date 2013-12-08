@@ -13,6 +13,7 @@
 
 /blog BlogR GET
 /blog/#Year/#Month/#Slug BlogPostR GET
+/blog/#Slug OldBlogPostR GET
 
 /book BookR BookSub getBook12
 /book-1.1 Book11R BookSub getBook11

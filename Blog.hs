@@ -1,7 +1,7 @@
 module Blog
     ( Blog (..)
     , Year
-    , Month
+    , Month (..)
     , Slug
     , Post (..)
     ) where
