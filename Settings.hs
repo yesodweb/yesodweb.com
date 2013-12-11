@@ -11,6 +11,7 @@ module Settings
     , parseExtra
     , blogRoot
     , Author (..)
+    , development
     ) where
 
 import Prelude
@@ -23,6 +24,7 @@ import Data.Yaml
 import Control.Applicative
 import qualified Filesystem.Path as F
 import Control.Monad (mzero)
+import Data.Monoid ((<>))
 
 blogRoot :: F.FilePath
 blogRoot = "content/blog"
@@ -33,6 +35,13 @@ blogRoot = "content/blog"
 -- path. The default value works properly with your scaffolded site.
 staticDir :: FilePath
 staticDir = "static"
+
+development :: Bool
+#if DEVELOPMENT
+development = True
+#else
+development = False
+#endif
 
 -- | The base URL for your static files. As you can see by the default
 -- value, this can simply be "static" appended to your application root.
@@ -48,23 +57,17 @@ staticDir = "static"
 --
 -- To see how this value is used, see urlRenderOverride in Foundation.hs
 staticRoot :: AppConfig DefaultEnv x ->  Text
-staticRoot _conf =
-#if DEVELOPMENT
-    [st|#{appRoot _conf}/static|]
-#else
-    "http://static.yesodweb.com"
-#endif
-
+staticRoot conf
+    | development = appRoot conf <> "/static"
+    | otherwise   = "http://static.yesodweb.com"
 
 -- The rest of this file contains settings which rarely need changing by a
 -- user.
 
 widgetFile :: String -> Q Exp
-#if DEVELOPMENT
-widgetFile = Yesod.Default.Util.widgetFileReload def
-#else
-widgetFile = Yesod.Default.Util.widgetFileNoReload def
-#endif
+widgetFile
+    | development = Yesod.Default.Util.widgetFileReload def
+    | otherwise   = Yesod.Default.Util.widgetFileNoReload def
 
 data Extra = Extra
 

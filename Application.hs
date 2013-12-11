@@ -2,13 +2,10 @@
 {-# LANGUAGE FlexibleInstances #-}
 module Application
     ( getApplication
-    , getApplicationDev
     ) where
 
 import Import
-import Settings
 import Yesod.Default.Config
-import Yesod.Default.Main
 import Yesod.Default.Handlers
 import Network.Wai.Middleware.Gzip
 import Network.Wai.Middleware.Autohead
@@ -91,13 +88,9 @@ getApplication conf = do
            $ logWare
              app
   where
-#ifdef DEVELOPMENT
-    mkLogWare = return logStdoutDev
-#else
     mkLogWare = mkRequestLogger def
         { outputFormat = Apache FromHeader
         }
-#endif
 
 mkBookSub :: Html -> Text -> F.FilePath -> IO BookSub
 mkBookSub title warning root' = do
@@ -112,15 +105,6 @@ mkBookSub title warning root' = do
         , bsTitle = title
         , bsWarning = if T.null warning then Nothing else Just (toHtml warning)
         , bsBranch = T.pack branch
-        }
-
--- for yesod devel
-getApplicationDev :: IO (Int, Application)
-getApplicationDev =
-    defaultDevelApp loader getApplication
-  where
-    loader = Yesod.Default.Config.loadConfig (configSettings Development)
-        { csParseExtra = parseExtra
         }
 
 dirCurrent, dir11 :: FilePath
