@@ -7,10 +7,10 @@ $newline never
              <li :currYear year:.open #nav-#{year}>
                  <span>#{year}
                  <ul>
-                     $forall (month, y) <- rev x
+                     $forall (month, y') <- rev x
                          <li :currMonth year month:.open #nav-#{year}#{toPathPiece month}>
                              <span>#{pretty month}
                              <ul>
-                                 $forall (slug, post) <- y
+                                 $forall (slug, post) <- y'
                                      <li .leaf>
                                          <a :currPost year month slug:.current href=@{BlogPostR year month slug}>#{postTitle post}

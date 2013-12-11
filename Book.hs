@@ -15,20 +15,14 @@ import qualified Data.Set as Set
 import Data.Text (Text)
 import Text.XML as X
 import qualified Filesystem.Path.CurrentOS as F
-import Control.Exception (handle, SomeException, throw, throwIO)
-import Text.Blaze.Html (Html, toHtml, unsafeLazyByteString)
+import Control.Exception (handle, SomeException, throw)
+import Text.Blaze.Html (Html, toHtml)
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Data.ByteString.Lazy as L
-import qualified Data.ByteString.Lazy.Char8 as L8
 import Data.Monoid (mconcat)
-import System.IO (hPutStrLn, stderr)
 import qualified Data.Text as T
-import Data.Char (isUpper)
 import Control.Exception (evaluate)
-import System.Process (readProcess)
 import Data.Maybe (mapMaybe, listToMaybe)
-import Data.Conduit.Process
-import Data.Conduit (($$), runResourceT)
 import Control.Monad (when)
 
 data Book = Book
@@ -48,6 +42,7 @@ data Chapter = Chapter
     , chapterHtml :: Html
     }
 
+getTitle :: [Node] -> IO (Text, [Node])
 getTitle =
     go id
   where
@@ -68,7 +63,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     dir = F.directory fp
 
     parsePart :: Node -> IO [Part]
-    parsePart (NodeElement (Element "part" as cs)) = do
+    parsePart (NodeElement (Element "part" _ cs)) = do
         (title, chapters') <- getTitle cs
         chapters <- mapM parseChapter chapters'
         return [Part title $ concat chapters]
@@ -79,11 +74,11 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     ps = def { psDecodeEntities = decodeHtmlEntities }
 
     -- Read a chapter as an XML file, converting from AsciiDoc as necessary
-    chapterToDoc fp
-        | F.hasExtension fp "ad" || F.hasExtension fp "asciidoc" =
-            let fp' = F.directory fp F.</> "../generated-xml" F.</> F.replaceExtension (F.filename fp) "xml"
-             in X.readFile ps fp'
-        | otherwise = X.readFile ps fp
+    chapterToDoc fp'
+        | F.hasExtension fp' "ad" || F.hasExtension fp' "asciidoc" =
+            let fp'' = F.directory fp' F.</> "../generated-xml" F.</> F.replaceExtension (F.filename fp') "xml"
+             in X.readFile ps fp''
+        | otherwise = X.readFile ps fp'
 
     getSection (NodeElement e@(Element "section" _ _)) = Just e
     getSection (NodeElement e@(Element "appendix" _ _)) = Just e
@@ -92,12 +87,12 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     parseChapter :: Node -> IO [Chapter]
     parseChapter (NodeElement (Element "{http://www.w3.org/2001/XInclude}include" as _)) = do
         Just href <- return $ Map.lookup "href" as
-        let fp = dir F.</> F.fromText href
-            slug = either id id $ F.toText $ F.basename fp
+        let fp' = dir F.</> F.fromText href
+            slug = either id id $ F.toText $ F.basename fp'
         if slug == "ch00"
             then return []
             else do
-                Document _ (Element name _ csOrig) _ <- chapterToDoc fp
+                Document _ (Element name _ csOrig) _ <- chapterToDoc fp'
                 cs <-
                     case name of
                         "article" ->
@@ -109,7 +104,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
                 (title, rest) <- getTitle cs
                 let content = mconcat $ map toHtml $ concatMap (goNode False) rest
                 !_ <- evaluate $ L.length $ renderHtml content -- FIXME comment out to avoid eager error checking
-                return [Chapter title fp slug content]
+                return [Chapter title fp' slug content]
     parseChapter NodeContent{} = return []
     parseChapter _ = error "Book.parseChapter"
 
@@ -231,43 +226,6 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
                 concatMap (goNode insideFigure) cs
             ]
         go _ = []
-
-    goApiname t =
-        [NodeElement $ Element "a" (Map.singleton "href" href) [NodeContent text]]
-      where
-        (href, text) =
-            case T.split (== ':') t of
-                [x] -> (T.append "http://hackage.haskell.org/package/" x, x)
-                [x, y] -> (T.concat
-                    [ "http://hackage.haskell.org/packages/archive/"
-                    , x
-                    , "/latest/doc/html/"
-                    , T.replace "." "-" y
-                    , ".html"
-                    ], y)
-                [x, y, z] -> (T.concat
-                    [ "http://hackage.haskell.org/packages/archive/"
-                    , x
-                    , "/latest/doc/html/"
-                    , T.replace "." "-" y
-                    , ".html#"
-                    , if isUpper (T.head z) then "t:" else "v:"
-                    , z
-                    ], z)
-                xs -> error $ show xs
-
-    goXref as cs =
-        [NodeElement $ Element "a" (Map.singleton "href" href') cs]
-      where
-        href' =
-            case Map.lookup "href" as of
-                Just href
-                    | "/" `T.isPrefixOf` href || "://" `T.isInfixOf` href -> href
-                    | otherwise ->
-                        let name = T.takeWhile (/= '.') href
-                            suffix = T.dropWhile (/= '#') href
-                         in T.append name suffix
-                Nothing -> error "xref with href"
 
     goStartStop t
         | "-- START" `elem` ls = T.unlines $ go False ls

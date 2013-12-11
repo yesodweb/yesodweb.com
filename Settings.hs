@@ -14,7 +14,6 @@ module Settings
     ) where
 
 import Prelude
-import Text.Shakespeare.Text (st)
 import Language.Haskell.TH.Syntax
 import Yesod.Default.Config
 import qualified Yesod.Default.Util
@@ -23,7 +22,6 @@ import Data.Text (Text)
 import Data.Yaml
 import Control.Applicative
 import qualified Filesystem.Path as F
-import Data.Map (Map)
 import Control.Monad (mzero)
 
 blogRoot :: F.FilePath
@@ -76,7 +74,7 @@ data Author = Author
     }
 
 parseExtra :: DefaultEnv -> Object -> Parser Extra
-parseExtra _ o = pure Extra
+parseExtra _ _ = pure Extra
 
 instance FromJSON Author where
     parseJSON (Object o) = Author

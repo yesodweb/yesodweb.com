@@ -18,12 +18,10 @@ import Data.IORef (readIORef)
 import Text.Markdown (markdown, def, msXssProtect)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Text.Lazy (fromStrict)
-import Yesod.Default.Config (appExtra)
 import qualified Data.Text as T
 import Data.Digest.Pure.MD5 (md5)
 import qualified Data.ByteString.Lazy.Char8 as L8
 import Data.Time (utctDay, toGregorian)
-import Blog (Month (..))
 import qualified Data.Foldable as Fo
 
 getBlogR :: Handler ()
@@ -39,7 +37,7 @@ getOldBlogPostR s = do
             let (y, m, _) = toGregorian $ utctDay $ postTime post
             redirect $ BlogPostR (fromIntegral y) (Month m) s
 
-getBlogPostR :: Year -> Month -> Slug -> Handler RepHtml
+getBlogPostR :: Year -> Month -> Slug -> Handler Html
 getBlogPostR y m s = do
     iblog <- ywBlog <$> getYesod
     authors <- (ywAuthors <$> getYesod) >>= liftIO . readIORef

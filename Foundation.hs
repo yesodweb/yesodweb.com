@@ -16,7 +16,6 @@ module Foundation
 
 import Prelude
 import Blog
-import Book
 import Book.Routes
 import Yesod hiding (Route)
 import Yesod.AtomFeed (atomLink)
@@ -109,6 +108,7 @@ instance Yesod YesodWeb where
 
     jsLoader _ = BottomOfBody
 
+license :: Html
 license =
     [shamlet|
         <footer #license style="text-align:center;font-size:0.8em">

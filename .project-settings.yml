@@ -14,42 +14,12 @@ extensions:
   MultiParamTypeClasses: true
   PatternGuards: true
   FlexibleContexts: true
-environment: null
+environment: ghc-7.4.2-stable-13.09
 cabal-file: project.cabal
-modules:
-  Handler.Book:
-    filename: Handler/Book.hs
-  Application:
-    filename: Application.hs
-  Import.Content:
-    filename: Import/Content.hs
-  Handler.Wiki:
-    filename: Handler/Wiki.hs
-  Settings:
-    filename: Settings.hs
-  Handler.Page:
-    filename: Handler/Page.hs
-  Book.Routes:
-    filename: Book/Routes.hs
-  Foundation:
-    filename: Foundation.hs
-  Blog:
-    filename: Blog.hs
-  Book:
-    filename: Book.hs
-  Main(main.hs):
-    filename: main.hs
-  Import:
-    filename: Import.hs
-  Handler.Root:
-    filename: Handler/Root.hs
-  Handler.Blog:
-    filename: Handler/Blog.hs
-  Settings.StaticFiles:
-    filename: Settings/StaticFiles.hs
-  Main(devel.hs):
-    filename: devel.hs
-  Main(static-upload.hs):
-    filename: static-upload.hs
+hidden-packages: ''
 version: 1
-ghc-args: []
+extra-packages: ''
+ghc-args:
+- -Wall
+- -Werror
+excluded-modules: []
