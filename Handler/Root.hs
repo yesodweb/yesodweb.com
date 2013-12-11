@@ -14,6 +14,7 @@ getRootR = do
             atomLink FeedR "Yesod Web Framework Blog"
             $(widgetFile "normalize")
             $(widgetFile "homepage")
+            $(widgetFile "mobile")
             toWidget $ unsafeByteString c
     pc <- widgetToPageContent widget
     (blogLink, post) <- getNewestBlog

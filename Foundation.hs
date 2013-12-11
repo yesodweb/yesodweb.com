@@ -92,6 +92,7 @@ instance Yesod YesodWeb where
             $(widgetFile "normalize")
             $(widgetFile "highlight")
             $(widgetFile "default-layout")
+            $(widgetFile "mobile")
         giveUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- This is done to provide an optimization for serving static files from

@@ -16,54 +16,7 @@ Flag dev
     Description:   Turn on development settings, like auto-reload templates.
     Default:       False
 
-Flag library-only
-    Description:   Build for use with "yesod devel"
-    Default:       False
-
-Flag upload
-    Default:       False
-
-library
-    if flag(library-only)
-        Buildable: True
-    else
-        Buildable: False
-
-    exposed-modules: Application
-    other-modules:   Foundation
-                     Blog
-                     Book
-                     Import
-                     Import.Content
-                     Settings
-                     Settings.StaticFiles
-                     Handler.Root
-                     Handler.Wiki
-                     Handler.Page
-                     Handler.Blog
-                     Handler.Book
-
-    ghc-options:   -Wall -threaded -O0
-    cpp-options:   -DDEVELOPMENT
-
-    extensions: TemplateHaskell
-                QuasiQuotes
-                OverloadedStrings
-                NoImplicitPrelude
-                CPP
-                OverloadedStrings
-                MultiParamTypeClasses
-                TypeFamilies
-                GADTs
-                GeneralizedNewtypeDeriving
-                FlexibleContexts
-                FlexibleInstances
-                PatternGuards
-
 executable         yesodweb
-    if flag(library-only)
-        Buildable: False
-
     if flag(dev)
         cpp-options:   -DDEVELOPMENT
         ghc-options:   -Wall -threaded -O0
@@ -127,13 +80,3 @@ executable         yesodweb
                  , markdown
                  , process-conduit
                  , html-conduit
-
-executable         static-upload
-    if flag(upload)
-        Buildable: True
-        Build-depends: xml-types                    >= 0.3.1          && < 0.4
-                     , aws                          >= 0.3.2          && < 0.4
-                     , tagstream-conduit            >= 0.2.2          && < 0.3
-    else
-        Buildable: False
-    main-is: static-upload.hs
