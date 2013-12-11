@@ -1,6 +1,7 @@
 @media (max-width: 700px) {
     body {
         background-color: #fff;
+        padding: 3px;
     }
 
     .googleplus, .feedlink, .headergroup, #announcement, #comments, #disqus_thread, #spotlight, #license, .github-link, .oreilly, .main-listing {
