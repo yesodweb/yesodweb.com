@@ -2,13 +2,10 @@
 {-# LANGUAGE FlexibleInstances #-}
 module Application
     ( getApplication
-    , getApplicationDev
     ) where
 
 import Import
-import Settings
 import Yesod.Default.Config
-import Yesod.Default.Main
 import Yesod.Default.Handlers
 import Network.Wai.Middleware.Gzip
 import Network.Wai.Middleware.Autohead
@@ -19,12 +16,12 @@ import Data.IORef (newIORef, writeIORef)
 import System.Process (runProcess, waitForProcess)
 import Yesod.Static (Static (Static))
 import Network.Wai.Application.Static (defaultFileServerSettings)
-import Control.Monad (unless, forever, forM_)
+import Control.Monad (unless, forM_)
 import Filesystem (isDirectory)
 import System.Process (rawSystem)
 import System.Exit (ExitCode (ExitSuccess), exitWith)
-import System.Environment (getEnv, getEnvironment)
-import Control.Concurrent (forkIO, threadDelay)
+import System.Environment (getEnvironment)
+import Control.Concurrent (forkIO)
 import qualified Filesystem.Path.CurrentOS as F
 import qualified Data.Text as T
 
@@ -50,7 +47,6 @@ mkYesodDispatch "YesodWeb" resourcesYesodWeb
 getApplication :: AppConfig DefaultEnv Extra -> IO Application
 getApplication conf = do
     env <- getEnvironment
-    mapM_ print env
     forM_ branches $ \(dir, branch) -> do
         exists <- isDirectory $ F.decodeString dir
         unless exists $ do
@@ -72,7 +68,7 @@ getApplication conf = do
 
     mblog <- loadBlog
     iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
-    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2 (beta)" "Note: This version of the book is not yet complete, only the first part of the book (the first 11 chapters) are guaranteed to be accurate" $ F.decodeString dirCurrent
+    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "" $ F.decodeString dirCurrent
     booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is one version behind" $ F.decodeString dir11
     iauthors <- loadAuthors >>= newIORef
 
@@ -92,13 +88,9 @@ getApplication conf = do
            $ logWare
              app
   where
-#ifdef DEVELOPMENT
-    mkLogWare = return logStdoutDev
-#else
     mkLogWare = mkRequestLogger def
         { outputFormat = Apache FromHeader
         }
-#endif
 
 mkBookSub :: Html -> Text -> F.FilePath -> IO BookSub
 mkBookSub title warning root' = do
@@ -115,18 +107,11 @@ mkBookSub title warning root' = do
         , bsBranch = T.pack branch
         }
 
--- for yesod devel
-getApplicationDev :: IO (Int, Application)
-getApplicationDev =
-    defaultDevelApp loader getApplication
-  where
-    loader = Yesod.Default.Config.loadConfig (configSettings Development)
-        { csParseExtra = parseExtra
-        }
-
+dirCurrent, dir11 :: FilePath
 dirCurrent = "content"
 dir11 = "content-1.1"
 
+branches :: [(FilePath, String)]
 branches =
     [ (dirCurrent, "master")
     , (dir11, "version1.1")

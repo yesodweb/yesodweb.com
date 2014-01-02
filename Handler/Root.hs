@@ -6,7 +6,7 @@ import qualified Data.ByteString as S
 import Text.Hamlet (hamletFile)
 import Yesod.AtomFeed (atomLink)
 
-getRootR :: Handler RepHtml
+getRootR :: Handler Html
 getRootR = do
     c <- liftIO $ S.readFile "content/homepage.html"
     let widget = do
@@ -14,7 +14,8 @@ getRootR = do
             atomLink FeedR "Yesod Web Framework Blog"
             $(widgetFile "normalize")
             $(widgetFile "homepage")
+            $(widgetFile "mobile")
             toWidget $ unsafeByteString c
     pc <- widgetToPageContent widget
     (blogLink, post) <- getNewestBlog
-    hamletToRepHtml $(hamletFile "templates/homepage-wrapper.hamlet")
+    giveUrlRenderer $(hamletFile "templates/homepage-wrapper.hamlet")

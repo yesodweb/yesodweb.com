@@ -14,8 +14,12 @@ extensions:
   MultiParamTypeClasses: true
   PatternGuards: true
   FlexibleContexts: true
-environment: default
+environment: ghc-7.4.2-stable-13.09
 cabal-file: project.cabal
+hidden-packages: ''
 version: 1
-ghc-args: []
+extra-packages: ''
+ghc-args:
+- -Wall
+- -Werror
 excluded-modules: []

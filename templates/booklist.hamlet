@@ -3,10 +3,10 @@
         <p .warning>#{w}
     <h2> Chapters
     <ul>
-        $forall Part title chapters <- parts
+        $forall Part ptitle chapters <- parts
             <li>
-                #{title}
+                #{ptitle}
                 <ul>
-                    $forall Chapter title _ slug _ <- chapters
+                    $forall Chapter ctitle _ cslug _ <- chapters
                         <li>
-                            <a href=@{toMaster $ ChapterR slug}>#{title}
+                            <a href=@{toMaster $ ChapterR cslug}>#{ctitle}

@@ -1,0 +1,59 @@
+@media print, (max-width: 700px) {
+    body {
+        background-color: #fff;
+        padding: 3px;
+    }
+
+    .googleplus, .feedlink, .headergroup, #announcement, #comments, #disqus_thread, #spotlight, #license, .github-link, .oreilly, .main-listing {
+        display: none;
+    }
+
+    #container > nav {
+        background-color: #fff;
+        box-shadow: none;
+        > ul {
+            text-align: left;
+
+            a, a:visited {
+                color: #00f;
+            }
+        }
+    }
+
+    #main, div#container, section.why > article {
+        width: auto;
+        min-width: 0;
+    }
+
+    #main {
+        box-shadow: none;
+        position: static;
+        margin: 0;
+    }
+
+    section.why, section.getting-started {
+        display: block;
+        width: auto;
+        padding: 0;
+        background-color: #fff;
+    }
+
+    hgroup {
+        h1[itemprop=name], h2, h3 {
+            margin: 0;
+
+            img {
+                display: none;
+            }
+        }
+    }
+}
+
+@media print {
+    nav {
+        display: none;
+    }
+    section.getting-started {
+        display: none;
+    }
+}

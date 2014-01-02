@@ -11,10 +11,10 @@ module Settings
     , parseExtra
     , blogRoot
     , Author (..)
+    , development
     ) where
 
 import Prelude
-import Text.Shakespeare.Text (st)
 import Language.Haskell.TH.Syntax
 import Yesod.Default.Config
 import qualified Yesod.Default.Util
@@ -23,8 +23,8 @@ import Data.Text (Text)
 import Data.Yaml
 import Control.Applicative
 import qualified Filesystem.Path as F
-import Data.Map (Map)
 import Control.Monad (mzero)
+import Data.Monoid ((<>))
 
 blogRoot :: F.FilePath
 blogRoot = "content/blog"
@@ -35,6 +35,13 @@ blogRoot = "content/blog"
 -- path. The default value works properly with your scaffolded site.
 staticDir :: FilePath
 staticDir = "static"
+
+development :: Bool
+#if DEVELOPMENT
+development = True
+#else
+development = False
+#endif
 
 -- | The base URL for your static files. As you can see by the default
 -- value, this can simply be "static" appended to your application root.
@@ -50,23 +57,24 @@ staticDir = "static"
 --
 -- To see how this value is used, see urlRenderOverride in Foundation.hs
 staticRoot :: AppConfig DefaultEnv x ->  Text
-staticRoot _conf =
-#if DEVELOPMENT || FPHC
-    [st|#{appRoot _conf}/static|]
-#else
-    "http://static.yesodweb.com"
-#endif
+staticRoot conf
+    | development || fphc = appRoot conf <> "/static"
+    | otherwise           = "http://static.yesodweb.com"
 
+fphc :: Bool
+#if FPHC
+fphc = True
+#else
+fphc = False
+#endif
 
 -- The rest of this file contains settings which rarely need changing by a
 -- user.
 
 widgetFile :: String -> Q Exp
-#if DEVELOPMENT
-widgetFile = Yesod.Default.Util.widgetFileReload def
-#else
-widgetFile = Yesod.Default.Util.widgetFileNoReload def
-#endif
+widgetFile
+    | development = Yesod.Default.Util.widgetFileReload def
+    | otherwise   = Yesod.Default.Util.widgetFileNoReload def
 
 data Extra = Extra
 
@@ -76,7 +84,7 @@ data Author = Author
     }
 
 parseExtra :: DefaultEnv -> Object -> Parser Extra
-parseExtra _ o = pure Extra
+parseExtra _ _ = pure Extra
 
 instance FromJSON Author where
     parseJSON (Object o) = Author

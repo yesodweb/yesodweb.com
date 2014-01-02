@@ -1,6 +1,7 @@
 module Handler.Blog
     ( getBlogR
     , getBlogPostR
+    , getOldBlogPostR
     , getFeedR
     ) where
 
@@ -17,15 +18,26 @@ import Data.IORef (readIORef)
 import Text.Markdown (markdown, def, msXssProtect)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Text.Lazy (fromStrict)
-import Yesod.Default.Config (appExtra)
 import qualified Data.Text as T
 import Data.Digest.Pure.MD5 (md5)
 import qualified Data.ByteString.Lazy.Char8 as L8
+import Data.Time (utctDay, toGregorian)
+import qualified Data.Foldable as Fo
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
 
-getBlogPostR :: Year -> Month -> Slug -> Handler RepHtml
+getOldBlogPostR :: Slug -> Handler ()
+getOldBlogPostR s = do
+    iblog <- ywBlog <$> getYesod
+    Blog blog <- liftIO $ readIORef iblog
+    case lookup s $ Fo.fold $ fmap Fo.fold blog of
+        Nothing -> notFound
+        Just post -> do
+            let (y, m, _) = toGregorian $ utctDay $ postTime post
+            redirect $ BlogPostR (fromIntegral y) (Month m) s
+
+getBlogPostR :: Year -> Month -> Slug -> Handler Html
 getBlogPostR y m s = do
     iblog <- ywBlog <$> getYesod
     authors <- (ywAuthors <$> getYesod) >>= liftIO . readIORef

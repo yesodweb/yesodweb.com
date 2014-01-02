@@ -3,8 +3,6 @@ stanzas:
       exec: ../dist/build/yesodweb/yesodweb
       args:
         - production
-#      env:
-#        CONTENT_REPO: /home/ubuntu/sites/yesodweb.com/content
       hosts:
         - www.yesodweb.com
 
@@ -25,4 +23,4 @@ stanzas:
           port: 80
 
 exec: ../dist/build/yesodweb/yesodweb
-#copy-to: ubuntu@www.yesodweb.com:/opt/keter/incoming
+copy-to: ubuntu@www.yesodweb.com:/opt/keter/incoming

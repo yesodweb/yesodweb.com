@@ -11,11 +11,11 @@ module Foundation
     , module Yesod
     , module Settings
     , module Blog
+    , license
     ) where
 
 import Prelude
 import Blog
-import Book
 import Book.Routes
 import Yesod hiding (Route)
 import Yesod.AtomFeed (atomLink)
@@ -92,7 +92,8 @@ instance Yesod YesodWeb where
             $(widgetFile "normalize")
             $(widgetFile "highlight")
             $(widgetFile "default-layout")
-        hamletToRepHtml $(hamletFile "templates/default-layout-wrapper.hamlet")
+            $(widgetFile "mobile")
+        giveUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- This is done to provide an optimization for serving static files from
     -- a separate domain. Please see the staticRoot setting in Settings.hs
@@ -107,3 +108,12 @@ instance Yesod YesodWeb where
     addStaticContent = addStaticContentExternal minifym base64md5 Settings.staticDir (StaticR . flip StaticRoute [])
 
     jsLoader _ = BottomOfBody
+
+license :: Html
+license =
+    [shamlet|
+        <footer #license style="text-align:center;font-size:0.8em">
+            All content on this site is dual licensed MIT and Create Commons Attribution 3.0. For more information, please
+            <a href=https://raw.github.com/yesodweb/yesodweb.com-content/master/LICENSE>see the license file#
+            .
+    |]

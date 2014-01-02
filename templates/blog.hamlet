@@ -6,7 +6,7 @@ $newline never
             <h2>#{prettyDay $ postTime post}
             $maybe author <- mauthor
                 <h3>
-                    <img itemprop=image src=#{gravatar $ authorEmail author} alt=Gravatar>
+                    <img width=80 height=80 itemprop=image src=#{gravatar $ authorEmail author} alt=Gravatar>
                     #{authorName author}
         <p .github-link>
             <a href="https://github.com/yesodweb/yesodweb.com-content/tree/master/blog/#{either id id $ F.toText $ postFP post}">View source on Github
