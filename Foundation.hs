@@ -113,7 +113,7 @@ license :: Html
 license =
     [shamlet|
         <footer #license style="text-align:center;font-size:0.8em">
-            All content on this site is dual licensed MIT and Create Commons Attribution 3.0. For more information, please
+            All content on this site is dual licensed MIT and Creative Commons Attribution 4.0. For more information, please
             <a href=https://raw.github.com/yesodweb/yesodweb.com-content/master/LICENSE>see the license file#
             .
     |]
