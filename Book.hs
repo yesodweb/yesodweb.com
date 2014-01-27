@@ -24,6 +24,11 @@ import qualified Data.Text as T
 import Control.Exception (evaluate)
 import Data.Maybe (mapMaybe, listToMaybe)
 import Control.Monad (when)
+import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.Conduit.Filesystem (sourceFile)
+import Data.Conduit
+import qualified Data.Conduit.List as CL
+import qualified Data.Conduit.Text as CT
 
 data Book = Book
     { bookParts :: [Part]
@@ -51,10 +56,34 @@ getTitle =
         return (t, front rest)
     go front (n:ns) = go (front . (n:)) ns
 
+mapWhile :: Monad m => (a -> Maybe b) -> Conduit a m b
+mapWhile f =
+    loop
+  where
+    loop = await >>= maybe (return ()) go
+    go x =
+        case f x of
+            Just y -> yield y >> loop
+            Nothing -> leftover x
+
+data BookLine = Title Text | Include Text
+
+parseBookLine :: Text -> Maybe BookLine
+parseBookLine t
+    | Just t' <- T.stripPrefix "= " t = Just $ Title t'
+    | Just t' <- T.stripPrefix "include::chapters/" t
+             >>= T.stripSuffix ".asciidoc[]" = Just $ Include t'
+    | otherwise = Nothing
+
 loadBook :: F.FilePath -> IO Book
 loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
-    Document _ (Element _ _ parts') _ <- X.readFile ps fp
-    parts <- fmap concat $ mapM parsePart parts'
+    parts <- runResourceT
+           $ sourceFile fp
+          $$ CT.decode CT.utf8
+          =$ CT.lines
+          =$ (CL.drop 1 >> CL.mapMaybe parseBookLine)
+          =$ parseParts
+          =$ CL.consume
     let m = Map.fromList $ concatMap goP parts
         goC c = (chapterSlug c, c)
         goP = map goC . partChapters
@@ -62,14 +91,19 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
   where
     dir = F.directory fp
 
-    parsePart :: Node -> IO [Part]
-    parsePart (NodeElement (Element "part" _ cs)) = do
-        (title, chapters') <- getTitle cs
-        chapters <- mapM parseChapter chapters'
-        return [Part title $ concat chapters]
-    parsePart (NodeElement (Element "title" _ _)) = return []
-    parsePart NodeContent{} = return []
-    parsePart _ = error "Book.parsePart"
+    parseParts :: MonadIO m => Conduit BookLine m Part
+    parseParts =
+        start
+      where
+        start = await >>= maybe (return ()) start'
+
+        start' (Title t) = do
+            let getInclude (Include x) = Just x
+                getInclude _ = Nothing
+            chapters <- mapWhile getInclude =$= CL.mapM (liftIO . parseChapter) =$= CL.consume
+            yield $ Part t chapters
+            start
+        start' (Include t) = error $ "Invalid beginning of a Part: " ++ show t
 
     ps = def { psDecodeEntities = decodeHtmlEntities }
 
@@ -84,29 +118,22 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     getSection (NodeElement e@(Element "appendix" _ _)) = Just e
     getSection _ = Nothing
 
-    parseChapter :: Node -> IO [Chapter]
-    parseChapter (NodeElement (Element "{http://www.w3.org/2001/XInclude}include" as _)) = do
-        Just href <- return $ Map.lookup "href" as
-        let fp' = dir F.</> F.fromText href
-            slug = either id id $ F.toText $ F.basename fp'
-        if slug == "ch00"
-            then return []
-            else do
-                Document _ (Element name _ csOrig) _ <- chapterToDoc fp'
-                cs <-
-                    case name of
-                        "article" ->
-                            case listToMaybe $ mapMaybe getSection csOrig of
-                                Nothing -> error $ "article without child section"
-                                Just (Element _ _ cs) -> return cs
-                        "chapter" -> return csOrig
-                        _ -> error $ "Unknown root element: " ++ show name
-                (title, rest) <- getTitle cs
-                let content = mconcat $ map toHtml $ concatMap (goNode False) rest
-                !_ <- evaluate $ L.length $ renderHtml content -- FIXME comment out to avoid eager error checking
-                return [Chapter title fp' slug content]
-    parseChapter NodeContent{} = return []
-    parseChapter _ = error "Book.parseChapter"
+    parseChapter :: Text -> IO Chapter
+    parseChapter slug = do
+        let fp' = dir F.</> "generated-xml" F.</> F.fromText slug F.<.> "xml"
+        Document _ (Element name _ csOrig) _ <- chapterToDoc fp'
+        cs <-
+            case name of
+                "article" ->
+                    case listToMaybe $ mapMaybe getSection csOrig of
+                        Nothing -> error $ "article without child section"
+                        Just (Element _ _ cs) -> return cs
+                "chapter" -> return csOrig
+                _ -> error $ "Unknown root element: " ++ show name
+        (title, rest) <- getTitle cs
+        let content = mconcat $ map toHtml $ concatMap (goNode False) rest
+        !_ <- evaluate $ L.length $ renderHtml content -- FIXME comment out to avoid eager error checking
+        return $ Chapter title fp' slug content
 
     goNode :: Bool -> Node -> [Node]
     goNode b (NodeElement e) = goElem b e
