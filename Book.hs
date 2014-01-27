@@ -73,6 +73,8 @@ parseBookLine t
     | Just t' <- T.stripPrefix "= " t = Just $ Title t'
     | Just t' <- T.stripPrefix "include::chapters/" t
              >>= T.stripSuffix ".asciidoc[]" = Just $ Include t'
+    | Just t' <- T.stripPrefix "include::" t
+             >>= T.stripSuffix ".asciidoc[]" = Just $ Include t'
     | otherwise = Nothing
 
 loadBook :: F.FilePath -> IO Book
