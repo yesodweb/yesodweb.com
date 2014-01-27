@@ -69,8 +69,8 @@ prettyDay = formatTime defaultTimeLocale "%B %e, %Y"
 loadBook :: F.FilePath -> IO Book.Book
 loadBook root = Book.loadBook $ root F.</> "yesod-web-framework-book.asciidoc"
 
-loadBlog :: IO (Maybe Blog)
-loadBlog = Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "posts.yaml"
+loadBlog :: IO (Either Data.Yaml.ParseException Blog)
+loadBlog = Data.Yaml.decodeFileEither $ F.encodeString $ blogRoot F.</> "posts.yaml"
 
 loadAuthors :: IO (Map.Map Text Author)
 loadAuthors = fromMaybe Map.empty <$> (Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "authors.yaml")

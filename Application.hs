@@ -66,8 +66,14 @@ getApplication conf = do
     s <- staticSite
     let assets = Static $ defaultFileServerSettings "content/static"
 
-    mblog <- loadBlog
-    iblog <- newIORef $ fromMaybe (error "Invalid posts.yaml") mblog
+    eblog <- loadBlog
+    blog <-
+        case eblog of
+            Left e -> do
+                print e
+                return $ error $ "Invalid posts.yaml: " ++ show e
+            Right b -> return b
+    iblog <- newIORef blog
     booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "" $ F.decodeString dirCurrent
     booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is one version behind" $ F.decodeString dir11
     iauthors <- loadAuthors >>= newIORef
@@ -125,10 +131,10 @@ postReloadR = do
             let run x y = runProcess x y (Just dir) Nothing Nothing Nothing Nothing >>= waitForProcess >> return ()
             run "git" ["fetch"]
             run "git" ["checkout", "origin/" ++ branch]
-        mblog <- loadBlog
-        case mblog of
-            Nothing -> return ()
-            Just blog -> writeIORef (ywBlog yw) blog
+        eblog <- loadBlog
+        case eblog of
+            Left e -> print e
+            Right blog -> writeIORef (ywBlog yw) blog
         bsReload $ getBook12 yw
         bsReload $ getBook11 yw
         loadAuthors >>= writeIORef (ywAuthors yw)

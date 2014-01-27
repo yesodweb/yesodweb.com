@@ -46,7 +46,7 @@ executable         yesodweb
                  , yesod-form                    >= 1.2        && < 1.4
                  , yesod-newsfeed                >= 1.2        && < 1.3
                  , bytestring                    >= 0.9        && < 0.11
-                 , text                          >= 0.11       && < 0.12
+                 , text                          >= 0.11
                  , template-haskell
                  , hamlet                        >= 1.1        && < 1.2
                  , shakespeare-css               >= 1.0        && < 1.1
@@ -56,13 +56,13 @@ executable         yesodweb
                  , monad-control                 >= 0.3        && < 0.4
                  , wai-extra                     >= 2.0        && < 2.1
                  , yaml                          >= 0.8        && < 0.9
-                 , blaze-html                    >= 0.5        && < 0.7
+                 , blaze-html                    >= 0.7        && < 0.8
                  , conduit                       >= 0.5.2.1    && < 1.1
                  , resourcet                     >= 0.3        && < 0.5
                  , xss-sanitize                  >= 0.3.1      && < 0.4
                  , system-filepath               >= 0.4.4      && < 0.5
                  , system-fileio                 >= 0.3        && < 0.4
-                 , attoparsec                    >= 0.10       && < 0.11
+                 , attoparsec                    >= 0.10
                  , attoparsec-conduit            >= 0.5        && < 1.1
                  , data-default
                  , xml-conduit                   >= 1.0        && < 1.2
