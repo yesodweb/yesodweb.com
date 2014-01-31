@@ -73,6 +73,8 @@ parseBookLine t
     | Just t' <- T.stripPrefix "= " t = Just $ Title t'
     | Just t' <- T.stripPrefix "include::chapters/" t
              >>= T.stripSuffix ".asciidoc[]" = Just $ Include t'
+    | Just t' <- T.stripPrefix "include::" t
+             >>= T.stripSuffix ".asciidoc[]" = Just $ Include t'
     | otherwise = Nothing
 
 loadBook :: F.FilePath -> IO Book
@@ -81,8 +83,8 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
            $ sourceFile fp
           $$ CT.decode CT.utf8
           =$ CT.lines
-          =$ (CL.drop 1 >> CL.mapMaybe parseBookLine)
-          =$ parseParts
+          =$ CL.mapMaybe parseBookLine
+          =$ (CL.drop 1 >> parseParts)
           =$ CL.consume
     let m = Map.fromList $ concatMap goP parts
         goC c = (chapterSlug c, c)
@@ -103,7 +105,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
             chapters <- mapWhile getInclude =$= CL.mapM (liftIO . parseChapter) =$= CL.consume
             yield $ Part t chapters
             start
-        start' (Include t) = error $ "Invalid beginning of a Part: " ++ show t
+        start' (Include _t) = start -- error $ "Invalid beginning of a Part: " ++ show t
 
     ps = def { psDecodeEntities = decodeHtmlEntities }
 
