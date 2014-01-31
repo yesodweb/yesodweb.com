@@ -13,6 +13,7 @@ module Import
     , loadBook
     , loadBlog
     , loadAuthors
+    , getBlog
     ) where
 
 import Prelude hiding (writeFile, readFile)
@@ -53,10 +54,14 @@ getBlogList = do
         (s, p) <- ps
         return (BlogPostR y m s, p)
 
+getBlog :: Handler Blog
+getBlog = do
+    now <- liftIO getCurrentTime
+    (ywBlog <$> getYesod) >>= fmap (filterBlog now) . liftIO . readIORef
+
 getNewestBlog :: Handler (Route YesodWeb, Post)
 getNewestBlog = do
-    iblog <- ywBlog <$> getYesod
-    Blog blog <- liftIO $ readIORef iblog
+    Blog blog <- getBlog
     maybe notFound return $ listToMaybe $ do
         (year, x) <- take 1 $ reverse $ sortBy (comparing fst) $ Map.toList blog
         (month, y) <- take 1 $ reverse $ sortBy (comparing fst) $ Map.toList x

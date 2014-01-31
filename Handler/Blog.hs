@@ -23,15 +23,9 @@ import Data.Digest.Pure.MD5 (md5)
 import qualified Data.ByteString.Lazy.Char8 as L8
 import Data.Time (utctDay, toGregorian)
 import qualified Data.Foldable as Fo
-import Data.Time (getCurrentTime)
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
-
-getBlog :: Handler Blog
-getBlog = do
-    now <- liftIO getCurrentTime
-    (ywBlog <$> getYesod) >>= fmap (filterBlog now) . liftIO . readIORef
 
 getOldBlogPostR :: Slug -> Handler ()
 getOldBlogPostR s = do
