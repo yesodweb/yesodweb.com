@@ -41,8 +41,7 @@ infixr 5 <>
 
 getBlogList :: Handler [(Route YesodWeb, Post)]
 getBlogList = do
-    iblog <- ywBlog <$> getYesod
-    Blog blog <- liftIO $ readIORef iblog
+    Blog blog <- getBlog
     return $ concatMap go' $ concatMap go $ reverse $ Map.toList blog
   where
     go :: (a, Map.Map b c) -> [(a, b, c)]
