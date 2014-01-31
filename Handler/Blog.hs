@@ -23,14 +23,19 @@ import Data.Digest.Pure.MD5 (md5)
 import qualified Data.ByteString.Lazy.Char8 as L8
 import Data.Time (utctDay, toGregorian)
 import qualified Data.Foldable as Fo
+import Data.Time (getCurrentTime)
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
 
+getBlog :: Handler Blog
+getBlog = do
+    now <- liftIO getCurrentTime
+    (ywBlog <$> getYesod) >>= fmap (filterBlog now) . liftIO . readIORef
+
 getOldBlogPostR :: Slug -> Handler ()
 getOldBlogPostR s = do
-    iblog <- ywBlog <$> getYesod
-    Blog blog <- liftIO $ readIORef iblog
+    Blog blog <- getBlog
     case lookup s $ Fo.fold $ fmap Fo.fold blog of
         Nothing -> notFound
         Just post -> do
@@ -39,9 +44,8 @@ getOldBlogPostR s = do
 
 getBlogPostR :: Year -> Month -> Slug -> Handler Html
 getBlogPostR y m s = do
-    iblog <- ywBlog <$> getYesod
     authors <- (ywAuthors <$> getYesod) >>= liftIO . readIORef
-    Blog blog <- liftIO $ readIORef iblog
+    Blog blog <- getBlog
     blog' <- maybe notFound return $ Map.lookup y blog
     blog'' <- maybe notFound return $ Map.lookup m blog'
     post <- maybe notFound return $ lookup s blog''

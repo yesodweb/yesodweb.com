@@ -1,9 +1,11 @@
+{-# LANGUAGE ViewPatterns #-}
 module Blog
     ( Blog (..)
     , Year
     , Month (..)
     , Slug
     , Post (..)
+    , filterBlog
     ) where
 
 import Prelude
@@ -41,6 +43,30 @@ data Post = Post
 
 type AList a b = [(a, b)]
 newtype Blog = Blog (Map Year (Map Month (AList Slug Post)))
+
+filterBlog :: UTCTime -> Blog -> Blog
+filterBlog now (Blog years) =
+    Blog $ Map.mapMaybeWithKey goYear years
+  where
+    (fromInteger -> curryear, currmonth, _) = toGregorian $ utctDay now
+
+    goYear year m =
+        case compare curryear year of
+            GT -> Just m
+            LT -> Nothing
+            EQ ->
+                let m' = Map.mapMaybeWithKey goMonth m
+                 in if Map.null m' then Nothing else Just m'
+
+    goMonth (Month month) alist =
+        case compare currmonth month of
+            GT -> Just alist
+            LT -> Nothing
+            EQ ->
+                let alist' = filter goPair alist
+                 in if null alist' then Nothing else Just alist'
+
+    goPair (_, post) = postTime post <= now
 
 instance FromJSON Post where
     parseJSON (Object o) = Post
