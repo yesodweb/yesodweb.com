@@ -1,6 +1,6 @@
 <section .why>
     <p .github-link>
-        <a href="https://github.com/yesodweb/yesodweb.com-content/tree/#{bsBranch bs}/book/chapters/#{slug}.asciidoc">View source on Github
+        <a href="https://github.com/yesodweb/yesodweb.com-content/blob/#{bsBranch bs}/book/#{slug}.asciidoc">View source on Github
     <article>
         <h1>#{chapterTitle chapter}
         #{chapterHtml chapter}
