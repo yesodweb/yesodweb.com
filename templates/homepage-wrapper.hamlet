@@ -29,7 +29,7 @@ $newline never
             <nav>
                 <ul>
                     <li.googleplus>
-                        <g:plusOne>
+                        <g:plusOne size=small>
                     <li>
                         <a href=@{BookR BookHomeR}>book
                     <li>

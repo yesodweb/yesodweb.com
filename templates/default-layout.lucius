@@ -305,3 +305,7 @@ p.what {
     font-size: 1.4em;
     padding: 0 200px;
 }
+
+#instantclick {
+    display: none;
+}
