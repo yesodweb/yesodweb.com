@@ -199,7 +199,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         , ("variablelist", "dl")
         , ("term", "dt")
         , ("literal", "code")
-        , ("screen", "code")
+        , ("screen", "pre")
         , ("quote", "q")
         , ("row", "tr")
         , ("entry", "td")
