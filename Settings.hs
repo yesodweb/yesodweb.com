@@ -57,9 +57,11 @@ development = False
 --
 -- To see how this value is used, see urlRenderOverride in Foundation.hs
 staticRoot :: AppConfig DefaultEnv x ->  Text
-staticRoot conf
+staticRoot conf = appRoot conf <> "/static"
+{-
     | development || fphc = appRoot conf <> "/static"
     | otherwise           = "http://static.yesodweb.com"
+    -}
 
 fphc :: Bool
 #if FPHC
