@@ -18,14 +18,15 @@ import Prelude
     )
 import Data.Text (Text)
 import qualified Data.Conduit as C
+import Control.Monad.Trans.Resource (ResourceT, runResourceT)
 import qualified Data.Conduit.List as CL
 import qualified Data.Conduit.Text as CT
-import qualified Data.Conduit.Filesystem as CB
+import qualified Data.Conduit.Binary as CB
 import Text.Blaze.Html (Html, preEscapedToMarkup, preEscapedToMarkup, toHtml)
 import qualified Data.ByteString as S
 import Control.Applicative ((<$>))
 import Text.HTML.SanitizeXSS (sanitizeBalance)
-import Filesystem.Path.CurrentOS ((</>), fromText, (<.>), FilePath)
+import Filesystem.Path.CurrentOS ((</>), fromText, (<.>), FilePath, encodeString)
 import Filesystem (isFile)
 import Data.List (foldl')
 import qualified Data.Text as T
@@ -42,13 +43,13 @@ import Settings (widgetFile)
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
-    , cfLoad :: C.Sink S.ByteString (C.ResourceT IO) (Either Text (Maybe Html, Html))
+    , cfLoad :: C.Sink S.ByteString (ResourceT IO) (Either Text (Maybe Html, Html))
     -- ^ Left == redirect, Right == title, content
     }
 
 -- | Turn a stream of 'S.ByteString's into an optional title line and the rest
 -- of the text. Assumes UTF8 encoding.
-sinkText :: (TL.Text -> a) -> C.Sink S.ByteString (C.ResourceT IO) (Either Text (Maybe Html, a))
+sinkText :: (TL.Text -> a) -> C.Sink S.ByteString (ResourceT IO) (Either Text (Maybe Html, a))
 sinkText f =
     Right . go . TL.fromChunks <$> (CT.decode CT.utf8 C.=$ CL.consume)
   where
@@ -86,7 +87,7 @@ loadContent root (cf:cfs) cp@(ContentPath pieces) = do
     e <- isFile path
     if e
         -- FIXME caching
-        then Just <$> (C.runResourceT $ CB.sourceFile path C.$$ cfLoad cf)
+        then Just <$> (runResourceT $ CB.sourceFile (encodeString path) C.$$ cfLoad cf)
         else loadContent root cfs cp
   where
     path = foldl' go root pieces <.> cfExtension cf

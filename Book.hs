@@ -9,6 +9,7 @@ module Book
     ) where
 
 import Control.Monad.Trans.Writer
+import Control.Monad.Trans.Resource
 import Prelude
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -25,7 +26,7 @@ import Control.Exception (evaluate)
 import Data.Maybe (mapMaybe, listToMaybe)
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import Data.Conduit.Filesystem (sourceFile)
+import Data.Conduit.Binary (sourceFile)
 import Data.Conduit
 import qualified Data.Conduit.List as CL
 import qualified Data.Conduit.Text as CT
@@ -80,7 +81,7 @@ parseBookLine t
 loadBook :: F.FilePath -> IO Book
 loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
     parts <- runResourceT
-           $ sourceFile fp
+           $ sourceFile (F.encodeString fp)
           $$ CT.decode CT.utf8
           =$ CT.lines
           =$ CL.mapMaybe parseBookLine
