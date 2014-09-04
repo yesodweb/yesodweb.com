@@ -113,12 +113,11 @@ license :: Html
 license =
     [shamlet|
         <footer #license style="text-align:center;font-size:0.8em">
-            <p>
-                The book content on this site is licensed
-                <a href=http://creativecommons.org/licenses/by-nc-nd/4.0/>Attribution-NonCommercial-NoDerivatives 4.0 International#
-                .
-            <p>
-                All other content on this site is dual licensed MIT and Creative Commons Attribution 4.0. For more information, please
-                <a href=https://raw.github.com/yesodweb/yesodweb.com-content/master/LICENSE>see the license file#
-                .
+            The book content on this site is licensed
+            <a href=http://creativecommons.org/licenses/by-nc-nd/4.0/>Attribution-NonCommercial-NoDerivatives 4.0 International#
+            .
+            <br>
+            All other content on this site is dual licensed MIT and Creative Commons Attribution 4.0. For more information, please
+            <a href=https://raw.github.com/yesodweb/yesodweb.com-content/master/LICENSE>see the license file#
+            .
     |]
