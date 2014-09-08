@@ -18,5 +18,6 @@
 /book BookR BookSub getBook12
 /book-1.1 Book11R BookSub getBook11
 /book-1.2 Book12R BookSub getBook12
+/book-1.4 Book14R BookSub getBook14
 
 /reload ReloadR POST

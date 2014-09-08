@@ -44,6 +44,7 @@ data YesodWeb = YesodWeb
     , ywAuthors :: IORef (Map Text Settings.Author)
     , getBook12 :: BookSub
     , getBook11 :: BookSub
+    , getBook14 :: BookSub
     }
 
 -- This is where we define all of the routes in our application. For a full

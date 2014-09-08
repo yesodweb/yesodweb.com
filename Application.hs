@@ -76,6 +76,7 @@ getApplication conf = do
     iblog <- newIORef blog
     booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "" $ F.decodeString dirCurrent
     booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is one version behind" $ F.decodeString dir11
+    booksub14 <- mkBookSub "Yesod Web Framework Book- Version 1.4" "Note: This is a preview release for the upcoming version of Yesod" $ F.decodeString dir14
     iauthors <- loadAuthors >>= newIORef
 
     let foundation = YesodWeb
@@ -86,6 +87,7 @@ getApplication conf = do
             , ywAuthors = iauthors
             , getBook12 = booksub12
             , getBook11 = booksub11
+            , getBook14 = booksub14
             }
     app <- toWaiAppPlain foundation
     logWare <- mkLogWare
@@ -113,14 +115,16 @@ mkBookSub title warning root' = do
         , bsBranch = T.pack branch
         }
 
-dirCurrent, dir11 :: FilePath
+dirCurrent, dir11, dir14 :: FilePath
 dirCurrent = "content"
 dir11 = "content-1.1"
+dir14 = "content-1.4"
 
 branches :: [(FilePath, String)]
 branches =
     [ (dirCurrent, "master")
     , (dir11, "version1.1")
+    , (dir14, "version1.4")
     ]
 
 postReloadR :: Handler ()
