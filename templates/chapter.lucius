@@ -16,3 +16,7 @@ article > h1:first-child {
 figure > h1 {
     margin: 0;
 }
+
+p code {
+    background-color: #f0f0f0;
+}
