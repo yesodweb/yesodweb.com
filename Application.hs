@@ -139,6 +139,7 @@ postReloadR = do
         case eblog of
             Left e -> print e
             Right blog -> writeIORef (ywBlog yw) blog
+        bsReload $ getBook14 yw
         bsReload $ getBook12 yw
         bsReload $ getBook11 yw
         loadAuthors >>= writeIORef (ywAuthors yw)
