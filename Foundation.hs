@@ -119,6 +119,6 @@ license =
             .
             <br>
             All other content on this site is dual licensed MIT and Creative Commons Attribution 4.0. For more information, please
-            <a href=https://raw.github.com/yesodweb/yesodweb.com-content/master/LICENSE>see the license file#
+            <a href=https://raw.github.com/yesodweb/yesodweb.com/master/LICENSE>see the license file#
             .
     |]
