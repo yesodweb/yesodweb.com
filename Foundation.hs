@@ -78,7 +78,6 @@ instance Yesod YesodWeb where
     makeSessionBackend _ = return Nothing
 
     defaultLayout widget = do
-        y <- getYesod
         mmsg <- getMessage
 
         -- We break up the default layout into two components:
@@ -94,7 +93,7 @@ instance Yesod YesodWeb where
             $(widgetFile "highlight")
             $(widgetFile "default-layout")
             $(widgetFile "mobile")
-        giveUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
+        withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- This is done to provide an optimization for serving static files from
     -- a separate domain. Please see the staticRoot setting in Settings.hs

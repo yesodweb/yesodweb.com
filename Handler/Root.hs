@@ -18,4 +18,4 @@ getRootR = do
             toWidget $ unsafeByteString c
     pc <- widgetToPageContent widget
     (blogLink, post) <- getNewestBlog
-    giveUrlRenderer $(hamletFile "templates/homepage-wrapper.hamlet")
+    withUrlRenderer $(hamletFile "templates/homepage-wrapper.hamlet")
