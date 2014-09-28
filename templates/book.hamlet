@@ -8,11 +8,11 @@
 
     <p>
         The current version of the book
-        <a href=@{Book12R BookHomeR}>covers Yesod 1.2#
-        . We also maintain a copy of
-        <a href=@{Book11R BookHomeR}>version 1.1
-        of the book, as well as a
-        <a href=@{Book14R BookHomeR}>preview release for version 1.4
+        <a href=@{Book14R BookHomeR}>covers Yesod 1.4#
+        . We also maintain older copies for
+        <a href=@{Book12R BookHomeR}>version 1.2
+        and
+        <a href=@{Book11R BookHomeR}>version 1.1#
         .
 
     <div .main-listing>
