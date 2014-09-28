@@ -38,15 +38,14 @@ getChapterR slug = do
 
     mraw <- lookupGetParam "raw"
     case mraw of
-        Nothing -> do
-            lift $ defaultLayout $ do
-                setTitle $ mconcat
-                    [ toHtml $ chapterTitle chapter
-                    , " :: "
-                    , bsTitle bs
-                    ]
-                $(widgetFile "chapter")
-                $(widgetFile "booklist")
+        Nothing -> lift $ defaultLayout $ do
+            setTitle $ mconcat
+                [ toHtml $ chapterTitle chapter
+                , " :: "
+                , bsTitle bs
+                ]
+            $(widgetFile "chapter")
+            $(widgetFile "booklist")
         Just raw -> return
             [shamlet|
                 $doctype 5
@@ -58,7 +57,7 @@ getChapterR slug = do
             |]
   where
     sohFixes "soh" x =
-        mconcat $ map toHtml $ map fixSOH nodes
+        mconcat $ map (toHtml . fixSOH) nodes
       where
         Document _ (Element _ _ nodes) _ = Text.HTML.DOM.parseLBS $ renderHtml $ H.div x
     sohFixes _ x = x

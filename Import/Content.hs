@@ -67,7 +67,7 @@ htmlFormat = ContentFormat "html" $ sinkText $
 
 -- | HTML content without XSS protection.
 unsafeHtmlFormat :: ContentFormat
-unsafeHtmlFormat = ContentFormat "html" $ sinkText $ preEscapedToMarkup
+unsafeHtmlFormat = ContentFormat "html" $ sinkText preEscapedToMarkup
 
 -- | Markdown content with XSS protection.
 markdownFormat :: ContentFormat
@@ -87,7 +87,7 @@ loadContent root (cf:cfs) cp@(ContentPath pieces) = do
     e <- isFile path
     if e
         -- FIXME caching
-        then Just <$> (runResourceT $ CB.sourceFile (encodeString path) C.$$ cfLoad cf)
+        then Just <$> runResourceT (CB.sourceFile (encodeString path) C.$$ cfLoad cf)
         else loadContent root cfs cp
   where
     path = foldl' go root pieces <.> cfExtension cf

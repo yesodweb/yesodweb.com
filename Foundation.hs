@@ -8,39 +8,37 @@ module Foundation
     , Form
     , maybeAuth
     , requireAuth
-    , module Yesod
-    , module Settings
-    , module Blog
+    , module X
     , license
     ) where
 
-import Prelude
-import Blog
-import Book.Routes
-import Yesod hiding (Route)
-import Yesod.AtomFeed (atomLink)
-import Yesod.Static
-import Settings.StaticFiles
-import Yesod.Auth
-import Yesod.Default.Config
-import Yesod.Default.Util (addStaticContentExternal)
+import           Blog                 as X
+import           Book.Routes
+import           Data.IORef           (IORef)
+import           Data.Map             (Map)
+import           Data.Text            (Text)
+import           Prelude
+import           Settings             as X (Extra (..), widgetFile)
 import qualified Settings
-import Settings (widgetFile, Extra (..))
-import Text.Jasmine (minifym)
-import Text.Hamlet (hamletFile)
-import Data.Text (Text)
-import Data.IORef (IORef)
-import Data.Map (Map)
+import           Settings.StaticFiles
+import           Text.Hamlet          (hamletFile)
+import           Text.Jasmine         (minifym)
+import           Yesod                as X hiding (Route)
+import           Yesod.AtomFeed       (atomLink)
+import           Yesod.Auth
+import           Yesod.Default.Config
+import           Yesod.Default.Util   (addStaticContentExternal)
+import           Yesod.Static
 
 -- | The site argument for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
 -- starts running, such as database connections. Every handler will have
 -- access to the data present here.
 data YesodWeb = YesodWeb
-    { settings :: AppConfig DefaultEnv Extra
+    { settings  :: AppConfig DefaultEnv Extra
     , getStatic :: Static -- ^ Settings for static file serving.
     , getAssets :: Static
-    , ywBlog :: IORef Blog
+    , ywBlog    :: IORef Blog
     , ywAuthors :: IORef (Map Text Settings.Author)
     , getBook12 :: BookSub
     , getBook11 :: BookSub

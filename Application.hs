@@ -4,33 +4,34 @@ module Application
     ( getApplication
     ) where
 
-import Import
-import Yesod.Default.Config
-import Yesod.Default.Handlers
-import Network.Wai.Middleware.Gzip
-import Network.Wai.Middleware.Autohead
-import Book.Routes
-import Network.Wai.Middleware.RequestLogger
-import Data.Maybe (fromMaybe)
-import Data.IORef (newIORef, writeIORef)
-import System.Process (runProcess, waitForProcess)
-import Yesod.Static (Static (Static))
-import Network.Wai.Application.Static (defaultFileServerSettings)
-import Control.Monad (unless, forM_)
-import Filesystem (isDirectory)
-import System.Process (rawSystem)
-import System.Exit (ExitCode (ExitSuccess), exitWith)
-import System.Environment (getEnvironment)
-import Control.Concurrent (forkIO)
-import qualified Filesystem.Path.CurrentOS as F
-import qualified Data.Text as T
+import           Book.Routes
+import           Control.Concurrent                   (forkIO)
+import           Control.Monad                        (forM_, unless, void)
+import           Data.IORef                           (newIORef, writeIORef)
+import           Data.Maybe                           (fromMaybe)
+import qualified Data.Text                            as T
+import           Filesystem                           (isDirectory)
+import qualified Filesystem.Path.CurrentOS            as F
+import           Import
+import           Network.Wai.Application.Static       (defaultFileServerSettings)
+import           Network.Wai.Middleware.Autohead
+import           Network.Wai.Middleware.Gzip
+import           Network.Wai.Middleware.RequestLogger
+import           System.Environment                   (getEnvironment)
+import           System.Exit                          (ExitCode (ExitSuccess),
+                                                       exitWith)
+import           System.Process                       (rawSystem, runProcess,
+                                                       waitForProcess)
+import           Yesod.Default.Config
+import           Yesod.Default.Handlers
+import           Yesod.Static                         (Static (Static))
 
 -- Import all relevant handler modules here.
-import Handler.Root
-import Handler.Wiki
-import Handler.Page
-import Handler.Blog
-import Handler.Book
+import           Handler.Blog
+import           Handler.Book
+import           Handler.Page
+import           Handler.Root
+import           Handler.Wiki
 
 instance YesodSubDispatch BookSub (HandlerT YesodWeb IO) where
     yesodSubDispatch = $(mkYesodSubDispatch resourcesBookSub)
@@ -132,7 +133,7 @@ postReloadR = do
     yw <- getYesod
     _ <- liftIO $ forkIO $ do
         forM_ branches $ \(dir, branch) -> do
-            let run x y = runProcess x y (Just dir) Nothing Nothing Nothing Nothing >>= waitForProcess >> return ()
+            let run x y = void $ runProcess x y (Just dir) Nothing Nothing Nothing Nothing >>= waitForProcess
             run "git" ["fetch"]
             run "git" ["checkout", "origin/" ++ branch]
         eblog <- loadBlog

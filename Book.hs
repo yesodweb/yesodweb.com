@@ -1,6 +1,6 @@
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE BangPatterns #-}
 module Book
     ( Book (..)
     , Part (..)
@@ -8,44 +8,44 @@ module Book
     , loadBook
     ) where
 
-import Control.Monad.Trans.Writer
-import Control.Monad.Trans.Resource
-import Prelude
-import qualified Data.Map as Map
-import qualified Data.Set as Set
-import Data.Text (Text)
-import Text.XML as X
-import qualified Filesystem.Path.CurrentOS as F
-import Control.Exception (handle, SomeException, throw)
-import Text.Blaze.Html (Html, toHtml)
-import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
-import qualified Data.ByteString.Lazy as L
-import Data.Monoid (mconcat)
-import qualified Data.Text as T
-import Control.Exception (evaluate)
-import Data.Maybe (mapMaybe, listToMaybe)
-import Control.Monad (when)
-import Control.Monad.IO.Class (MonadIO (liftIO))
-import Data.Conduit.Binary (sourceFile)
-import Data.Conduit
-import qualified Data.Conduit.List as CL
-import qualified Data.Conduit.Text as CT
+import           Control.Exception             (SomeException, evaluate, handle,
+                                                throw)
+import           Control.Monad                 (when)
+import           Control.Monad.IO.Class        (MonadIO (liftIO))
+import           Control.Monad.Trans.Resource
+import           Control.Monad.Trans.Writer
+import qualified Data.ByteString.Lazy          as L
+import           Data.Conduit
+import           Data.Conduit.Binary           (sourceFile)
+import qualified Data.Conduit.List             as CL
+import qualified Data.Conduit.Text             as CT
+import qualified Data.Map                      as Map
+import           Data.Maybe                    (listToMaybe, mapMaybe)
+import           Data.Monoid                   (mconcat)
+import qualified Data.Set                      as Set
+import           Data.Text                     (Text)
+import qualified Data.Text                     as T
+import qualified Filesystem.Path.CurrentOS     as F
+import           Prelude
+import           Text.Blaze.Html               (Html, toHtml)
+import           Text.Blaze.Html.Renderer.Utf8 (renderHtml)
+import           Text.XML                      as X
 
 data Book = Book
-    { bookParts :: [Part]
+    { bookParts      :: [Part]
     , bookChapterMap :: Map.Map Text Chapter
     }
 
 data Part = Part
-    { partTitle :: Text
+    { partTitle    :: Text
     , partChapters :: [Chapter]
     }
 
 data Chapter = Chapter
     { chapterTitle :: Text
-    , chapterPath :: F.FilePath
-    , chapterSlug :: Text
-    , chapterHtml :: Html
+    , chapterPath  :: F.FilePath
+    , chapterSlug  :: Text
+    , chapterHtml  :: Html
     }
 
 getTitle :: [Node] -> IO (Text, [Node])
@@ -53,7 +53,7 @@ getTitle =
     go id
   where
     go _ [] = error "Title not found"
-    go front ((NodeElement (Element "title" _ [NodeContent t])):rest) =
+    go front (NodeElement (Element "title" _ [NodeContent t]):rest) =
         return (t, front rest)
     go front (n:ns) = go (front . (n:)) ns
 
@@ -129,7 +129,7 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
             case name of
                 "article" ->
                     case listToMaybe $ mapMaybe getSection csOrig of
-                        Nothing -> error $ "article without child section"
+                        Nothing -> error "article without child section"
                         Just (Element _ _ cs) -> return cs
                 "chapter" -> return csOrig
                 _ -> error $ "Unknown root element: " ++ show name

@@ -1,12 +1,7 @@
 module Import
-    ( module Prelude
-    , module Foundation
+    ( module X
     , (<>)
     , Text
-    , module Data.Monoid
-    , module Control.Applicative
-    , module Import.Content
-    , module Settings.StaticFiles
     , getNewestBlog
     , getBlogList
     , prettyDay
@@ -16,13 +11,13 @@ module Import
     , getBlog
     ) where
 
-import Prelude hiding (writeFile, readFile)
-import Foundation
-import Data.Monoid (Monoid (mappend, mempty, mconcat))
-import Control.Applicative ((<$>), (<*>), pure)
+import Prelude as X hiding (writeFile, readFile)
+import Foundation as X
+import Data.Monoid as X (Monoid (mappend, mempty, mconcat))
+import Control.Applicative as X ((<$>), (<*>), pure)
 import Data.Text (Text)
-import Import.Content
-import Settings.StaticFiles
+import Import.Content as X
+import Settings.StaticFiles as X
 import Data.Maybe (listToMaybe, fromMaybe)
 import Data.List (sortBy)
 import Data.Ord (comparing)
@@ -77,5 +72,5 @@ loadBlog :: IO (Either Data.Yaml.ParseException Blog)
 loadBlog = Data.Yaml.decodeFileEither $ F.encodeString $ blogRoot F.</> "posts.yaml"
 
 loadAuthors :: IO (Map.Map Text Author)
-loadAuthors = fromMaybe Map.empty <$> (Data.Yaml.decodeFile $ F.encodeString $ blogRoot F.</> "authors.yaml")
+loadAuthors = fromMaybe Map.empty <$> Data.Yaml.decodeFile (F.encodeString $ blogRoot F.</> "authors.yaml")
 
