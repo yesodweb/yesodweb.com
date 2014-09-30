@@ -125,7 +125,7 @@ branches :: [(FilePath, String)]
 branches =
     [ (dir12, "version1.2")
     , (dir11, "version1.1")
-    , (dir14, "version1.4")
+    , (dir14, "master")
     ]
 
 postReloadR :: Handler ()
