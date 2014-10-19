@@ -7,6 +7,7 @@ module Handler.Book
 import Import
 import qualified Data.Text as T
 import qualified Filesystem.Path.CurrentOS as F
+import Filesystem (isFile)
 import Book
 import qualified Data.Map as Map
 import Text.XML
@@ -81,8 +82,12 @@ getBookImageR :: Text -> HandlerT BookSub Handler ()
 getBookImageR name
     | name' == name'' = do
         bs <- getYesod
-        sendFile "image/png" $ F.encodeString $
-            bsRoot bs F.</> "images" F.</> name' F.<.> "png"
+        let fp1 = bsRoot bs F.</> "images" F.</> name' F.<.> "png"
+            fp2 = bsRoot bs F.</> "asciidoc" F.</> "images" F.</> name' F.<.> "png"
+        fp <- do
+            x <- liftIO $ isFile fp1
+            return $ if x then fp1 else fp2
+        sendFile "image/png" $ F.encodeString $ fp
     | otherwise = redirectWith status301 $ BookImageR $ either id id $ F.toText name'
   where
     name' = F.basename name''
