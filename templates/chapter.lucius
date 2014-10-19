@@ -20,3 +20,15 @@ figure > h1 {
 p code {
     background-color: #f0f0f0;
 }
+
+a.permalink {
+    font-size: 50%;
+    text-decoration: none;
+    position: absolute;
+    left: -25px;
+    top: 10px;
+}
+
+section > h1 {
+    position: relative;
+}

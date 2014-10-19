@@ -17,6 +17,7 @@ import Book.Routes
 import qualified Text.Blaze.Html5 as H
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Text.HTML.DOM
+import Yesod.Form.Jquery (urlJqueryJs)
 
 getBookHomeR :: HandlerT BookSub Handler Html
 getBookHomeR = do
@@ -45,6 +46,7 @@ getChapterR slug = do
                 , " :: "
                 , bsTitle bs
                 ]
+            getYesod >>= addScriptEither . urlJqueryJs
             $(widgetFile "chapter")
             $(widgetFile "booklist")
         Just raw -> return

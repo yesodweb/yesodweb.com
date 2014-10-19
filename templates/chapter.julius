@@ -1,0 +1,9 @@
+$(function(){
+    $.each($("section[id] > h1"), function(i, e){
+        var $e = $(e),
+            link = $("<a class='permalink'>¶</a>");
+        link.attr("href", "#" + $e.parent().attr("id"));
+
+        $e.prepend(link);
+    });
+});

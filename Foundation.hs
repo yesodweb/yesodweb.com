@@ -28,6 +28,7 @@ import           Yesod.AtomFeed       (atomLink)
 import           Yesod.Auth
 import           Yesod.Default.Config
 import           Yesod.Default.Util   (addStaticContentExternal)
+import           Yesod.Form.Jquery    (YesodJquery)
 import           Yesod.Static
 
 -- | The site argument for your application. This can be a good place to
@@ -119,3 +120,5 @@ license =
             <a href=https://raw.github.com/yesodweb/yesodweb.com/master/LICENSE>see the license file#
             .
     |]
+
+instance YesodJquery YesodWeb
