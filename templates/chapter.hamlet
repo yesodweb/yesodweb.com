@@ -2,8 +2,10 @@
     <p .github-link>
         $if bsBranch bs == "version1.1"
             <a href="https://github.com/yesodweb/yesodweb.com-content/tree/#{bsBranch bs}/book/chapters/#{slug}.xml">View source on Github
-        $else
+        $elseif bsBranch bs == "version1.2"
             <a href="https://github.com/yesodweb/yesodweb.com-content/tree/#{bsBranch bs}/book/#{slug}.asciidoc">View source on Github
+        $else
+            <a href="https://github.com/yesodweb/yesodweb.com-content/tree/#{bsBranch bs}/book/asciidoc/#{slug}.asciidoc">View source on Github
     <article>
         <h1>#{chapterTitle chapter}
         #{chapterHtml chapter}
