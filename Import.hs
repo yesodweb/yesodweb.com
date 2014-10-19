@@ -66,7 +66,7 @@ prettyDay :: UTCTime -> String
 prettyDay = formatTime defaultTimeLocale "%B %e, %Y"
 
 loadBook :: F.FilePath -> IO Book.Book
-loadBook root = Book.loadBook $ root F.</> "yesod-web-framework-book.asciidoc"
+loadBook root = Book.loadBook root
 
 loadBlog :: IO (Either Data.Yaml.ParseException Blog)
 loadBlog = Data.Yaml.decodeFileEither $ F.encodeString $ blogRoot F.</> "posts.yaml"

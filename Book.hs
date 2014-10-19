@@ -25,6 +25,7 @@ import           Data.Monoid                   (mconcat)
 import qualified Data.Set                      as Set
 import           Data.Text                     (Text)
 import qualified Data.Text                     as T
+import qualified Filesystem                    as F
 import qualified Filesystem.Path.CurrentOS     as F
 import           Prelude
 import           Text.Blaze.Html               (Html, toHtml)
@@ -79,7 +80,11 @@ parseBookLine t
     | otherwise = Nothing
 
 loadBook :: F.FilePath -> IO Book
-loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
+loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
+    fp <- trySuffixes
+        [ "yesod-web-framework-book.asciidoc"
+        , "asciidoc/book.asciidoc"
+        ]
     parts <- runResourceT
            $ sourceFile (F.encodeString fp)
           $$ CT.decode CT.utf8
@@ -92,7 +97,11 @@ loadBook fp = handle (\(e :: SomeException) -> return (throw e)) $ do
         goP = map goC . partChapters
     return $ Book parts m
   where
-    dir = F.directory fp
+    trySuffixes [] = error "No suffixes worked for loading book"
+    trySuffixes (x:xs) = do
+        let fp = dir F.</> x
+        exists <- F.isFile fp
+        if exists then return fp else trySuffixes xs
 
     parseParts :: MonadIO m => Conduit BookLine m Part
     parseParts =
