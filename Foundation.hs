@@ -104,7 +104,9 @@ instance Yesod YesodWeb where
     -- and names them based on a hash of their content. This allows
     -- expiration dates to be set far in the future without worry of
     -- users receiving stale content.
-    addStaticContent = addStaticContentExternal minifym base64md5 Settings.staticDir (StaticR . flip StaticRoute [])
+
+    -- Disabled to allow for horizontal scaling
+    --addStaticContent = addStaticContentExternal minifym base64md5 Settings.staticDir (StaticR . flip StaticRoute [])
 
     jsLoader _ = BottomOfBody
 

@@ -5,8 +5,9 @@ module Application
     ) where
 
 import           Book.Routes
-import           Control.Concurrent                   (forkIO)
-import           Control.Monad                        (forM_, unless, void)
+import           ClassyPrelude                        (handleAny)
+import           Control.Concurrent                   (forkIO, threadDelay)
+import           Control.Monad                        (forM_, unless, void, forever)
 import           Data.IORef                           (newIORef, writeIORef)
 import           Data.Maybe                           (fromMaybe)
 import qualified Data.Text                            as T
@@ -92,6 +93,13 @@ getApplication conf = do
             }
     app <- toWaiAppPlain foundation
     logWare <- mkLogWare
+
+    -- Reload git every 5 minutes, due to lack of propagation of webhooks in a
+    -- horizontally scaled situation
+    void $ forkIO $ forever $ do
+        threadDelay 300000000
+        handleAny print $ pullGitBranches foundation
+
     return $ gzip def
            $ autohead
            $ logWare
@@ -131,17 +139,19 @@ branches =
 postReloadR :: Handler ()
 postReloadR = do
     yw <- getYesod
-    _ <- liftIO $ forkIO $ do
-        forM_ branches $ \(dir, branch) -> do
-            let run x y = void $ runProcess x y (Just dir) Nothing Nothing Nothing Nothing >>= waitForProcess
-            run "git" ["fetch"]
-            run "git" ["checkout", "origin/" ++ branch]
-        eblog <- loadBlog
-        case eblog of
-            Left e -> print e
-            Right blog -> writeIORef (ywBlog yw) blog
-        bsReload $ getBook14 yw
-        bsReload $ getBook12 yw
-        bsReload $ getBook11 yw
-        loadAuthors >>= writeIORef (ywAuthors yw)
-    return ()
+    void $ liftIO $ forkIO $ pullGitBranches yw
+
+pullGitBranches :: YesodWeb -> IO ()
+pullGitBranches yw = do
+    forM_ branches $ \(dir, branch) -> do
+        let run x y = void $ runProcess x y (Just dir) Nothing Nothing Nothing Nothing >>= waitForProcess
+        run "git" ["fetch"]
+        run "git" ["checkout", "origin/" ++ branch]
+    eblog <- loadBlog
+    case eblog of
+        Left e -> print e
+        Right blog -> writeIORef (ywBlog yw) blog
+    bsReload $ getBook14 yw
+    bsReload $ getBook12 yw
+    bsReload $ getBook11 yw
+    loadAuthors >>= writeIORef (ywAuthors yw)

@@ -77,3 +77,4 @@ executable         yesodweb
                  , wai-app-static
                  , markdown
                  , html-conduit
+                 , classy-prelude
