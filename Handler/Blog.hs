@@ -48,12 +48,14 @@ getBlogPostR y m s = do
     let currYear y' = y == y'
         currMonth y' m' = y == y' && m == m'
         currPost y' m' s' = y == y' && m == m' && s == s'
-    defaultLayout $ do
-        setTitle $ toHtml $ postTitle post
-        let rev :: Ord k => Map.Map k v -> [(k, v)]
-            rev = reverse . sortBy (comparing fst) . Map.toList
-        $(widgetFile "blog") :: Widget
-        $(widgetFile "archive")
+    if postRaw post
+        then return content
+        else defaultLayout $ do
+            setTitle $ toHtml $ postTitle post
+            let rev :: Ord k => Map.Map k v -> [(k, v)]
+                rev = reverse . sortBy (comparing fst) . Map.toList
+            $(widgetFile "blog") :: Widget
+            $(widgetFile "archive")
   where
     pretty 1 = "January"
     pretty 2 = "February"

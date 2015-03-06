@@ -39,6 +39,8 @@ data Post = Post
     , postAuthor :: Text
     , postTitle :: Text
     , postFP :: F.FilePath
+    , postRaw :: Bool
+    -- ^ don't apply any template to the raw page
     }
 
 type AList a b = [(a, b)]
@@ -74,6 +76,7 @@ instance FromJSON Post where
         <*> o .: "author"
         <*> o .: "title"
         <*> (F.fromText <$> o .: "path")
+        <*> o .:? "raw" .!= False
     parseJSON _ = mzero
 
 instance FromJSON Blog where
