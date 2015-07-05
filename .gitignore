@@ -9,3 +9,5 @@ content-1.1/
 content-1.2/
 /.cabal-sandbox/
 /cabal.sandbox.config
+/.stack-work/
+/docker/app/
