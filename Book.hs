@@ -21,7 +21,6 @@ import qualified Data.Conduit.List             as CL
 import qualified Data.Conduit.Text             as CT
 import qualified Data.Map                      as Map
 import           Data.Maybe                    (listToMaybe, mapMaybe)
-import           Data.Monoid                   (mconcat)
 import qualified Data.Set                      as Set
 import           Data.Text                     (Text)
 import qualified Data.Text                     as T
@@ -123,8 +122,8 @@ loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
     chapterToDoc fp'
         | F.hasExtension fp' "ad" || F.hasExtension fp' "asciidoc" =
             let fp'' = F.directory fp' F.</> "../generated-xml" F.</> F.replaceExtension (F.filename fp') "xml"
-             in X.readFile ps fp''
-        | otherwise = X.readFile ps fp'
+             in X.readFile ps $ F.encodeString fp''
+        | otherwise = X.readFile ps $ F.encodeString fp'
 
     getSection (NodeElement e@(Element "section" _ _)) = Just e
     getSection (NodeElement e@(Element "appendix" _ _)) = Just e

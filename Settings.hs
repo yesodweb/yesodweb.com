@@ -21,8 +21,7 @@ import qualified Yesod.Default.Util
 import Data.Default (def)
 import Data.Text (Text)
 import Data.Yaml
-import Control.Applicative
-import qualified Filesystem.Path as F
+import qualified Filesystem.Path.CurrentOS as F
 import Control.Monad (mzero)
 import Data.Monoid ((<>))
 

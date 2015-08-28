@@ -13,8 +13,6 @@ module Import
 
 import Prelude as X hiding (writeFile, readFile)
 import Foundation as X
-import Data.Monoid as X (Monoid (mappend, mempty, mconcat))
-import Control.Applicative as X ((<$>), (<*>), pure)
 import Data.Text (Text)
 import Import.Content as X
 import Settings.StaticFiles as X
@@ -23,7 +21,6 @@ import Data.List (sortBy)
 import Data.Ord (comparing)
 import qualified Data.Map as Map
 import Data.Time
-import System.Locale (defaultTimeLocale)
 import qualified Book
 import qualified Filesystem.Path.CurrentOS as F
 import qualified Data.Yaml

@@ -22,12 +22,10 @@ import           Settings             as X (Extra (..), widgetFile)
 import qualified Settings
 import           Settings.StaticFiles
 import           Text.Hamlet          (hamletFile)
-import           Text.Jasmine         (minifym)
 import           Yesod                as X hiding (Route)
 import           Yesod.AtomFeed       (atomLink)
 import           Yesod.Auth
 import           Yesod.Default.Config
-import           Yesod.Default.Util   (addStaticContentExternal)
 import           Yesod.Form.Jquery    (YesodJquery)
 import           Yesod.Static
 
