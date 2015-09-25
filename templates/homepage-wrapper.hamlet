@@ -33,7 +33,7 @@ $newline never
                     <li>
                         <a href=@{BookR BookHomeR}>book
                     <li>
-                        <a href="https://github.com/yesodweb/yesod/wiki/Cookbook">cookbook
+                        <a href=@{WikiHomeR}>cookbook
                     <li>
                         <a href=@{BlogR}>blog
                     <li>
