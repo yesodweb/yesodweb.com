@@ -5,7 +5,7 @@ metadata:
     labels:
         name: yesodweb
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     name: yesodweb
   template:
@@ -16,6 +16,9 @@ spec:
         containers:
         - name: yesodweb
           image: snoyberg/yesodweb
+          resources:
+            limits:
+              memory: 800Mi
           imagePullPolicy: Always
           command: ["yesodweb", "development"]
           workingDir: /app
