@@ -22,7 +22,3 @@ spec:
           env:
           - name: PORT
             value: "3001"
-          livenessProbe:
-              httpGet:
-                  path: /
-                  port: 3001
