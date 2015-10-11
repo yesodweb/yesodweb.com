@@ -13,9 +13,6 @@ spec:
     spec:
         containers:
         - name: yesodweb
-          resources:
-            limits:
-              memory: 800Mi
           image: snoyberg/yesodweb:latest
           command: ["yesodweb", "development"]
           workingDir: /app
