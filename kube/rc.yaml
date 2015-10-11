@@ -6,8 +6,6 @@ metadata:
         app: yesodweb
 spec:
   replicas: 2
-  selector:
-    name: yesodweb
   template:
     metadata:
         labels:
