@@ -13,11 +13,10 @@ spec:
     spec:
         containers:
         - name: yesodweb
-          image: snoyberg/yesodweb
           resources:
             limits:
               memory: 800Mi
-          imagePullPolicy: Always
+          image: snoyberg/yesodweb:latest
           command: ["yesodweb", "development"]
           workingDir: /app
           ports:
