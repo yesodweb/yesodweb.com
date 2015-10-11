@@ -3,7 +3,7 @@ kind: ReplicationController
 metadata:
     name: yesodweb
     labels:
-        name: yesodweb
+        app: yesodweb
 spec:
   replicas: 2
   selector:
@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
         labels:
-            name: yesodweb
+            app: yesodweb
     spec:
         containers:
         - name: yesodweb
