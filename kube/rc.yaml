@@ -18,7 +18,6 @@ spec:
           workingDir: /app
           ports:
           - containerPort: 3001
-            hostPort: 3001
           env:
           - name: PORT
             value: "3001"
