@@ -112,13 +112,14 @@ license :: Html
 license =
     [shamlet|
         <footer #license style="text-align:center;font-size:0.8em">
-            The book content on this site is licensed
-            <a href=http://creativecommons.org/licenses/by-nc-nd/4.0/>Attribution-NonCommercial-NoDerivatives 4.0 International#
+            All content on this site is available under the
+            <a href=http://creativecommons.org/licenses/by/4.0/>Creative Commons Attribution 4.0 International License#
             .
             <br>
-            All other content on this site is dual licensed MIT and Creative Commons Attribution 4.0. For more information, please
-            <a href=https://raw.github.com/yesodweb/yesodweb.com/master/LICENSE>see the license file#
-            .
+            Content outside the book section is available under
+            <a href=https://raw.github.com/yesodweb/yesodweb.com/master/LICENSE>
+                the MIT license
+            as well.
     |]
 
 instance YesodJquery YesodWeb
