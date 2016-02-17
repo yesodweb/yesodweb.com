@@ -60,7 +60,11 @@ getNewestBlog = do
         return (BlogPostR year month slug, post)
 
 prettyDay :: UTCTime -> String
-prettyDay = formatTime defaultTimeLocale "%B %e, %Y"
+prettyDay time
+    | month == 4 && day == 1 = "March 32, " ++ show year
+    | otherwise = formatTime defaultTimeLocale "%B %e, %Y" time
+  where
+    (year, month, day) = toGregorian $ utctDay time
 
 loadBook :: F.FilePath -> IO Book.Book
 loadBook root = Book.loadBook root
