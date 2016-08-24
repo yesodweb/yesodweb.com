@@ -88,6 +88,7 @@ getFeedR = do
         , feedUpdated = postTime f
         , feedEntries = entries
         , feedAuthor = "Yesod Web Framework Team"
+        , feedLogo = Nothing
         }
   where
     go (url, p) = do
@@ -97,6 +98,7 @@ getFeedR = do
             , feedEntryUpdated = postTime p
             , feedEntryTitle = postTitle p
             , feedEntryContent = content
+            , feedEntryEnclosure = Nothing
             }
 
 getContent :: Post -> IO Html

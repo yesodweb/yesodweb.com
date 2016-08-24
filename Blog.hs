@@ -13,7 +13,6 @@ import Data.Text (Text, pack)
 import Yesod.Core (PathPiece (..))
 import Data.Yaml
 import Control.Monad (mzero)
-import Control.Applicative
 import qualified Filesystem.Path.CurrentOS as F
 import Data.Time
 import Data.Map (Map)
