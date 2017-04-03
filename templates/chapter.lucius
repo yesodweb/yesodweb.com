@@ -32,3 +32,8 @@ a.permalink {
 section > h1 {
     position: relative;
 }
+
+pre > code {
+    white-space: pre;
+    overflow-x: auto;
+}
