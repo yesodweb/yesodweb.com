@@ -8,7 +8,7 @@
         display: none;
     }
 
-    /* Because of specificity we need to overriede display:flex from homepage.lucius */
+    /* Because of specificity we need to override display:flex from homepage.lucius */
     div .headergroup {
         display: none;
     }        
