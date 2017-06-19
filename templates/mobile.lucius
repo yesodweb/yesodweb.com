@@ -47,6 +47,11 @@
             }
         }
     }
+    
+    dd, p, dt {
+        margin: 12px;
+    }
+
 }
 
 @media print {
