@@ -46,6 +46,9 @@ nav {
     font-family: 'Lato';
     font-size: 0.80em;
     font-weight: 400;
+    position: fixed;
+    width: 100%;
+    top: 0;
     ul {
         margin: 0;
         padding: 0;
@@ -92,11 +95,11 @@ nav {
 div.headergroup {
     width: 1050px;
     margin: 0 auto;
-    position: relative;
-    padding-top: 1.3em;
+    padding-top: 2.6em;
     padding-bottom: 1.3em;
     a {
       text-decoration: none;
+      display: flex;
     }
     div.homepage-logo {
         text-align: center;
@@ -124,11 +127,7 @@ div.headergroup {
        font-weight: 300;
        font-size: 0.8em;
        line-height: 1.6em;
-       position: absolute;
-       left: 600px;
-       top: 0;
        width: 220px;
-       padding: 30px;
     }
 
     h2 {
