@@ -37,3 +37,14 @@ pre > code {
     white-space: pre;
     overflow-x: auto;
 }
+
+@media print, (max-width: 700px) {
+
+article > h1:first-child {
+    margin-top: 25px;
+}
+
+section > h1 {
+  margin-bottom: 0.5em;
+}
+}
