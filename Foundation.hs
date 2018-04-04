@@ -42,6 +42,7 @@ data YesodWeb = YesodWeb
     , getBook12 :: BookSub
     , getBook11 :: BookSub
     , getBook14 :: BookSub
+    , getBook16 :: BookSub
     }
 
 -- This is where we define all of the routes in our application. For a full

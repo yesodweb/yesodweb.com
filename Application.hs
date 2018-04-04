@@ -76,9 +76,10 @@ getApplication conf = do
                 return $ error $ "Invalid posts.yaml: " ++ show e
             Right b -> return b
     iblog <- newIORef blog
-    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "Note: You are looking at version 1.2 of the book, which is one version behind" $ F.decodeString dir12
-    booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is two versions behind" $ F.decodeString dir11
-    booksub14 <- mkBookSub "Yesod Web Framework Book- Version 1.4" "" $ F.decodeString dir14
+    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "Note: You are looking at version 1.2 of the book, which is two versions behind" $ F.decodeString dir12
+    booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is three versions behind" $ F.decodeString dir11
+    booksub14 <- mkBookSub "Yesod Web Framework Book- Version 1.4" "Note: You are looking at version 1.4 of the book, which is one version behind" $ F.decodeString dir14
+    booksub16 <- mkBookSub "Yesod Web Framework Book- Version 1.6" "Note: The book has not yet been fully updated to version 1.6, there may still be some out of date information!" $ F.decodeString dir16
     iauthors <- loadAuthors >>= newIORef
 
     let foundation = YesodWeb
@@ -90,6 +91,7 @@ getApplication conf = do
             , getBook12 = booksub12
             , getBook11 = booksub11
             , getBook14 = booksub14
+            , getBook16 = booksub16
             }
     app <- toWaiAppPlain foundation
     logWare <- mkLogWare
@@ -124,16 +126,18 @@ mkBookSub title warning root' = do
         , bsBranch = T.pack branch
         }
 
-dir12, dir11, dir14 :: FilePath
+dir12, dir11, dir14, dir16 :: FilePath
 dir12 = "content-1.2"
 dir11 = "content-1.1"
-dir14 = "content"
+dir14 = "content-1.4"
+dir16 = "content"
 
 branches :: [(FilePath, String)]
 branches =
     [ (dir12, "version1.2")
     , (dir11, "version1.1")
-    , (dir14, "master")
+    , (dir14, "version1.4")
+    , (dir16, "master")
     ]
 
 postReloadR :: Handler ()
