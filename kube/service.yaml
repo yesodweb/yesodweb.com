@@ -3,12 +3,12 @@ kind: Service
 metadata:
     name: yesodweb
     labels:
-        name: yesodweb
+        app: yesodweb
 spec:
     type: LoadBalancer
     ports:
-    - port: 80
-      targetPort: 3001
-      protocol: TCP
+    - name: http
+      port: 80
+      targetPort: http
     selector:
-        name: yesodweb
+        app: yesodweb

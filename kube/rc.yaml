@@ -3,32 +3,22 @@ kind: ReplicationController
 metadata:
     name: yesodweb
     labels:
-        name: yesodweb
+        app: yesodweb
 spec:
-  replicas: 2
-  selector:
-    name: yesodweb
+  replicas: 1
   template:
     metadata:
         labels:
-            name: yesodweb
+            app: yesodweb
     spec:
         containers:
         - name: yesodweb
-          image: snoyberg/yesodweb
-          resources:
-            limits:
-              memory: 800Mi
-          imagePullPolicy: Always
+          image: snoyberg/yesodweb:latest
           command: ["yesodweb", "development"]
           workingDir: /app
           ports:
-          - containerPort: 3001
-            hostPort: 3001
+          - name: http
+            containerPort: 3001
           env:
           - name: PORT
             value: "3001"
-          livenessProbe:
-              httpGet:
-                  path: /
-                  port: 3001
