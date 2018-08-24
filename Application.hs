@@ -34,7 +34,7 @@ import           Handler.Page
 import           Handler.Root
 import           Handler.Wiki
 
-instance YesodSubDispatch BookSub (HandlerT YesodWeb IO) where
+instance YesodSubDispatch BookSub YesodWeb where
     yesodSubDispatch = $(mkYesodSubDispatch resourcesBookSub)
 
 -- This line actually creates our YesodSite instance. It is the second half

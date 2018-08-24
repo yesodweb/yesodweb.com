@@ -19,20 +19,20 @@ import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Text.HTML.DOM
 import Yesod.Form.Jquery (urlJqueryJs)
 
-getBookHomeR :: HandlerT BookSub Handler Html
+getBookHomeR :: SubHandlerFor BookSub YesodWeb Html
 getBookHomeR = do
-    bs <- getYesod
+    bs <- getSubYesod
     let ibook = bsBook bs
     Book parts _ <- liftIO $ readIORef ibook
     toMaster <- getRouteToParent
-    lift $ defaultLayout $ do
+    liftHandler $ defaultLayout $ do
         setTitle $ bsTitle bs
         $(widgetFile "book")
         $(widgetFile "booklist")
 
-getChapterR :: Text -> HandlerT BookSub Handler Html
+getChapterR :: Text -> SubHandlerFor BookSub YesodWeb Html
 getChapterR slug = do
-    bs <- getYesod
+    bs <- getSubYesod
     let ibook = bsBook bs
     Book parts m <- liftIO $ readIORef ibook
     chapter <- maybe notFound return $ Map.lookup slug m
@@ -40,7 +40,7 @@ getChapterR slug = do
 
     mraw <- lookupGetParam "raw"
     case mraw of
-        Nothing -> lift $ defaultLayout $ do
+        Nothing -> liftHandler $ defaultLayout $ do
             setTitle $ mconcat
                 [ toHtml $ chapterTitle chapter
                 , " :: "
@@ -80,17 +80,19 @@ fixSOH (NodeElement (Element name attrs nodes)) =
     NodeElement $ Element name attrs $ map fixSOH nodes
 fixSOH n = n
 
-getBookImageR :: Text -> HandlerT BookSub Handler ()
+getBookImageR :: Text -> SubHandlerFor BookSub YesodWeb ()
 getBookImageR name
     | name' == name'' = do
-        bs <- getYesod
+        bs <- getSubYesod
         let fp1 = bsRoot bs F.</> "images" F.</> name' F.<.> "png"
             fp2 = bsRoot bs F.</> "asciidoc" F.</> "images" F.</> name' F.<.> "png"
         fp <- do
             x <- liftIO $ isFile fp1
             return $ if x then fp1 else fp2
         sendFile "image/png" $ F.encodeString $ fp
-    | otherwise = redirectWith status301 $ BookImageR $ either id id $ F.toText name'
+    | otherwise = do
+        tp <- getRouteToParent
+        redirectWith status301 $ tp $ BookImageR $ either id id $ F.toText name'
   where
     name' = F.basename name''
     name'' = F.fromText name

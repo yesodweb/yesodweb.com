@@ -27,10 +27,6 @@ import qualified Data.Yaml
 import Settings (blogRoot, Author)
 import Data.IORef (readIORef)
 
-infixr 5 <>
-(<>) :: Monoid m => m -> m -> m
-(<>) = mappend
-
 getBlogList :: Handler [(Route YesodWeb, Post)]
 getBlogList = do
     Blog blog <- getBlog
