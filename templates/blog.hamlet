@@ -1,20 +1,20 @@
 $newline never
-<section .why>
-    <article>
-        <hgroup>
-            <h1 itemprop=name>#{postTitle post}
-            <h2>#{prettyDay $ postTime post}
-            $maybe author <- mauthor
-                <h3>
-                    <img width=80 height=80 itemprop=image src=#{gravatar $ authorEmail author} alt=Gravatar>
-                    #{authorName author}
-        <p .github-link>
-            <a href="https://github.com/yesodweb/yesodweb.com-content/tree/master/blog/#{T.pack $ postFP post}">View source on Github
-        <div itemprop=description>^{content}
 
-    <h1 #comments>Comments
+<section .why>
+    <h1>#{postTitle post}
+    <h2>#{prettyDay $ postTime post}
+    $maybe author <- mauthor
+      <h3>
+        <img width=80 height=80 itemprop=image src=#{gravatar $ authorEmail author} alt=Gravatar>
+        By #{authorName author}
+    <p .github-link>
+      <a href="https://github.com/yesodweb/yesodweb.com-content/tree/master/blog/#{T.pack $ postFP post}">View source on Github
+    <article>^{content}
+
+    <p #comments>Comments
     <div id="disqus_thread">
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span>
+    <p>
+      <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span>
 
 <script type="text/javascript">
   var disqus_shortname = 'yesoddocs';

@@ -1,6 +1,6 @@
 $newline never
 <section .getting-started>
-  <h2> Archives
+  <h2>Archives
   <div #archive>
      <ul>
          $forall (year, x) <- rev blog
