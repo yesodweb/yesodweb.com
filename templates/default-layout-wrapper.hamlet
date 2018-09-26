@@ -66,4 +66,4 @@ $newline never
             <script>
                 window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
         \<![endif]-->
-        <script src="https://apis.google.com/js/plusone.js"></script>
+        <script src="https://apis.google.com/js/plusone.js">
