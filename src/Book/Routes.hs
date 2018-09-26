@@ -1,14 +1,11 @@
 module Book.Routes where
 
-import Prelude (IO, Maybe)
+import RIO (IO, Maybe, FilePath, Text, IORef, SomeException, Either)
 import Yesod
-import Data.Text (Text)
-import Data.IORef (IORef)
 import Book (Book)
-import Filesystem.Path (FilePath)
 
 data BookSub = BookSub
-    { bsBook :: IORef Book
+    { bsBook :: IORef (Either SomeException Book)
     , bsRoot :: FilePath
     , bsReload :: IO ()
     , bsTitle :: Html

@@ -11,28 +11,17 @@ module Import.Content
     , returnContent
     ) where
 
-import Prelude
-    ( (.), ($), IO, Maybe (..), return, (==), (/=)
-    , Eq, Show, Read
-    , Either (..)
-    )
-import Data.Text (Text)
-import qualified Data.Conduit as C
-import Control.Monad.Trans.Resource (ResourceT, runResourceT)
-import qualified Data.Conduit.List as CL
-import qualified Data.Conduit.Text as CT
-import qualified Data.Conduit.Binary as CB
+import Conduit
 import Text.Blaze.Html (Html, preEscapedToMarkup, preEscapedToMarkup, toHtml)
-import qualified Data.ByteString as S
-import Control.Applicative ((<$>))
 import Text.HTML.SanitizeXSS (sanitizeBalance)
-import Filesystem.Path.CurrentOS ((</>), fromText, (<.>), FilePath, encodeString)
-import Filesystem (isFile)
+import RIO
+import RIO.FilePath
+import RIO.Directory
 import Data.List (foldl')
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Yesod
-    ( liftIO, HandlerT, Yesod, notFound, defaultLayout
+    ( liftIO, HandlerFor, Yesod, notFound, defaultLayout
     , setTitle
     , redirectWith
     )
@@ -43,15 +32,15 @@ import Settings (widgetFile)
 
 data ContentFormat = ContentFormat
     { cfExtension :: Text
-    , cfLoad :: C.Sink S.ByteString (ResourceT IO) (Either Text (Maybe Html, Html))
+    , cfLoad :: ConduitT ByteString Void IO (Either Text (Maybe Html, Html))
     -- ^ Left == redirect, Right == title, content
     }
 
--- | Turn a stream of 'S.ByteString's into an optional title line and the rest
+-- | Turn a stream of 'ByteString's into an optional title line and the rest
 -- of the text. Assumes UTF8 encoding.
-sinkText :: (TL.Text -> a) -> C.Sink S.ByteString (ResourceT IO) (Either Text (Maybe Html, a))
+sinkText :: (TL.Text -> a) -> ConduitT ByteString Void IO (Either Text (Maybe Html, a))
 sinkText f =
-    Right . go . TL.fromChunks <$> (CT.decode CT.utf8 C.=$ CL.consume)
+    Right . go . TL.fromChunks <$> (decodeUtf8C .| sinkList)
   where
     go t =
         case TL.stripPrefix "Title: " x of
@@ -75,7 +64,7 @@ markdownFormat = ContentFormat "md" $ sinkText $ Markdown.markdown Markdown.def
 
 -- | 301 redirects
 redirectFormat :: ContentFormat
-redirectFormat = ContentFormat "redirect" $ Left . T.takeWhile (/= '\n') . T.concat <$> (CT.decode CT.utf8 C.=$ CL.consume)
+redirectFormat = ContentFormat "redirect" $ Left . T.takeWhile (/= '\n') . T.concat <$> (decodeUtf8C .| sinkList)
 
 -- | Try to load 'Html' from the given path.
 loadContent :: FilePath -- ^ root
@@ -84,14 +73,14 @@ loadContent :: FilePath -- ^ root
             -> IO (Maybe (Either Text (Maybe Html, Html)))
 loadContent _ [] _ = return Nothing
 loadContent root (cf:cfs) cp@(ContentPath pieces) = do
-    e <- isFile path
+    e <- doesFileExist path
     if e
         -- FIXME caching
-        then Just <$> runResourceT (CB.sourceFile (encodeString path) C.$$ cfLoad cf)
+        then Just <$> withSourceFile path (\src -> runConduit $ src .| cfLoad cf)
         else loadContent root cfs cp
   where
-    path = foldl' go root pieces <.> cfExtension cf
-    go x y = x </> fromText y
+    path = foldl' go root pieces <.> T.unpack (cfExtension cf)
+    go x y = x </> T.unpack y
 
 -- | Return some content as a 'Handler'.
 returnContent :: Yesod master
@@ -99,7 +88,7 @@ returnContent :: Yesod master
               -> Text -- ^ default title
               -> [ContentFormat]
               -> ContentPath
-              -> HandlerT master IO Html
+              -> HandlerFor master Html
 returnContent root defTitle cfs pieces = do
     mc <- liftIO $ loadContent root cfs pieces
     case mc of

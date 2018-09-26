@@ -6,6 +6,8 @@ getPageR :: [Text] -> Handler Html
 getPageR ps =
     returnContent "content/page" title [unsafeHtmlFormat, markdownFormat, redirectFormat] $ ContentPath ps
   where
-    title
-        | null ps = ""
-        | otherwise = last ps
+    title = fromMaybe "" $ lastMay ps
+
+    lastMay [] = Nothing
+    lastMay [x] = Just x
+    lastMay (_:rest) = lastMay rest

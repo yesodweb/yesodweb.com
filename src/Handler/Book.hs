@@ -4,26 +4,25 @@ module Handler.Book
     , getBookImageR
     ) where
 
-import Import
+import Import hiding (fix)
 import qualified Data.Text as T
-import qualified Filesystem.Path.CurrentOS as F
-import Filesystem (isFile)
 import Book
 import qualified Data.Map as Map
 import Text.XML
 import Network.HTTP.Types (status301)
-import Data.IORef (readIORef)
 import Book.Routes
 import qualified Text.Blaze.Html5 as H
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import qualified Text.HTML.DOM
 import Yesod.Form.Jquery (urlJqueryJs)
+import RIO.FilePath
+import RIO.Directory
 
 getBookHomeR :: SubHandlerFor BookSub YesodWeb Html
 getBookHomeR = do
     bs <- getSubYesod
     let ibook = bsBook bs
-    Book parts _ <- liftIO $ readIORef ibook
+    Book parts _ <- readIORef ibook >>= either throwIO pure
     toMaster <- getRouteToParent
     liftHandler $ defaultLayout $ do
         setTitle $ bsTitle bs
@@ -34,7 +33,7 @@ getChapterR :: Text -> SubHandlerFor BookSub YesodWeb Html
 getChapterR slug = do
     bs <- getSubYesod
     let ibook = bsBook bs
-    Book parts m <- liftIO $ readIORef ibook
+    Book parts m <- readIORef ibook >>= either throwIO pure
     chapter <- maybe notFound return $ Map.lookup slug m
     toMaster <- getRouteToParent
 
@@ -84,15 +83,15 @@ getBookImageR :: Text -> SubHandlerFor BookSub YesodWeb ()
 getBookImageR name
     | name' == name'' = do
         bs <- getSubYesod
-        let fp1 = bsRoot bs F.</> "images" F.</> name' F.<.> "png"
-            fp2 = bsRoot bs F.</> "asciidoc" F.</> "images" F.</> name' F.<.> "png"
+        let fp1 = bsRoot bs </> "images" </> name' <.> "png"
+            fp2 = bsRoot bs </> "asciidoc" </> "images" </> name' <.> "png"
         fp <- do
-            x <- liftIO $ isFile fp1
+            x <- doesFileExist fp1
             return $ if x then fp1 else fp2
-        sendFile "image/png" $ F.encodeString $ fp
+        sendFile "image/png" fp
     | otherwise = do
         tp <- getRouteToParent
-        redirectWith status301 $ tp $ BookImageR $ either id id $ F.toText name'
+        redirectWith status301 $ tp $ BookImageR $ T.pack name'
   where
-    name' = F.basename name''
-    name'' = F.fromText name
+    name' = takeBaseName name''
+    name'' = T.unpack name

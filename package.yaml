@@ -39,8 +39,6 @@ dependencies:
 - conduit-extra
 - resourcet >=0.3
 - xss-sanitize >=0.3.1
-- system-filepath >=0.4.4
-- system-fileio >=0.3
 - attoparsec >=0.10
 - data-default
 - xml-conduit >=1.0
@@ -57,6 +55,7 @@ dependencies:
 - markdown
 - html-conduit
 - classy-prelude
+- rio
 
 library:
   source-dirs: src

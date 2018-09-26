@@ -5,14 +5,11 @@ module Application
     ) where
 
 import           Book.Routes
-import           ClassyPrelude                        (handleAny)
-import           Control.Concurrent                   (forkIO, threadDelay)
-import           Control.Monad                        (forM_, unless, void, forever)
-import           Data.IORef                           (newIORef, writeIORef)
-import           Data.Maybe                           (fromMaybe)
+import           ClassyPrelude                        (print, putStrLn)
+import           Control.Concurrent                   (forkIO)
 import qualified Data.Text                            as T
-import           Filesystem                           (isDirectory)
-import qualified Filesystem.Path.CurrentOS            as F
+import           RIO.FilePath
+import           RIO.Directory
 import           Import
 import           Network.Wai.Application.Static       (defaultFileServerSettings)
 import           Network.Wai.Middleware.Autohead
@@ -50,9 +47,9 @@ getApplication :: AppConfig DefaultEnv Extra -> IO Application
 getApplication conf = do
     env <- getEnvironment
     forM_ branches $ \(dir, branch) -> do
-        exists <- isDirectory $ F.decodeString dir
+        exists <- doesDirectoryExist dir
         unless exists $ do
-            putStrLn $ "Cloning " ++ dir
+            putStrLn $ T.pack $ "Cloning " <> dir
             ec <- rawSystem "git"
                 [ "clone"
                 , "-b"
@@ -76,10 +73,10 @@ getApplication conf = do
                 return $ error $ "Invalid posts.yaml: " ++ show e
             Right b -> return b
     iblog <- newIORef blog
-    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "Note: You are looking at version 1.2 of the book, which is two versions behind" $ F.decodeString dir12
-    booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is three versions behind" $ F.decodeString dir11
-    booksub14 <- mkBookSub "Yesod Web Framework Book- Version 1.4" "Note: You are looking at version 1.4 of the book, which is one version behind" $ F.decodeString dir14
-    booksub16 <- mkBookSub "Yesod Web Framework Book- Version 1.6" "Note: The book has not yet been fully updated to version 1.6, there may still be some out of date information!" $ F.decodeString dir16
+    booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "Note: You are looking at version 1.2 of the book, which is two versions behind" dir12
+    booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is three versions behind" dir11
+    booksub14 <- mkBookSub "Yesod Web Framework Book- Version 1.4" "Note: You are looking at version 1.4 of the book, which is one version behind" dir14
+    booksub16 <- mkBookSub "Yesod Web Framework Book- Version 1.6" "Note: The book has not yet been fully updated to version 1.6, there may still be some out of date information!" dir16
     iauthors <- loadAuthors >>= newIORef
 
     let foundation = YesodWeb
@@ -111,10 +108,10 @@ getApplication conf = do
         { outputFormat = Apache FromHeader
         }
 
-mkBookSub :: Html -> Text -> F.FilePath -> IO BookSub
+mkBookSub :: Html -> Text -> FilePath -> IO BookSub
 mkBookSub title warning root' = do
-    Just branch <- return $ lookup (F.encodeString root') branches
-    let root = root' F.</> "book"
+    Just branch <- return $ lookup root' branches
+    let root = root' </> "book"
     ibook <- newIORef $ error "Still loading"
     _ <- forkIO $ loadBook root >>= writeIORef ibook
     return BookSub

@@ -8,32 +8,23 @@ module Book
     , loadBook
     ) where
 
-import           Control.Exception             (SomeException, evaluate, handle,
-                                                throw)
-import           Control.Monad                 (when)
-import           Control.Monad.IO.Class        (MonadIO (liftIO))
-import           Control.Monad.Trans.Resource
 import           Control.Monad.Trans.Writer
 import qualified Data.ByteString.Lazy          as L
-import           Data.Conduit
-import           Data.Conduit.Binary           (sourceFile)
-import qualified Data.Conduit.List             as CL
-import qualified Data.Conduit.Text             as CT
+import           Conduit
 import qualified Data.Map                      as Map
 import           Data.Maybe                    (listToMaybe, mapMaybe)
 import qualified Data.Set                      as Set
-import           Data.Text                     (Text)
 import qualified Data.Text                     as T
-import qualified Filesystem                    as F
-import qualified Filesystem.Path.CurrentOS     as F
-import           Prelude
+import           RIO
+import           RIO.Directory
+import           RIO.FilePath
 import           Text.Blaze.Html               (Html, toHtml)
 import           Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 import           Text.XML                      as X
 
 data Book = Book
     { bookParts      :: [Part]
-    , bookChapterMap :: Map.Map Text Chapter
+    , bookChapterMap :: Map Text Chapter
     }
 
 data Part = Part
@@ -43,7 +34,7 @@ data Part = Part
 
 data Chapter = Chapter
     { chapterTitle :: Text
-    , chapterPath  :: F.FilePath
+    , chapterPath  :: FilePath
     , chapterSlug  :: Text
     , chapterHtml  :: Html
     }
@@ -57,7 +48,7 @@ getTitle =
         return (t, front rest)
     go front (n:ns) = go (front . (n:)) ns
 
-mapWhile :: Monad m => (a -> Maybe b) -> Conduit a m b
+mapWhile :: Monad m => (a -> Maybe b) -> ConduitT a b m ()
 mapWhile f =
     loop
   where
@@ -78,19 +69,20 @@ parseBookLine t
              >>= T.stripSuffix ".asciidoc[]" = Just $ Include t'
     | otherwise = Nothing
 
-loadBook :: F.FilePath -> IO Book
-loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
+loadBook :: FilePath -> IO (Either SomeException Book)
+loadBook dir = try $ do
     fp <- trySuffixes
         [ "yesod-web-framework-book.asciidoc"
         , "asciidoc/book.asciidoc"
         ]
-    parts <- runResourceT
-           $ sourceFile (F.encodeString fp)
-          $$ CT.decode CT.utf8
-          =$ CT.lines
-          =$ CL.mapMaybe parseBookLine
-          =$ (CL.drop 1 >> parseParts)
-          =$ CL.consume
+    parts <- withSourceFile fp
+           $ \src -> runConduit
+           $ src
+          .| decodeUtf8C
+          .| linesUnboundedC
+          .| concatMapC parseBookLine
+          .| (dropC 1 >> parseParts)
+          .| sinkList
     let m = Map.fromList $ concatMap goP parts
         goC c = (chapterSlug c, c)
         goP = map goC . partChapters
@@ -98,11 +90,11 @@ loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
   where
     trySuffixes [] = error "No suffixes worked for loading book"
     trySuffixes (x:xs) = do
-        let fp = dir F.</> x
-        exists <- F.isFile fp
+        let fp = dir </> x
+        exists <- doesFileExist fp
         if exists then return fp else trySuffixes xs
 
-    parseParts :: MonadIO m => Conduit BookLine m Part
+    parseParts :: ConduitT BookLine Part IO ()
     parseParts =
         start
       where
@@ -111,7 +103,7 @@ loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
         start' (Title t) = do
             let getInclude (Include x) = Just x
                 getInclude _ = Nothing
-            chapters <- mapWhile getInclude =$= CL.mapM (liftIO . parseChapter) =$= CL.consume
+            chapters <- mapWhile getInclude .| mapMC parseChapter .| sinkList
             yield $ Part t chapters
             start
         start' (Include _t) = start -- error $ "Invalid beginning of a Part: " ++ show t
@@ -120,10 +112,10 @@ loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
 
     -- Read a chapter as an XML file, converting from AsciiDoc as necessary
     chapterToDoc fp'
-        | F.hasExtension fp' "ad" || F.hasExtension fp' "asciidoc" =
-            let fp'' = F.directory fp' F.</> "../generated-xml" F.</> F.replaceExtension (F.filename fp') "xml"
-             in X.readFile ps $ F.encodeString fp''
-        | otherwise = X.readFile ps $ F.encodeString fp'
+        | takeExtension fp' `elem` [".ad", ".asciidoc"] =
+            let fp'' = takeDirectory fp' </> "../generated-xml" </> takeBaseName fp' <.> "xml"
+             in X.readFile ps fp''
+        | otherwise = X.readFile ps fp'
 
     getSection (NodeElement e@(Element "section" _ _)) = Just e
     getSection (NodeElement e@(Element "appendix" _ _)) = Just e
@@ -131,7 +123,7 @@ loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
 
     parseChapter :: Text -> IO Chapter
     parseChapter slug = do
-        let fp' = dir F.</> "generated-xml" F.</> F.fromText slug F.<.> "xml"
+        let fp' = dir </> "generated-xml" </> T.unpack slug <.> "xml"
         Document _ (Element name _ csOrig) _ <- chapterToDoc fp'
         cs <-
             case name of
@@ -293,7 +285,7 @@ loadBook dir = handle (\(e :: SomeException) -> return (throw e)) $ do
         href' =
             case Map.lookup "fileref" as of
                 Just href ->
-                    let name = either id id $ F.toText $ F.basename $ F.fromText href
+                    let name = T.pack $ takeBaseName $ T.unpack href
                      in T.append "image/" name
                 Nothing -> error "image without href"
 

@@ -13,18 +13,14 @@ module Settings
     , development
     ) where
 
-import Prelude
+import RIO
 import Language.Haskell.TH.Syntax
 import Yesod.Default.Config
 import qualified Yesod.Default.Util
 import Data.Default (def)
-import Data.Text (Text)
 import Data.Yaml
-import qualified Filesystem.Path.CurrentOS as F
-import Control.Monad (mzero)
-import Data.Monoid ((<>))
 
-blogRoot :: F.FilePath
+blogRoot :: FilePath
 blogRoot = "content/blog"
 
 -- Static setting below. Changing these requires a recompile
@@ -60,7 +56,6 @@ parseExtra :: DefaultEnv -> Object -> Parser Extra
 parseExtra _ _ = pure Extra
 
 instance FromJSON Author where
-    parseJSON (Object o) = Author
+    parseJSON = withObject "Author" $ \o -> Author
         <$> o .: "name"
         <*> o .: "email"
-    parseJSON _ = mzero

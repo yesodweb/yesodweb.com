@@ -8,13 +8,11 @@ module Handler.Blog
 import Import
 import qualified Data.Map as Map
 import qualified Data.ByteString as S
-import qualified Filesystem.Path.CurrentOS as F
 import Text.Blaze.Html (unsafeByteString)
 import Settings (blogRoot, Author (..))
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import Yesod.Feed
-import Data.IORef (readIORef)
 import Text.Markdown (markdown, def, msXssProtect)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Text.Lazy (fromStrict)
@@ -23,6 +21,7 @@ import Data.Digest.Pure.MD5 (md5)
 import qualified Data.ByteString.Lazy.Char8 as L8
 import Data.Time (utctDay, toGregorian)
 import qualified Data.Foldable as Fo
+import RIO.FilePath
 
 getBlogR :: Handler ()
 getBlogR = getNewestBlog >>= redirect . fst
@@ -103,9 +102,9 @@ getFeedR = do
 
 getContent :: Post -> IO Html
 getContent post = do
-    contentRaw <- S.readFile $ F.encodeString $ blogRoot F.</> postFP post
+    contentRaw <- S.readFile $ blogRoot </> postFP post
     return $
-        if F.hasExtension (postFP post) "md"
+        if takeExtension (postFP post) == ".md"
             then markdown def { msXssProtect = False } $ fromStrict $ decodeUtf8 contentRaw
             else unsafeByteString contentRaw
 

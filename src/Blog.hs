@@ -13,10 +13,11 @@ import Data.Text (Text, pack)
 import Yesod.Core (PathPiece (..))
 import Data.Yaml
 import Control.Monad (mzero)
-import qualified Filesystem.Path.CurrentOS as F
 import Data.Time
 import Data.Map (Map)
 import qualified Data.Map as Map
+import qualified RIO.Text as T
+import RIO.FilePath (takeBaseName)
 
 newtype Slug = Slug Text
     deriving (Read, Eq, Show, PathPiece, Ord)
@@ -37,7 +38,7 @@ data Post = Post
     { postTime :: UTCTime
     , postAuthor :: Text
     , postTitle :: Text
-    , postFP :: F.FilePath
+    , postFP :: FilePath
     , postRaw :: Bool
     -- ^ don't apply any template to the raw page
     }
@@ -74,7 +75,7 @@ instance FromJSON Post where
         <$> o .: "time"
         <*> o .: "author"
         <*> o .: "title"
-        <*> (F.fromText <$> o .: "path")
+        <*> o .: "path"
         <*> o .:? "raw" .!= False
     parseJSON _ = mzero
 
@@ -90,4 +91,4 @@ instance FromJSON Blog where
             (y', m', _) = toGregorian $ utctDay $ postTime p
             y = fromInteger y'
             m = Month m'
-            slug = Slug $ either id id $ F.toText $ F.basename $ postFP p
+            slug = Slug $ T.pack $ takeBaseName $ postFP p

@@ -1,7 +1,5 @@
 module Import
     ( module X
-    , (<>)
-    , Text
     , getNewestBlog
     , getBlogList
     , prettyDay
@@ -11,21 +9,17 @@ module Import
     , getBlog
     ) where
 
-import Prelude as X hiding (writeFile, readFile)
+import RIO as X hiding (Handler (..), logWarn, logWarnS, logError, logErrorS, logInfo, logInfoS, logDebug, logDebugS, logOther, logOtherS, LogLevel (..))
 import Foundation as X
-import Data.Text (Text)
 import Import.Content as X
 import Settings.StaticFiles as X
-import Data.Maybe (listToMaybe, fromMaybe)
 import Data.List (sortBy)
-import Data.Ord (comparing)
 import qualified Data.Map as Map
 import Data.Time
 import qualified Book
-import qualified Filesystem.Path.CurrentOS as F
 import qualified Data.Yaml
 import Settings (blogRoot, Author)
-import Data.IORef (readIORef)
+import RIO.FilePath ((</>))
 
 getBlogList :: Handler [(Route YesodWeb, Post)]
 getBlogList = do
@@ -62,12 +56,12 @@ prettyDay time
   where
     (year, month, day) = toGregorian $ utctDay time
 
-loadBook :: F.FilePath -> IO Book.Book
+loadBook :: FilePath -> IO (Either SomeException Book.Book)
 loadBook root = Book.loadBook root
 
 loadBlog :: IO (Either Data.Yaml.ParseException Blog)
-loadBlog = Data.Yaml.decodeFileEither $ F.encodeString $ blogRoot F.</> "posts.yaml"
+loadBlog = Data.Yaml.decodeFileEither $ blogRoot </> "posts.yaml"
 
 loadAuthors :: IO (Map.Map Text Author)
-loadAuthors = fromMaybe Map.empty <$> Data.Yaml.decodeFile (F.encodeString $ blogRoot F.</> "authors.yaml")
+loadAuthors = either (const Map.empty) id <$> Data.Yaml.decodeFileEither (blogRoot </> "authors.yaml")
 
