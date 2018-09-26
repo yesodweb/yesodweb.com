@@ -28,8 +28,6 @@ $newline never
         <#container>
             <nav>
                 <ul>
-                    <li.googleplus>
-                        <g:plusOne size=small>
                     <li>
                         <a href=@{BookR BookHomeR}>book
                     <li>
@@ -69,4 +67,3 @@ $newline never
             <script>
                 window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
         \<![endif]-->
-        <script src="https://apis.google.com/js/plusone.js">
