@@ -152,6 +152,7 @@ pullGitBranches yw = do
     case eblog of
         Left e -> print e
         Right blog -> writeIORef (ywBlog yw) blog
+    bsReload $ getBook16 yw
     bsReload $ getBook14 yw
     bsReload $ getBook12 yw
     bsReload $ getBook11 yw
