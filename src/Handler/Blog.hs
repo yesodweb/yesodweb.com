@@ -110,7 +110,7 @@ getContent post = do
 
 gravatar :: Text -> Text
 gravatar email = T.concat
-    [ "http://www.gravatar.com/avatar/"
+    [ "https://www.gravatar.com/avatar/"
     , hashEmail email
     , "?size=80"
     ]
