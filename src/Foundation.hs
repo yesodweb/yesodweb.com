@@ -6,8 +6,6 @@ module Foundation
     , Handler
     , Widget
     , Form
-    , maybeAuth
-    , requireAuth
     , module X
     , license
     ) where
@@ -24,7 +22,6 @@ import           Settings.StaticFiles
 import           Text.Hamlet          (hamletFile)
 import           Yesod                as X hiding (Route)
 import           Yesod.AtomFeed       (atomLink)
-import           Yesod.Auth
 import           Yesod.Default.Config
 import           Yesod.Form.Jquery    (YesodJquery)
 import           Yesod.Static
