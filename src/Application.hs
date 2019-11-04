@@ -16,8 +16,7 @@ import           Network.Wai.Middleware.Autohead
 import           Network.Wai.Middleware.Gzip
 import           Network.Wai.Middleware.RequestLogger
 import           System.Environment                   (getEnvironment)
-import           System.Exit                          (ExitCode (ExitSuccess),
-                                                       exitWith)
+import           System.Exit                          (ExitCode (ExitSuccess))
 import           System.Process                       (rawSystem, runProcess,
                                                        waitForProcess)
 import           Yesod.Default.Config
