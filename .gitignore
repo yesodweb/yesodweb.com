@@ -1,5 +1,4 @@
 .static-cache/
-dist/
 *.swp
 static/tmp/
 tmp
@@ -8,9 +7,6 @@ content/
 content-1.1/
 content-1.2/
 content-1.4/
-/.cabal-sandbox/
-/cabal.sandbox.config
 /.stack-work/
-/docker/app/
 /yesodweb.cabal
 *~
