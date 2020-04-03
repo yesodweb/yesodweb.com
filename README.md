@@ -1,5 +1,7 @@
 # yesodweb.com
 
+![Runtime image](https://github.com/yesodweb/yesodweb.com/workflows/Runtime%20image/badge.svg)
+
 You made it!  You're currently looking behind the scenes at
 [yesodweb.com](http://yesodweb.com), the project page for Yesod.
 I'm not going to explain what Yesod is, that you learn when you point
