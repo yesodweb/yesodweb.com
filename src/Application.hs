@@ -75,7 +75,7 @@ getApplication conf = do
     booksub12 <- mkBookSub "Yesod Web Framework Book- Version 1.2" "Note: You are looking at version 1.2 of the book, which is two versions behind" dir12
     booksub11 <- mkBookSub "Yesod Web Framework Book- Version 1.1" "Note: You are looking at version 1.1 of the book, which is three versions behind" dir11
     booksub14 <- mkBookSub "Yesod Web Framework Book- Version 1.4" "Note: You are looking at version 1.4 of the book, which is one version behind" dir14
-    booksub16 <- mkBookSub "Yesod Web Framework Book- Version 1.6" "Note: The book has not yet been fully updated to version 1.6, there may still be some out of date information!" dir16
+    booksub16 <- mkBookSub "Yesod Web Framework Book- Version 1.6" "" dir16
     iauthors <- loadAuthors >>= newIORef
 
     let foundation = YesodWeb
