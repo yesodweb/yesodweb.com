@@ -98,6 +98,7 @@ getFeedR = do
             , feedEntryTitle = postTitle p
             , feedEntryContent = content
             , feedEntryEnclosure = Nothing
+            , feedEntryCategories = []
             }
 
 getContent :: Post -> IO Html

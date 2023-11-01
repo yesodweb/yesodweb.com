@@ -15,7 +15,7 @@ import Import.Content as X
 import Settings.StaticFiles as X
 import Data.List (sortBy)
 import qualified Data.Map as Map
-import Data.Time
+import Data.Time (UTCTime, utctDay, toGregorian, defaultTimeLocale, formatTime, getCurrentTime)
 import qualified Book
 import qualified Data.Yaml
 import Settings (blogRoot, Author)

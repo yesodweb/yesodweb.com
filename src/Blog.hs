@@ -13,7 +13,7 @@ import Data.Text (Text, pack)
 import Yesod.Core (PathPiece (..))
 import Data.Yaml
 import Control.Monad (mzero)
-import Data.Time
+import Data.Time (UTCTime, utctDay, toGregorian)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified RIO.Text as T
