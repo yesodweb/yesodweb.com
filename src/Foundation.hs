@@ -68,7 +68,7 @@ type Form x = Html -> MForm Handler (FormResult x, Widget)
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
 instance Yesod YesodWeb where
-    approot = guessApproot
+    approot = ApprootRelative
 
     makeSessionBackend _ = return Nothing
 
