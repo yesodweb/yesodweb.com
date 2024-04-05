@@ -33,7 +33,7 @@ impl App {
         if route.starts_with("/wiki") {
             return;
         }
-        if let Some(route) = route.strip_prefix("/") {
+        if let Some(route) = route.strip_prefix('/') {
             if !self.processed.contains(route) {
                 self.processed.insert(route.to_owned());
                 self.queue.push_back(route.to_owned());
@@ -61,9 +61,6 @@ fn main() -> Result<()> {
         .args(["-r", "../static", "../public/static"])
         .status()?;
     anyhow::ensure!(status.success(), "Failed copying static dir");
-    let status = Command::new("cp")
-        .args(["-r", "../content/static", "../public/assets"])
-        .status()?;
 
     let client = reqwest::blocking::Client::new();
     let running_server = RunningServer::new(&client)?;
@@ -83,6 +80,11 @@ fn main() -> Result<()> {
     while let Some(route) = app.queue.pop_front() {
         process(&mut app, route)?;
     }
+
+    // Wait until after the server has started to ensure we clone the content repo.
+    let status = Command::new("cp")
+        .args(["-r", "../content/static", "../public/assets"])
+        .status()?;
     anyhow::ensure!(status.success(), "Failed copying assets dir");
 
     Ok(())
@@ -90,7 +92,7 @@ fn main() -> Result<()> {
 
 fn process(app: &mut App, route: String) -> Result<()> {
     anyhow::ensure!(!route.contains(".."), "No double dots allowed!");
-    anyhow::ensure!(!route.starts_with("/"), "No leading slashes: {route}");
+    anyhow::ensure!(!route.starts_with('/'), "No leading slashes: {route}");
     let url = format!("{}/{route}", app.running_server.host_root());
     let res = app
         .client
@@ -128,7 +130,7 @@ fn process(app: &mut App, route: String) -> Result<()> {
     if is_html {
         let body =
             std::str::from_utf8(&body).with_context(|| format!("Non-UTF8 content in {url}"))?;
-        handle_html(app, &body)?;
+        handle_html(app, body)?;
     }
 
     Ok(())
