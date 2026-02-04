@@ -65,12 +65,6 @@ fn main() -> Result<()> {
     let client = reqwest::blocking::Client::new();
     let running_server = RunningServer::new(&client)?;
 
-    // Wait until after the server has started to ensure we clone the content repo.
-    let status = Command::new("cp")
-        .args(["-r", "../content/static", "../public/assets"])
-        .status()?;
-    anyhow::ensure!(status.success(), "Failed copying assets dir");
-
     let mut app = App {
         processed: HashSet::new(),
         queue: VecDeque::new(),
@@ -88,7 +82,11 @@ fn main() -> Result<()> {
         process(&mut app, route)?;
     }
 
-    // Perform this copy at the end to ensure the book repos were already cloned.
+    // Perform these copies at the end to ensure the book repos were already cloned.
+    let status = Command::new("cp")
+        .args(["-r", "../content/static", "../public/assets"])
+        .status()?;
+    anyhow::ensure!(status.success(), "Failed copying assets dir");
     let status = Command::new("cp")
         .args([
             "-r",
