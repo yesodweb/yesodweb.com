@@ -61,14 +61,6 @@ fn main() -> Result<()> {
         .args(["-r", "../static", "../public/static"])
         .status()?;
     anyhow::ensure!(status.success(), "Failed copying static dir");
-    let status = Command::new("cp")
-        .args([
-            "-r",
-            "../content/book/asciidoc/images",
-            "../public/static/bookimage",
-        ])
-        .status()?;
-    anyhow::ensure!(status.success(), "Failed copying book/images dir");
 
     let client = reqwest::blocking::Client::new();
     let running_server = RunningServer::new(&client)?;
@@ -95,6 +87,16 @@ fn main() -> Result<()> {
     while let Some(route) = app.queue.pop_front() {
         process(&mut app, route)?;
     }
+
+    // Perform this copy at the end to ensure the book repos were already cloned.
+    let status = Command::new("cp")
+        .args([
+            "-r",
+            "../content/book/asciidoc/images",
+            "../public/static/bookimage",
+        ])
+        .status()?;
+    anyhow::ensure!(status.success(), "Failed copying book/images dir");
 
     Ok(())
 }
