@@ -61,6 +61,14 @@ fn main() -> Result<()> {
         .args(["-r", "../static", "../public/static"])
         .status()?;
     anyhow::ensure!(status.success(), "Failed copying static dir");
+    let status = Command::new("cp")
+        .args([
+            "-r",
+            "../content/book/asciidoc/images",
+            "../public/static/bookimage",
+        ])
+        .status()?;
+    anyhow::ensure!(status.success(), "Failed copying book/images dir");
 
     let client = reqwest::blocking::Client::new();
     let running_server = RunningServer::new(&client)?;

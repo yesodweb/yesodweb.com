@@ -286,7 +286,7 @@ loadBook dir = try $ do
             case Map.lookup "fileref" as of
                 Just href ->
                     let name = T.pack $ takeBaseName $ T.unpack href
-                     in T.append "image/" name
+                     in "/static/bookimage/" `T.append` name `T.append` ".png"
                 Nothing -> error "image without href"
 
 data LHask t = LHCode t | LHText t
